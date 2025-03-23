@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GesTool - Controle Pessoal e Profissional</title>
+  <title>Ocean - Controle Pessoal e Profissional</title>
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
@@ -13,17 +13,25 @@
     <!-- Navigation -->
     <nav class="navbar">
       <div class="container">
-        <a href="index.html" class="logo">GesTool</a>
-        <div class="nav-links" id="navLinks">
-          <a href="index.html" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a>
-          <a href="/paginas/tarefas.html" class="nav-link"><i class="fas fa-tasks"></i> Tarefas</a>
-          <a href="#" class="nav-link"><i class="fas fa-chart-line"></i> Metas</a>
-          <a href="#" class="nav-link"><i class="fas fa-wallet"></i> Finanças</a>
+        <a href="index.html" class="logo">Ocean</a>
+        <div class="nav-actions">
           <a href="#" class="nav-link" id="loginButton"><i class="fas fa-sign-in-alt"></i> Login</a>
+          <div class="nav_bar" id="menuButton">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3_h"></div>
+            <div class="bar4"></div>
+            <div class="menu-dropdown" id="menuDropdown">
+              <a href="index.html" class="menu-item"><i class="fas fa-home"></i> Dashboard</a>
+              <a href="/paginas/tarefas.html" class="menu-item"><i class="fas fa-tasks"></i> Tarefas</a>
+              <a href="#" class="menu-item"><i class="fas fa-chart-line"></i> Metas</a>
+              <a href="#" class="menu-item"><i class="fas fa-wallet"></i> Finanças</a>
+              <a href="#" class="menu-item"><i class="fas fa-cog"></i> Configurações</a>
+              <a href="#" class="menu-item"><i class="fas fa-user"></i> Perfil</a>
+              <a href="#" class="menu-item"><i class="fas fa-question-circle"></i> Ajuda</a>
+            </div>
+          </div>
         </div>
-        <button class="mobile-menu-btn" id="mobileMenuBtn">
-          <i class="fas fa-bars"></i>
-        </button>
       </div>
     </nav>
 

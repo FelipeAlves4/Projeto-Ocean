@@ -260,18 +260,47 @@ function initDatePicker() {
   }
 }
 
-// Init App
+// Menu Dropdown Functionality
+function setupMenuDropdown() {
+    const menuButton = document.getElementById('menuButton');
+    const menuDropdown = document.getElementById('menuDropdown');
+    
+    if (menuButton && menuDropdown) {
+        menuButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            menuDropdown.classList.toggle('active');
+        });
+
+        // Fecha o menu quando clicar fora
+        document.addEventListener('click', function(e) {
+            if (!menuButton.contains(e.target) && !menuDropdown.contains(e.target)) {
+                menuDropdown.classList.remove('active');
+            }
+        });
+
+        // Fecha o menu quando clicar em um item
+        const menuItems = menuDropdown.querySelectorAll('.menu-item');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                menuDropdown.classList.remove('active');
+            });
+        });
+    }
+}
+
+// Modifica a função initApp para incluir o setup do menu dropdown
 function initApp() {
-  initLocalStorage();
-  toggleMobileMenu();
-  setupTabs();
-  
-  // Tasks page specific functionality
-  if (window.location.pathname.includes('tarefas.html')) {
-    initDatePicker();
-    handleTaskForm();
-    displayTasks();
-  }
+    initLocalStorage();
+    toggleMobileMenu();
+    setupTabs();
+    setupMenuDropdown();
+    
+    // Tasks page specific functionality
+    if (window.location.pathname.includes('tarefas.html')) {
+        initDatePicker();
+        handleTaskForm();
+        displayTasks();
+    }
 }
 
 // Run on page load
@@ -281,24 +310,24 @@ document.addEventListener('DOMContentLoaded', initApp);
 function atualizarInterfaceLogin() {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
     const loginButton = document.getElementById('loginButton');
-    const logoutButton = document.querySelector('.nav-link[onclick="logout()"]');
+    const navActions = document.querySelector('.nav-actions');
     
     if (isLoggedIn) {
         if (loginButton) loginButton.style.display = 'none';
-        if (!logoutButton) {
-            const navLinks = document.querySelector('.nav-links');
-            const newLogoutButton = document.createElement('a');
-            newLogoutButton.href = '#';
-            newLogoutButton.className = 'nav-link';
-            newLogoutButton.innerHTML = '<i class="fas fa-sign-out-alt"></i> Sair';
-            newLogoutButton.onclick = function(e) {
+        if (!document.querySelector('.nav-link[onclick="logout()"]')) {
+            const logoutButton = document.createElement('a');
+            logoutButton.href = '#';
+            logoutButton.className = 'nav-link';
+            logoutButton.innerHTML = '<i class="fas fa-sign-out-alt"></i> Sair';
+            logoutButton.onclick = function(e) {
                 e.preventDefault();
                 logout();
             };
-            navLinks.appendChild(newLogoutButton);
+            navActions.insertBefore(logoutButton, document.getElementById('menuButton'));
         }
     } else {
         if (loginButton) loginButton.style.display = 'flex';
+        const logoutButton = document.querySelector('.nav-link[onclick="logout()"]');
         if (logoutButton) logoutButton.remove();
     }
 }
