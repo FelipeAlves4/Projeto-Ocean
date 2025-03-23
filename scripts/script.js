@@ -276,3 +276,70 @@ function initApp() {
 
 // Run on page load
 document.addEventListener('DOMContentLoaded', initApp);
+
+// Função para atualizar a interface baseada no estado de login
+function atualizarInterfaceLogin() {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const loginButton = document.getElementById('loginButton');
+    const logoutButton = document.querySelector('.nav-link[onclick="logout()"]');
+    
+    if (isLoggedIn) {
+        if (loginButton) loginButton.style.display = 'none';
+        if (!logoutButton) {
+            const navLinks = document.querySelector('.nav-links');
+            const newLogoutButton = document.createElement('a');
+            newLogoutButton.href = '#';
+            newLogoutButton.className = 'nav-link';
+            newLogoutButton.innerHTML = '<i class="fas fa-sign-out-alt"></i> Sair';
+            newLogoutButton.onclick = function(e) {
+                e.preventDefault();
+                logout();
+            };
+            navLinks.appendChild(newLogoutButton);
+        }
+    } else {
+        if (loginButton) loginButton.style.display = 'flex';
+        if (logoutButton) logoutButton.remove();
+    }
+}
+
+// Adiciona evento de clique ao botão de login
+document.addEventListener('DOMContentLoaded', function() {
+    const loginButton = document.getElementById('loginButton');
+    if (loginButton) {
+        loginButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = './paginas/login.html';
+        });
+    }
+    atualizarInterfaceLogin();
+});
+
+// Modifica a função verificarLogin para não redirecionar automaticamente
+function verificarLogin() {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (!isLoggedIn) {
+        atualizarInterfaceLogin();
+    }
+}
+
+// Função para fazer logout
+function logout() {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('usuario');
+    window.location.href = './paginas/login.html';
+}
+
+// Adiciona o botão de logout na navbar
+document.addEventListener('DOMContentLoaded', function() {
+    const navLinks = document.querySelector('.nav-links');
+    const logoutButton = document.createElement('a');
+    logoutButton.href = '#';
+    logoutButton.className = 'nav-link';
+    logoutButton.innerHTML = '<i class="fas fa-sign-out-alt"></i> Sair';
+    logoutButton.onclick = function(e) {
+        e.preventDefault();
+        logout();
+    };
+    navLinks.appendChild(logoutButton);
+});
