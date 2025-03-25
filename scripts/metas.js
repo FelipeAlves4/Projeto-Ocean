@@ -29,36 +29,74 @@ function calcularProgresso(dataInicio, dataPrazo) {
 }
 
 function criarCardMeta(meta) {
-    const progresso = calcularProgresso(meta.dataInicio, meta.dataPrazo);
-    const status = progresso >= 100 ? 'concluida' : progresso >= 75 ? 'em-progresso' : 'pendente';
+    const card = document.createElement('div');
+    card.className = 'meta-card';
+    card.dataset.id = meta.id;
     
-    return `
-        <div class="meta-card" data-id="${meta.id}">
-            <div class="meta-header">
-                <h3>${meta.titulo}</h3>
-                <div class="meta-actions">
-                    <button class="btn-icon btn-editar" title="Editar meta">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-excluir" title="Excluir meta">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
+    const progresso = meta.progresso || 0;
+    const diasRestantes = calcularDiasRestantes(meta.dataPrazo);
+    
+    card.innerHTML = `
+        <div class="meta-header">
+            <h3>${meta.titulo}</h3>
+            <div class="meta-actions">
+                <button class="btn-icon" onclick="editarMeta(${meta.id})">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon" onclick="excluirMeta(${meta.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
             </div>
-            <p class="meta-descricao">${meta.descricao}</p>
-            <div class="meta-progresso">
-                <div class="progress-bar">
-                    <div class="progress ${status}" style="width: ${progresso}%"></div>
-                </div>
-                <span>${progresso}%</span>
-            </div>
+        </div>
+        <p class="meta-descricao">${meta.descricao}</p>
+        <div class="meta-info">
             <div class="meta-datas">
-                <span><i class="fas fa-calendar"></i> Início: ${formatarData(meta.dataInicio)}</span>
-                <span><i class="fas fa-calendar-check"></i> Prazo: ${formatarData(meta.dataPrazo)}</span>
+                <span><i class="fas fa-calendar-alt"></i> Início: ${formatarData(meta.dataInicio)}</span>
+                <span><i class="fas fa-flag-checkered"></i> Prazo: ${formatarData(meta.dataPrazo)}</span>
+            </div>
+            <div class="meta-progresso">
+                <div class="progresso-container">
+                    <div class="progresso-barra" style="width: ${progresso}%"></div>
+                    <div class="progresso-controles">
+                        <button class="btn-icon" onclick="ajustarProgresso(${meta.id}, -10)">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <span class="progresso-valor">${progresso}%</span>
+                        <button class="btn-icon" onclick="ajustarProgresso(${meta.id}, 10)">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="meta-status">
+                <span class="status-badge ${progresso === 100 ? 'concluida' : diasRestantes < 0 ? 'atrasada' : 'em-progresso'}">
+                    ${progresso === 100 ? 'Concluída' : diasRestantes < 0 ? 'Atrasada' : 'Em Progresso'}
+                </span>
+                <span class="dias-restantes">
+                    ${diasRestantes < 0 ? 'Atrasada' : diasRestantes === 0 ? 'Vence hoje' : `${diasRestantes} dias restantes`}
+                </span>
             </div>
         </div>
     `;
+    
+    return card;
 }
+
+function ajustarProgresso(metaId, valor) {
+    const metas = JSON.parse(localStorage.getItem('metas') || '[]');
+    const metaIndex = metas.findIndex(m => m.id === metaId);
+    
+    if (metaIndex !== -1) {
+        let novoProgresso = (metas[metaIndex].progresso || 0) + valor;
+        novoProgresso = Math.max(0, Math.min(100, novoProgresso));
+        
+        metas[metaIndex].progresso = novoProgresso;
+        localStorage.setItem('metas', JSON.stringify(metas));
+        
+        atualizarListaMetas();
+        atualizarContadores();
+    }
+} 
 
 function renderizarMetas() {
     metasContainer.innerHTML = metas.map(meta => criarCardMeta(meta)).join('');
