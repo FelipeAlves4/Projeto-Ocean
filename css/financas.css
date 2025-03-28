@@ -1,0 +1,231 @@
+/* Estilos específicos para a página de finanças */
+
+/* Header da Página */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem 0;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--foreground);
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Cards de Resumo */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.summary-cards .card {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.summary-cards .card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.summary-cards .card h3 {
+    font-size: 1rem;
+    color: var(--muted-foreground);
+    margin-bottom: 0.5rem;
+}
+
+.summary-cards .card p {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+/* Grid de Gráficos */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.chart-container {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    height: 400px;
+}
+
+.chart-container h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    color: var(--foreground);
+}
+
+/* Lista de Transações */
+.transaction-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.transaction-item:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow);
+}
+
+.transaction-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-right: 1rem;
+}
+
+.transaction-item.income .transaction-icon {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.transaction-item.expense .transaction-icon {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.transaction-info {
+    flex: 1;
+}
+
+.transaction-info h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.transaction-info p {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+.transaction-value {
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+.transaction-item.income .transaction-value {
+    color: #10b981;
+}
+
+.transaction-item.expense .transaction-value {
+    color: #ef4444;
+}
+
+/* Lista de Orçamento */
+.budget-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.budget-item {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+}
+
+.budget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.budget-header h3 {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.budget-header span {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+.budget-item .progress-bar {
+    height: 8px;
+    background-color: var(--muted);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.budget-item .progress {
+    height: 100%;
+    background-color: var(--primary);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-container {
+        height: 300px;
+    }
+
+    .transaction-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .transaction-value {
+        width: 100%;
+        text-align: right;
+    }
+} 

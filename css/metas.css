@@ -1,0 +1,234 @@
+/* Estilos específicos para a página de metas */
+
+/* Grid de Metas */
+.goals-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+    .goals-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .goals-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* Card de Meta */
+.goal-card {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: transform 0.3s, border-color 0.3s;
+}
+
+.goal-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+}
+
+/* Cabeçalho da Meta */
+.goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.goal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.goal-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.goal-description {
+    color: var(--muted-foreground);
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+/* Meta Informações */
+.goal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.goal-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-weight: 500;
+}
+
+/* Progresso da Meta */
+.goal-progress {
+    margin-bottom: 1rem;
+}
+
+.goal-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.goal-progress-label {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+.goal-progress-value {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.goal-progress-bar {
+    width: 100%;
+    height: 0.5rem;
+    background-color: var(--muted);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.goal-progress-fill {
+    height: 100%;
+    background-color: var(--primary);
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+}
+
+/* Datas da Meta */
+.goal-dates {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+}
+
+/* Formulário Range */
+.form-range {
+    width: 100%;
+    height: 0.5rem;
+    background-color: var(--muted);
+    border-radius: 9999px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.form-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1rem;
+    height: 1rem;
+    background-color: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.form-range::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.form-range::-moz-range-thumb {
+    width: 1rem;
+    height: 1rem;
+    background-color: var(--primary);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.form-range::-moz-range-thumb:hover {
+    transform: scale(1.1);
+}
+
+.progress-value {
+    text-align: right;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin-top: 0.25rem;
+}
+
+/* Categorias de Metas */
+.category-profissional {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.category-saude {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.category-educacao {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.category-financeiro {
+    background-color: rgba(79, 70, 229, 0.1);
+    color: #4f46e5;
+}
+
+.category-outros {
+    background-color: rgba(107, 114, 128, 0.1);
+    color: #6b7280;
+}
+
+/* Prioridades de Metas */
+.priority-alta {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.priority-média {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.priority-baixa {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+/* Estado Vazio */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--muted-foreground);
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.empty-state h3 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--foreground);
+}
+
+.empty-state p {
+    font-size: 0.875rem;
+    max-width: 24rem;
+    margin: 0 auto;
+} 

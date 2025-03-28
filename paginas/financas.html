@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanças - PMD</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/financas.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="../index.html">PMD</a>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">Dashboard</a>
+            <a href="tarefas.html">Tarefas</a>
+            <a href="metas.html">Metas</a>
+            <a href="financas.html" class="active">Finanças</a>
+            <a href="perfil.html">Perfil</a>
+        </div>
+        <div class="nav-actions">
+            <button class="menu-button">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="menu-dropdown">
+                <a href="#" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    Configurações
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Sair
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="page-header">
+            <h1>Finanças</h1>
+            <div class="header-actions">
+                <button class="btn btn-outline filter-btn">
+                    <i class="fas fa-filter"></i>
+                    Filtrar
+                </button>
+                <button class="btn btn-primary add-transaction-btn">
+                    <i class="fas fa-plus"></i>
+                    Nova Transação
+                </button>
+            </div>
+        </div>
+
+        <div class="summary-cards">
+            <div class="card">
+                <div class="card-body">
+                    <h3>Saldo Total</h3>
+                    <p class="total-balance">R$ 0,00</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h3>Receitas do Mês</h3>
+                    <p class="monthly-income">R$ 0,00</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h3>Despesas do Mês</h3>
+                    <p class="monthly-expenses">R$ 0,00</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h3>Economias</h3>
+                    <p class="savings">R$ 0,00</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="transactions">
+                    <i class="fas fa-list"></i>
+                    Transações
+                </button>
+                <button class="tab-btn" data-tab="charts">
+                    <i class="fas fa-chart-pie"></i>
+                    Gráficos
+                </button>
+                <button class="tab-btn" data-tab="budget">
+                    <i class="fas fa-wallet"></i>
+                    Orçamento
+                </button>
+            </div>
+
+            <div class="tab-content active" data-tab="transactions">
+                <div class="transaction-list"></div>
+            </div>
+
+            <div class="tab-content" data-tab="charts">
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3>Despesas por Categoria</h3>
+                        <canvas id="expenseChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Receitas por Categoria</h3>
+                        <canvas id="incomeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" data-tab="budget">
+                <div class="budget-header">
+                    <h2>Orçamento Mensal</h2>
+                    <button class="btn btn-outline edit-budget-btn">
+                        <i class="fas fa-edit"></i>
+                        Editar
+                    </button>
+                </div>
+                <div class="budget-list"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Nova Transação -->
+    <div id="transactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nova Transação</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="transactionForm">
+                    <div class="form-group">
+                        <label for="type">Tipo</label>
+                        <select id="type" name="type" required>
+                            <option value="income">Receita</option>
+                            <option value="expense">Despesa</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Descrição</label>
+                        <input type="text" id="description" name="description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Valor</label>
+                        <input type="number" id="amount" name="amount" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Categoria</label>
+                        <select id="category" name="category" required>
+                            <option value="Trabalho">Trabalho</option>
+                            <option value="Moradia">Moradia</option>
+                            <option value="Alimentação">Alimentação</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Saúde">Saúde</option>
+                            <option value="Lazer">Lazer</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Data</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="transactionModal.style.display='none'">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Filtro -->
+    <div id="filterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Filtrar Transações</h2>
+                <button class="close-button close-filter-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="filterForm">
+                    <div class="form-group">
+                        <label for="filterType">Tipo</label>
+                        <select id="filterType" name="filterType">
+                            <option value="">Todos</option>
+                            <option value="income">Receitas</option>
+                            <option value="expense">Despesas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filterCategory">Categoria</label>
+                        <select id="filterCategory" name="filterCategory">
+                            <option value="">Todas</option>
+                            <option value="Trabalho">Trabalho</option>
+                            <option value="Moradia">Moradia</option>
+                            <option value="Alimentação">Alimentação</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Saúde">Saúde</option>
+                            <option value="Lazer">Lazer</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="startDate">Data Inicial</label>
+                        <input type="date" id="startDate" name="startDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">Data Final</label>
+                        <input type="date" id="endDate" name="endDate">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="filterModal.style.display='none'">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Aplicar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Orçamento -->
+    <div id="budgetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Orçamento</h2>
+                <button class="close-button close-budget-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="budgetForm">
+                    <div class="form-group">
+                        <label for="Moradia">Moradia</label>
+                        <input type="number" id="Moradia" name="Moradia" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="Alimentação">Alimentação</label>
+                        <input type="number" id="Alimentação" name="Alimentação" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="Transporte">Transporte</label>
+                        <input type="number" id="Transporte" name="Transporte" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="Saúde">Saúde</label>
+                        <input type="number" id="Saúde" name="Saúde" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="Lazer">Lazer</label>
+                        <input type="number" id="Lazer" name="Lazer" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="Outros">Outros</label>
+                        <input type="number" id="Outros" name="Outros" step="0.01" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="budgetModal.style.display='none'">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/financas.js"></script>
+</body>
+</html> 
