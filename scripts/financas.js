@@ -1,348 +1,222 @@
 // Dados de exemplo
-let transactions = [
+let transacoes = [
     {
         id: 1,
-        type: 'income',
-        description: 'Salário',
-        amount: 5000,
-        category: 'Trabalho',
-        date: '2024-03-15'
+        tipo: 'receita',
+        descricao: 'Salário',
+        valor: 5000,
+        categoria: 'salario',
+        data: '2024-03-25'
     },
     {
         id: 2,
-        type: 'expense',
-        description: 'Aluguel',
-        amount: 1500,
-        category: 'Moradia',
-        date: '2024-03-10'
-    },
-    {
-        id: 3,
-        type: 'expense',
-        description: 'Supermercado',
-        amount: 300,
-        category: 'Alimentação',
-        date: '2024-03-05'
-    },
-    {
-        id: 4,
-        type: 'income',
-        description: 'Freelance',
-        amount: 800,
-        category: 'Trabalho',
-        date: '2024-03-01'
+        tipo: 'despesa',
+        descricao: 'Aluguel',
+        valor: 1500,
+        categoria: 'moradia',
+        data: '2024-03-20'
     }
 ];
 
-let budget = {
-    'Moradia': 2000,
-    'Alimentação': 1000,
-    'Transporte': 500,
-    'Saúde': 300,
-    'Lazer': 400,
-    'Outros': 600
-};
-
 // Elementos do DOM
-const menuButton = document.querySelector('.menu-button');
-const menuDropdown = document.querySelector('.menu-dropdown');
-const tabButtons = document.querySelectorAll('.tab-btn');
-const tabContents = document.querySelectorAll('.tab-content');
-const transactionModal = document.getElementById('transactionModal');
-const addTransactionBtn = document.querySelector('.add-transaction-btn');
-const closeModalBtn = document.querySelector('.close-button');
-const transactionForm = document.getElementById('transactionForm');
-const transactionList = document.querySelector('.transaction-list');
-const expenseChart = document.getElementById('expenseChart');
-const incomeChart = document.getElementById('incomeChart');
-const budgetList = document.querySelector('.budget-list');
-const filterModal = document.getElementById('filterModal');
-const filterBtn = document.querySelector('.filter-btn');
-const filterForm = document.getElementById('filterForm');
-const closeFilterBtn = document.querySelector('.close-filter-btn');
-const editBudgetBtn = document.querySelector('.edit-budget-btn');
-const budgetModal = document.getElementById('budgetModal');
-const budgetForm = document.getElementById('budgetForm');
-const closeBudgetBtn = document.querySelector('.close-budget-btn');
+const modal = document.getElementById('modalTransacao');
+const btnNovaTransacao = document.getElementById('btnNovaTransacao');
+const btnCancelar = document.getElementById('btnCancelar');
+const formTransacao = document.getElementById('formTransacao');
+const transacoesLista = document.querySelector('.transacoes-lista');
 
-// Funções utilitárias
-function formatCurrency(value) {
+// Configuração dos gráficos
+const ctxDespesas = document.getElementById('graficoDespesas').getContext('2d');
+const ctxReceitas = document.getElementById('graficoReceitas').getContext('2d');
+
+let graficoDespesas = new Chart(ctxDespesas, {
+    type: 'doughnut',
+    data: {
+        labels: [],
+        datasets: [{
+            data: [],
+            backgroundColor: [
+                '#ef4444',
+                '#f97316',
+                '#eab308',
+                '#84cc16',
+                '#22c55e',
+                '#14b8a6',
+                '#06b6d4',
+                '#3b82f6',
+                '#6366f1',
+                '#8b5cf6'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'right'
+            }
+        }
+    }
+});
+
+let graficoReceitas = new Chart(ctxReceitas, {
+    type: 'doughnut',
+    data: {
+        labels: [],
+        datasets: [{
+            data: [],
+            backgroundColor: [
+                '#22c55e',
+                '#84cc16',
+                '#eab308',
+                '#f97316',
+                '#ef4444'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'right'
+            }
+        }
+    }
+});
+
+// Funções auxiliares
+function formatarMoeda(valor) {
     return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL'
-    }).format(value);
+    }).format(valor);
 }
 
-function formatDate(dateString) {
-    return new Date(dateString).toLocaleDateString('pt-BR');
+function formatarData(data) {
+    return new Date(data).toLocaleDateString('pt-BR');
 }
 
-// Gerenciamento do Menu
-menuButton.addEventListener('click', () => {
-    menuDropdown.classList.toggle('active');
-});
+function calcularTotais() {
+    const totais = {
+        saldo: 0,
+        receitas: 0,
+        despesas: 0
+    };
 
-document.addEventListener('click', (e) => {
-    if (!menuButton.contains(e.target) && !menuDropdown.contains(e.target)) {
-        menuDropdown.classList.remove('active');
-    }
-});
-
-// Gerenciamento das Tabs
-tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        const target = button.dataset.tab;
-        
-        // Remove active class from all buttons and contents
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        tabContents.forEach(content => content.classList.remove('active'));
-        
-        // Add active class to clicked button and target content
-        button.classList.add('active');
-        document.querySelector(`.tab-content[data-tab="${target}"]`).classList.add('active');
+    transacoes.forEach(transacao => {
+        if (transacao.tipo === 'receita') {
+            totais.receitas += transacao.valor;
+            totais.saldo += transacao.valor;
+        } else {
+            totais.despesas += transacao.valor;
+            totais.saldo -= transacao.valor;
+        }
     });
+
+    return totais;
+}
+
+function atualizarContadores() {
+    const totais = calcularTotais();
+    
+    document.querySelector('[data-tipo="saldo"]').textContent = formatarMoeda(totais.saldo);
+    document.querySelector('[data-tipo="receitas"]').textContent = formatarMoeda(totais.receitas);
+    document.querySelector('[data-tipo="despesas"]').textContent = formatarMoeda(totais.despesas);
+}
+
+function atualizarGraficos() {
+    const categoriasDespesas = {};
+    const categoriasReceitas = {};
+
+    transacoes.forEach(transacao => {
+        if (transacao.tipo === 'despesa') {
+            categoriasDespesas[transacao.categoria] = (categoriasDespesas[transacao.categoria] || 0) + transacao.valor;
+        } else {
+            categoriasReceitas[transacao.categoria] = (categoriasReceitas[transacao.categoria] || 0) + transacao.valor;
+        }
+    });
+
+    graficoDespesas.data.labels = Object.keys(categoriasDespesas);
+    graficoDespesas.data.datasets[0].data = Object.values(categoriasDespesas);
+    graficoDespesas.update();
+
+    graficoReceitas.data.labels = Object.keys(categoriasReceitas);
+    graficoReceitas.data.datasets[0].data = Object.values(categoriasReceitas);
+    graficoReceitas.update();
+}
+
+function renderizarTransacoes() {
+    transacoesLista.innerHTML = '';
+    
+    transacoes.sort((a, b) => new Date(b.data) - new Date(a.data))
+        .forEach(transacao => {
+            const transacaoElement = document.createElement('div');
+            transacaoElement.className = 'transacao-item';
+            
+            const icon = transacao.tipo === 'receita' ? 'fa-arrow-up' : 'fa-arrow-down';
+            
+            transacaoElement.innerHTML = `
+                <div class="transacao-info">
+                    <div class="transacao-icon">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <div class="transacao-detalhes">
+                        <span class="transacao-descricao">${transacao.descricao}</span>
+                        <span class="transacao-data">${formatarData(transacao.data)}</span>
+                    </div>
+                </div>
+                <span class="transacao-valor ${transacao.tipo}">
+                    ${transacao.tipo === 'receita' ? '+' : '-'}${formatarMoeda(transacao.valor)}
+                </span>
+            `;
+            
+            transacoesLista.appendChild(transacaoElement);
+        });
+}
+
+// Event Listeners
+btnNovaTransacao.addEventListener('click', () => {
+    modal.style.display = 'block';
+    formTransacao.reset();
 });
 
-// Gerenciamento do Modal de Transação
-addTransactionBtn.addEventListener('click', () => {
-    transactionModal.style.display = 'flex';
+btnCancelar.addEventListener('click', () => {
+    modal.style.display = 'none';
 });
 
-closeModalBtn.addEventListener('click', () => {
-    transactionModal.style.display = 'none';
-});
-
-transactionModal.addEventListener('click', (e) => {
-    if (e.target === transactionModal) {
-        transactionModal.style.display = 'none';
+window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+        modal.style.display = 'none';
     }
 });
 
-transactionForm.addEventListener('submit', (e) => {
+formTransacao.addEventListener('submit', (e) => {
     e.preventDefault();
     
-    const formData = new FormData(transactionForm);
-    const newTransaction = {
-        id: transactions.length + 1,
-        type: formData.get('type'),
-        description: formData.get('description'),
-        amount: parseFloat(formData.get('amount')),
-        category: formData.get('category'),
-        date: formData.get('date')
+    const formData = new FormData(formTransacao);
+    const novaTransacao = {
+        id: transacoes.length + 1,
+        tipo: formData.get('tipo'),
+        descricao: formData.get('descricao'),
+        valor: parseFloat(formData.get('valor')),
+        categoria: formData.get('categoria'),
+        data: formData.get('data')
     };
     
-    transactions.push(newTransaction);
-    updateTransactionList();
-    updateCharts();
-    updateBudgetList();
-    updateSummaryCards();
+    transacoes.push(novaTransacao);
     
-    transactionModal.style.display = 'none';
-    transactionForm.reset();
+    atualizarContadores();
+    atualizarGraficos();
+    renderizarTransacoes();
+    
+    modal.style.display = 'none';
 });
-
-// Gerenciamento do Modal de Filtro
-filterBtn.addEventListener('click', () => {
-    filterModal.style.display = 'flex';
-});
-
-closeFilterBtn.addEventListener('click', () => {
-    filterModal.style.display = 'none';
-});
-
-filterModal.addEventListener('click', (e) => {
-    if (e.target === filterModal) {
-        filterModal.style.display = 'none';
-    }
-});
-
-filterForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData(filterForm);
-    const type = formData.get('filterType');
-    const category = formData.get('filterCategory');
-    const startDate = formData.get('startDate');
-    const endDate = formData.get('endDate');
-    
-    // Implementar lógica de filtro aqui
-    updateTransactionList();
-    
-    filterModal.style.display = 'none';
-    filterForm.reset();
-});
-
-// Gerenciamento do Modal de Orçamento
-editBudgetBtn.addEventListener('click', () => {
-    budgetModal.style.display = 'flex';
-    
-    // Preencher o formulário com os valores atuais
-    Object.entries(budget).forEach(([category, amount]) => {
-        const input = budgetForm.querySelector(`input[name="${category}"]`);
-        if (input) {
-            input.value = amount;
-        }
-    });
-});
-
-closeBudgetBtn.addEventListener('click', () => {
-    budgetModal.style.display = 'none';
-});
-
-budgetModal.addEventListener('click', (e) => {
-    if (e.target === budgetModal) {
-        budgetModal.style.display = 'none';
-    }
-});
-
-budgetForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData(budgetForm);
-    Object.keys(budget).forEach(category => {
-        budget[category] = parseFloat(formData.get(category)) || 0;
-    });
-    
-    updateBudgetList();
-    updateSummaryCards();
-    
-    budgetModal.style.display = 'none';
-    budgetForm.reset();
-});
-
-// Funções de Atualização
-function updateTransactionList() {
-    transactionList.innerHTML = transactions.map(transaction => `
-        <div class="transaction-item ${transaction.type}">
-            <div class="transaction-icon">
-                <i class="fas ${transaction.type === 'income' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
-            </div>
-            <div class="transaction-info">
-                <h3>${transaction.description}</h3>
-                <p>${transaction.category} • ${formatDate(transaction.date)}</p>
-            </div>
-            <div class="transaction-value">
-                ${formatCurrency(transaction.amount)}
-            </div>
-        </div>
-    `).join('');
-}
-
-function updateCharts() {
-    // Dados para os gráficos
-    const expenseData = {};
-    const incomeData = {};
-    
-    transactions.forEach(transaction => {
-        if (transaction.type === 'expense') {
-            expenseData[transaction.category] = (expenseData[transaction.category] || 0) + transaction.amount;
-        } else {
-            incomeData[transaction.category] = (incomeData[transaction.category] || 0) + transaction.amount;
-        }
-    });
-
-    // Configuração do gráfico de despesas
-    new Chart(expenseChart, {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(expenseData),
-            datasets: [{
-                data: Object.values(expenseData),
-                backgroundColor: [
-                    '#ef4444',
-                    '#f97316',
-                    '#f59e0b',
-                    '#eab308',
-                    '#84cc16',
-                    '#22c55e',
-                    '#14b8a6'
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-
-    // Configuração do gráfico de receitas
-    new Chart(incomeChart, {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(incomeData),
-            datasets: [{
-                data: Object.values(incomeData),
-                backgroundColor: [
-                    '#10b981',
-                    '#059669',
-                    '#047857',
-                    '#065f46',
-                    '#064e3b'
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-}
-
-function updateBudgetList() {
-    budgetList.innerHTML = Object.entries(budget).map(([category, amount]) => {
-        const spent = transactions
-            .filter(t => t.type === 'expense' && t.category === category)
-            .reduce((sum, t) => sum + t.amount, 0);
-        
-        const progress = (spent / amount) * 100;
-        
-        return `
-            <div class="budget-item">
-                <div class="budget-header">
-                    <h3>${category}</h3>
-                    <span>${formatCurrency(spent)} / ${formatCurrency(amount)}</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress" style="width: ${Math.min(progress, 100)}%"></div>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-function updateSummaryCards() {
-    const totalIncome = transactions
-        .filter(t => t.type === 'income')
-        .reduce((sum, t) => sum + t.amount, 0);
-    
-    const totalExpenses = transactions
-        .filter(t => t.type === 'expense')
-        .reduce((sum, t) => sum + t.amount, 0);
-    
-    const savings = totalIncome - totalExpenses;
-    
-    document.querySelector('.total-balance').textContent = formatCurrency(savings);
-    document.querySelector('.monthly-income').textContent = formatCurrency(totalIncome);
-    document.querySelector('.monthly-expenses').textContent = formatCurrency(totalExpenses);
-    document.querySelector('.savings').textContent = formatCurrency(savings);
-}
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
-    updateTransactionList();
-    updateCharts();
-    updateBudgetList();
-    updateSummaryCards();
+    atualizarContadores();
+    atualizarGraficos();
+    renderizarTransacoes();
 }); 
