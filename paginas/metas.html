@@ -1,100 +1,138 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Metas - PMD</title>
-    <link rel="stylesheet" href="../css/metas.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metas - PMD</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/metas.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <h1>Minhas Metas</h1>
-                <div class="header-stats">
-                    <div class="stat-item">
-                        <i class="fas fa-bullseye"></i>
-                        <span>Total: <span class="contador" data-tipo="total">0</span></span>
-                    </div>
-                    <div class="stat-item">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Concluídas: <span class="contador" data-tipo="concluidas">0</span></span>
-                    </div>
-                    <div class="stat-item">
-                        <i class="fas fa-spinner"></i>
-                        <span>Em Progresso: <span class="contador" data-tipo="em-progresso">0</span></span>
-                    </div>
-                </div>
+  <div class="app">
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="container">
+        <a href="../index.html" class="logo">Ocean</a>
+        <div class="nav-actions">
+          <a href="./login.html" class="nav-link" id="loginButton"><i class="fas fa-sign-in-alt"></i> Login</a>
+          <div class="nav_bar" id="menuButton">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3_h"></div>
+            <div class="bar4"></div>
+            <div class="menu-dropdown" id="menuDropdown">
+              <a href="../index.html" class="menu-item"><i class="fas fa-home"></i> Dashboard</a>
+              <a href="/paginas/tarefas.html" class="menu-item"><i class="fas fa-tasks"></i> Tarefas</a>
+              <a href="/paginas/metas.html" class="menu-item"><i class="fas fa-chart-line"></i> Metas</a>
+              <a href="/paginas/financas.html" class="menu-item"><i class="fas fa-wallet"></i> Finanças</a>
+              <a href="#" class="menu-item"><i class="fas fa-cog"></i> Configurações</a>
+              <a href="#" class="menu-item"><i class="fas fa-user"></i> Perfil</a>
+              <a href="#" class="menu-item"><i class="fas fa-question-circle"></i> Ajuda</a>
             </div>
-            <button id="btnNovaMeta" class="btn-primary">
-                <i class="fas fa-plus"></i> Nova Meta
-            </button>
-        </header>
-
-        <main>
-            <div class="metas-container">
-                <div class="meta-card">
-                    <div class="meta-header">
-                        <h3>Meta 1</h3>
-                        <div class="meta-actions">
-                            <button class="btn-icon"><i class="fas fa-edit"></i></button>
-                            <button class="btn-icon"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                    <p class="meta-descricao">Descrição da meta 1</p>
-                    <div class="meta-progresso">
-                        <div class="progress-bar">
-                            <div class="progress" style="width: 75%"></div>
-                        </div>
-                        <span>75%</span>
-                    </div>
-                    <div class="meta-datas">
-                        <span><i class="fas fa-calendar"></i> Início: 01/01/2024</span>
-                        <span><i class="fas fa-calendar-check"></i> Prazo: 31/12/2024</span>
-                    </div>
-                </div>
-
-                <!-- Mais cards de metas serão adicionados dinamicamente -->
-            </div>
-        </main>
-    </div>
-
-    <!-- Modal para adicionar/editar meta -->
-    <div id="modalMeta" class="modal">
-        <div class="modal-content">
-            <h2>Nova Meta</h2>
-            <form id="formMeta">
-                <div class="form-group">
-                    <label for="titulo">Título</label>
-                    <input type="text" id="titulo" name="titulo" required 
-                           placeholder="Digite o título da sua meta">
-                </div>
-                <div class="form-group">
-                    <label for="descricao">Descrição</label>
-                    <textarea id="descricao" name="descricao" required 
-                              placeholder="Descreva sua meta em detalhes"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="dataInicio">Data de Início</label>
-                    <input type="date" id="dataInicio" name="dataInicio" required>
-                </div>
-                <div class="form-group">
-                    <label for="dataPrazo">Prazo</label>
-                    <input type="date" id="dataPrazo" name="dataPrazo" required>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" id="btnCancelar">
-                        <i class="fas fa-times"></i> Cancelar
-                    </button>
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-save"></i> Salvar
-                    </button>
-                </div>
-            </form>
+          </div>
         </div>
-    </div>
+      </div>
+    </nav>
 
-    <script src="../scripts/metas.js"></script>
+    <!-- Main Content -->
+    <main>
+      <div class="container">
+        <div class="header-section">
+          <div>
+            <span class="badge">Metas</span>
+            <h1>Gerenciamento de Metas</h1>
+            <p class="text-muted">Acompanhe seu progresso e alcance seus objetivos.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-outline"><i class="fas fa-filter"></i> Filtrar</button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGoalModal">
+              <i class="fas fa-plus"></i> Nova Meta
+            </button>
+          </div>
+        </div>
+
+        <!-- Goals Grid -->
+        <div class="goals-grid">
+          <!-- Empty State -->
+          <div class="empty-state" id="emptyGoals">
+            <i class="fas fa-bullseye empty-icon"></i>
+            <h3>Nenhuma meta definida</h3>
+            <p>Comece criando uma nova meta para acompanhar seu progresso.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Add Goal Modal -->
+    <div class="modal fade" id="addGoalModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Nova Meta</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form id="addGoalForm" class="add-goal-form">
+              <div class="form-group">
+                <label for="goalTitle">Título da Meta</label>
+                <input type="text" class="form-input" id="goalTitle" required>
+              </div>
+              <div class="form-group">
+                <label for="goalDescription">Descrição</label>
+                <textarea class="form-input" id="goalDescription" rows="3"></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="goalStartDate">Data Inicial</label>
+                  <input type="text" class="form-input" id="goalStartDate">
+                </div>
+                <div class="form-group">
+                  <label for="goalEndDate">Data Final</label>
+                  <input type="text" class="form-input" id="goalEndDate">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="goalCategory">Categoria</label>
+                  <select class="form-select" id="goalCategory">
+                    <option value="pessoal">Pessoal</option>
+                    <option value="profissional">Profissional</option>
+                    <option value="saude">Saúde</option>
+                    <option value="educacao">Educação</option>
+                    <option value="financeiro">Financeiro</option>
+                    <option value="outros">Outros</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="goalPriority">Prioridade</label>
+                  <select class="form-select" id="goalPriority">
+                    <option value="baixa">Baixa</option>
+                    <option value="média">Média</option>
+                    <option value="alta">Alta</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="goalProgress">Progresso Inicial (%)</label>
+                <input type="range" class="form-range" id="goalProgress" min="0" max="100" value="0">
+                <div class="progress-value" id="progressValue">0%</div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Adicionar Meta</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../scripts/metas.js"></script>
 </body>
 </html> 
