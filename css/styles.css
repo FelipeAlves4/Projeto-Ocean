@@ -2,6 +2,14 @@
 
 /* Variáveis CSS */
 :root {
+    /* Tema Claro (padrão) */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --border-color: #e0e0e0;
+    --card-bg: #ffffff;
+    --hover-bg: #f0f0f0;
     --background: hsl(210, 40%, 98%);
     --foreground: hsl(222, 47%, 11%);
     --card: hsl(0, 0%, 100%);
@@ -24,6 +32,32 @@
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --max-width: 1400px;
     --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+}
+
+[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --border-color: #404040;
+    --card-bg: #2d2d2d;
+    --hover-bg: #404040;
+    --background: hsl(222, 47%, 11%);
+    --foreground: hsl(210, 40%, 98%);
+    --card: hsl(222, 47%, 11%);
+    --card-foreground: hsl(210, 40%, 98%);
+    --primary: hsl(217, 91%, 60%);
+    --primary-foreground: hsl(222, 47%, 11%);
+    --secondary: hsl(217, 33%, 17%);
+    --secondary-foreground: hsl(210, 40%, 98%);
+    --muted: hsl(217, 33%, 17%);
+    --muted-foreground: hsl(215, 20%, 65%);
+    --accent: hsl(217, 91%, 60%);
+    --accent-foreground: hsl(210, 40%, 98%);
+    --destructive: hsl(0, 63%, 31%);
+    --destructive-foreground: hsl(210, 40%, 98%);
+    --border: hsl(217, 33%, 17%);
+    --input: hsl(217, 33%, 17%);
 }
 
 @media (prefers-color-scheme: dark) {

@@ -16,6 +16,9 @@
                 <a href="../index.html" class="logo">Ocean</a>
                 <div class="nav-actions">
                     <a href="#" class="nav-link" id="loginButton"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    <button id="themeToggle" class="nav-link">
+                        <i class="fas fa-moon"></i>
+                    </button>
                     <div class="nav_bar" id="menuButton">
                         <div class="bar1"></div>
                         <div class="bar2"></div>
@@ -186,5 +189,37 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../scripts/financas.js"></script>
+    <script src="../scripts/script.js"></script>
+    <script>
+      // Controle de tema
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = themeToggle.querySelector('i');
+
+      // Verifica se há um tema salvo no localStorage
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+      }
+
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+      });
+
+      function updateThemeIcon(theme) {
+        if (theme === 'dark') {
+          themeIcon.classList.remove('fa-moon');
+          themeIcon.classList.add('fa-sun');
+        } else {
+          themeIcon.classList.remove('fa-sun');
+          themeIcon.classList.add('fa-moon');
+        }
+      }
+    </script>
 </body>
 </html> 
