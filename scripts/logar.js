@@ -12,7 +12,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         localStorage.setItem('usuario', usuario);
         
         // Redireciona para a página principal
-        window.location.href = '../index.html';
+        window.location.href = '../paginas/inicio.html';
     } else {
         alert('Por favor, preencha todos os campos!');
     }
