@@ -1,0 +1,654 @@
+/* Ocean Design System - Inspirado na fluidez e vastidão do oceano */
+
+:root {
+    /* Ocean Color Palette */
+    --background: hsl(210, 20%, 98%);
+    --foreground: hsl(215, 25%, 15%);
+    
+    --card: hsl(210, 30%, 99%);
+    --card-foreground: hsl(215, 25%, 15%);
+    
+    /* Ocean Primary - Deep Blue */
+    --primary: hsl(215, 85%, 45%);
+    --primary-foreground: hsl(210, 20%, 98%);
+    --primary-glow: hsl(200, 90%, 65%);
+    
+    /* Ocean Secondary - Light Blue */
+    --secondary: hsl(200, 50%, 88%);
+    --secondary-foreground: hsl(215, 25%, 25%);
+    
+    /* Ocean Muted - Soft Gray Blue */
+    --muted: hsl(210, 25%, 94%);
+    --muted-foreground: hsl(215, 15%, 45%);
+    
+    /* Ocean Accent - Cyan */
+    --accent: hsl(185, 80%, 75%);
+    --accent-foreground: hsl(215, 25%, 15%);
+    
+    --destructive: hsl(0, 84%, 60%);
+    --destructive-foreground: hsl(210, 20%, 98%);
+    
+    --border: hsl(210, 20%, 88%);
+    --input: hsl(210, 20%, 94%);
+    --ring: hsl(215, 85%, 45%);
+    
+    /* Ocean Gradients */
+    --gradient-ocean: linear-gradient(135deg, var(--primary), var(--primary-glow));
+    --gradient-wave: linear-gradient(180deg, var(--background), var(--secondary));
+    --gradient-depth: linear-gradient(135deg, hsl(215, 85%, 35%), hsl(200, 90%, 55%));
+    
+    /* Ocean Shadows */
+    --shadow-ocean: 0 10px 30px -10px hsla(215, 85%, 45%, 0.3);
+    --shadow-wave: 0 4px 20px -4px hsla(185, 80%, 75%, 0.2);
+    --shadow-depth: 0 20px 40px -12px hsla(215, 85%, 45%, 0.4);
+    
+    /* Ocean Animations */
+    --transition-ocean: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--background);
+    color: var(--foreground);
+    line-height: 1.6;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Ocean Animations */
+@keyframes wave {
+    0%, 100% { transform: translateY(0px) rotateZ(0deg); }
+    50% { transform: translateY(-10px) rotateZ(1deg); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes ripple {
+    0% { transform: scale(0.8); opacity: 1; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* Ocean Utility Classes */
+.ocean-gradient {
+    background: var(--gradient-ocean);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.wave-gradient {
+    background: var(--gradient-wave);
+}
+
+.depth-gradient {
+    background: var(--gradient-depth);
+}
+
+.ocean-shadow {
+    box-shadow: var(--shadow-ocean);
+}
+
+.wave-shadow {
+    box-shadow: var(--shadow-wave);
+}
+
+.depth-shadow {
+    box-shadow: var(--shadow-depth);
+}
+
+.ocean-transition {
+    transition: var(--transition-ocean);
+}
+
+.ocean-animate-wave {
+    animation: wave 3s ease-in-out infinite;
+}
+
+.ocean-animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+    min-height: 100vh;
+    background: var(--gradient-wave);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.hero-background {
+    position: absolute;
+    inset: 0;
+    background-image: url('src/assets/ocean-hero.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 5rem 0;
+}
+
+.brand-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.wave-icon {
+    height: 3rem;
+    width: 3rem;
+    color: var(--primary);
+    margin-right: 1rem;
+}
+
+.hero-content h1 {
+    font-size: 6rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: var(--muted-foreground);
+    margin-bottom: 2rem;
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-description {
+    font-size: 1.125rem;
+    color: var(--muted-foreground);
+    max-width: 48rem;
+    margin: 0 auto 4rem auto;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: var(--transition-ocean);
+    font-size: 1rem;
+    gap: 0.5rem;
+}
+
+.btn-primary {
+    background: var(--gradient-ocean);
+    color: var(--primary-foreground);
+    box-shadow: var(--shadow-ocean);
+}
+
+.btn-primary:hover {
+    box-shadow: var(--shadow-depth);
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    border: 1px solid var(--border);
+    color: var(--foreground);
+    background: transparent;
+}
+
+.btn-outline:hover {
+    box-shadow: var(--shadow-wave);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--primary);
+    border: 1px solid white;
+}
+
+.btn-secondary:hover {
+    background: var(--secondary);
+}
+
+.btn-outline-white {
+    border: 1px solid white;
+    color: white;
+    background: transparent;
+}
+
+.btn-outline-white:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.cta-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 4rem;
+}
+
+@media (min-width: 640px) {
+    .cta-buttons {
+        flex-direction: row;
+    }
+}
+
+.arrow-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    transition: transform 0.3s ease;
+}
+
+.btn:hover .arrow-icon {
+    transform: translateX(0.25rem);
+}
+
+/* Cards */
+.card {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(0.5rem);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    text-align: center;
+    transition: var(--transition-ocean);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-wave);
+    transform: translateY(-0.5rem);
+}
+
+.card-icon {
+    width: 3rem;
+    height: 3rem;
+    color: var(--primary);
+    margin: 0 auto 1.5rem auto;
+    transition: all 0.3s ease;
+}
+
+.card:hover .card-icon {
+    color: var(--accent);
+    transform: scale(1.1);
+}
+
+.card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.card p {
+    color: var(--muted-foreground);
+    line-height: 1.6;
+}
+
+.feature-cards {
+    display: grid;
+    gap: 2rem;
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .feature-cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Stats Section */
+.stats-section {
+    padding: 5rem 0;
+    background: var(--background);
+}
+
+.stats-grid {
+    display: grid;
+    gap: 2rem;
+    text-align: center;
+}
+
+@media (min-width: 640px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.stat-card {
+    background: var(--card);
+    border-radius: 1rem;
+    padding: 2rem;
+    border: 1px solid var(--border);
+    transition: var(--transition-ocean);
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-wave);
+    transform: translateY(-0.25rem);
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    background: var(--gradient-ocean);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.stat-description {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+}
+
+/* Features Section */
+.features-section {
+    padding: 5rem 0;
+    background: var(--background);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.section-header p {
+    font-size: 1.25rem;
+    color: var(--muted-foreground);
+    max-width: 48rem;
+    margin: 0 auto;
+}
+
+.features-grid {
+    display: grid;
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+@media (min-width: 768px) {
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(0.5rem);
+    border: none;
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    transition: var(--transition-ocean);
+}
+
+.feature-card:hover {
+    box-shadow: var(--shadow-wave);
+    transform: translateY(-0.5rem);
+}
+
+.feature-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    margin: 0 auto 1.5rem auto;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1);
+}
+
+.feature-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.feature-card p {
+    color: var(--muted-foreground);
+    line-height: 1.6;
+}
+
+/* CTA Section */
+.cta-section {
+    text-align: center;
+}
+
+.cta-section .depth-gradient {
+    padding: 3rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-ocean);
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+.cta-section h3 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.cta-section p {
+    font-size: 1.25rem;
+    color: hsl(200, 90%, 85%);
+    margin-bottom: 2rem;
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Footer */
+.footer {
+    color: white;
+}
+
+.footer .container {
+    padding: 4rem 1rem;
+}
+
+.footer-grid {
+    display: grid;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+@media (min-width: 768px) {
+    .footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.footer-brand h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.footer-brand p {
+    color: hsl(200, 90%, 85%);
+    line-height: 1.6;
+}
+
+.footer-links h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.footer-links ul {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-links a {
+    color: hsl(200, 90%, 85%);
+    text-decoration: none;
+    transition: var(--transition-ocean);
+}
+
+.footer-links a:hover {
+    color: white;
+}
+
+.footer-contact h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.contact-info {
+    margin-bottom: 1rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    color: hsl(200, 90%, 85%);
+}
+
+.contact-item svg {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.75rem;
+}
+
+/* Newsletter */
+.newsletter {
+    border-top: 1px solid hsla(200, 90%, 65%, 0.2);
+    padding-top: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.newsletter h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.newsletter p {
+    color: hsl(200, 90%, 85%);
+    margin-bottom: 1.5rem;
+}
+
+.newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 24rem;
+    margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+    .newsletter-form {
+        flex-direction: row;
+    }
+}
+
+.newsletter-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    transition: var(--transition-ocean);
+}
+
+.newsletter-input::placeholder {
+    color: hsl(200, 90%, 85%);
+}
+
+.newsletter-input:focus {
+    outline: none;
+    ring: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Footer Bottom */
+.footer-bottom {
+    border-top: 1px solid hsla(200, 90%, 65%, 0.2);
+    padding-top: 2rem;
+    text-align: center;
+}
+
+.footer-bottom p {
+    color: hsl(200, 90%, 85%);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 3rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+    }
+    
+    .section-header h2 {
+        font-size: 2rem;
+    }
+    
+    .cta-section h3 {
+        font-size: 1.5rem;
+    }
+}

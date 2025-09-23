@@ -4,115 +4,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ocean - Login</title>
-    <link rel="stylesheet" href="/css/login.css">
+    <title>Ocean - Plataforma de Organização Pessoal e Profissional</title>
+    <!--Tags para SEO -->
+    <meta name="description"
+        content="Organize sua vida pessoal e profissional com a fluidez do oceano. Uma plataforma intuitiva para gerenciar tarefas, projetos e metas." />
+    <meta name="author" content="Ocean" />
+
+    <meta property="og:title" content="Ocean - Plataforma de Organização" />
+    <meta property="og:description" content="Organize sua vida com a fluidez do oceano" />
+    <meta property="og:type" content="website" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="stylesheet" href="/css/inicio.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div class="login-container">
-        <!-- Background Ocean Elements -->
-        <div class="background-elements">
-            <div class="floating-blob blob-1"></div>
-            <div class="floating-blob blob-2"></div>
-            <div class="floating-blob blob-3"></div>
-            <!-- Liquid Blobs -->
-            <div class="liquid-blob liquid-1"></div>
-            <div class="liquid-blob liquid-2"></div>
-            <div class="liquid-blob liquid-3"></div>
-            <div class="liquid-blob liquid-4"></div>
-        </div>
-
-        <!-- Animated Waves -->
-        <div class="ocean-wave wave-1"></div>
-        <div class="ocean-wave wave-2"></div>
-
-        <div class="login-content">
-            <!-- Logo e Título -->
-            <div class="header fade-in-up">
-                <div class="logo-container">
-                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path
-                            d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
-                        <path d="m10 15-3-3 3-3" />
-                        <path d="m14 9 3 3-3 3" />
-                    </svg>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background"></div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-title">
+                    <div class="brand-container">
+                        <svg class="wave-icon ocean-animate-wave" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M2 12c.6.5 1.2 1 2.5.5s1.8-1.5 3.5-1.5 2.7 1 4 1 1.8-.5 2.5-.5 1.2.5 2.5.5 1.8-.5 2.5-.5 1.2.5 2.5.5 1.8-.5 2.5-.5" />
+                            <path
+                                d="M2 17c.6.5 1.2 1 2.5.5s1.8-1.5 3.5-1.5 2.7 1 4 1 1.8-.5 2.5-.5 1.2.5 2.5.5 1.8-.5 2.5-.5 1.2.5 2.5.5 1.8-.5 2.5-.5" />
+                        </svg>
+                        <h1 class="ocean-gradient">Ocean</h1>
+                    </div>
+                    <p class="hero-subtitle">Organize sua vida pessoal e profissional com a fluidez do oceano</p>
+                    <p class="hero-description">Uma plataforma intuitiva que te ajuda a navegar pelas suas tarefas,
+                        projetos e metas com a serenidade e profundidade do oceano</p>
                 </div>
-                <h1 class="title">Ocean</h1>
-                <p class="subtitle">Entre na sua conta</p>
+
+                <div class="cta-buttons">
+                    <button class="btn btn-primary">
+                        Começar Agora
+                        <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14m-7-7 7 7-7 7" />
+                        </svg>
+                    </button>
+                    <button class="btn btn-outline">Saber Mais</button>
+                </div>
+
+                <div class="feature-cards">
+                    <div class="card ocean-animate-float">
+                        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <circle cx="12" cy="12" r="6" />
+                            <circle cx="12" cy="12" r="2" />
+                        </svg>
+                        <h3>Foco & Metas</h3>
+                        <p>Defina objetivos claros e acompanhe seu progresso como as marés constantes</p>
+                    </div>
+
+                    <div class="card ocean-animate-float" style="animation-delay: 2s;">
+                        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22,4 12,14.01 9,11.01" />
+                        </svg>
+                        <h3>Tarefas Fluidas</h3>
+                        <p>Gerencie suas atividades com a naturalidade do fluxo oceânico</p>
+                    </div>
+
+                    <div class="card ocean-animate-float" style="animation-delay: 4s;">
+                        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        <h3>Agenda Integrada</h3>
+                        <p>Sincronize tempo pessoal e profissional em harmonia perfeita</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card ocean-animate-float">
+                    <div class="stat-number">250k+</div>
+                    <div class="stat-label">Usuários Ativos</div>
+                    <div class="stat-description">Profissionais organizando suas vidas</div>
+                </div>
+
+                <div class="stat-card ocean-animate-float" style="animation-delay: 1s;">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Satisfação</div>
+                    <div class="stat-description">Clientes recomendam nossa plataforma</div>
+                </div>
+
+                <div class="stat-card ocean-animate-float" style="animation-delay: 2s;">
+                    <div class="stat-number">45h</div>
+                    <div class="stat-label">Tempo Economizado</div>
+                    <div class="stat-description">Por mês em média por usuário</div>
+                </div>
+
+                <div class="stat-card ocean-animate-float" style="animation-delay: 3s;">
+                    <div class="stat-number">150+</div>
+                    <div class="stat-label">Países</div>
+                    <div class="stat-description">Onde Ocean faz a diferença</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Recursos que Fazem a Diferença</h2>
+                <p>Cada funcionalidade foi pensada para tornar sua organização mais natural e eficiente, como as
+                    correntes oceânicas que seguem seu curso perfeito</p>
             </div>
 
-            <!-- Card de Login -->
-            <div class="login-card fade-in-up stagger-1">
-                <div class="card-header">
-                    <h2 class="card-title">Fazer Login</h2>
-                    <p class="card-description">Digite suas credenciais para acessar o dashboard</p>
+            <div class="features-grid" id="features-grid">
+                <!-- Features will be populated by JavaScript -->
+            </div>
+
+            <div class="cta-section">
+                <div class="depth-gradient">
+                    <h3>Pronto para Navegar suas Tarefas?</h3>
+                    <p>Junte-se a milhares de profissionais que já descobriram a serenidade da organização fluida</p>
+                    <div class="cta-buttons">
+                        <button class="btn btn-secondary">
+                            Começar Gratuitamente
+                            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M5 12h14m-7-7 7 7-7 7" />
+                            </svg>
+                        </button>
+                        <button class="btn btn-outline-white">Ver Demonstração</button>
+                    </div>
                 </div>
-                <form id="loginForm" class="login-form">
-                    <div class="form-group fade-in-up stagger-2">
-                        <label for="email" class="form-label">Email</label>
-                        <div class="input-container">
-                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer depth-gradient">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-container">
+                        <svg class="wave-icon ocean-animate-wave" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M2 12c.6.5 1.2 1 2.5.5s1.8-1.5 3.5-1.5 2.7 1 4 1 1.8-.5 2.5-.5 1.2.5 2.5.5 1.8-.5 2.5-.5 1.2.5 2.5.5 1.8-.5 2.5-.5" />
+                            <path
+                                d="M2 17c.6.5 1.2 1 2.5.5s1.8-1.5 3.5-1.5 2.7 1 4 1 1.8-.5 2.5-.5 1.2.5 2.5.5 1.8-.5 2.5-.5 1.2.5 2.5.5 1.8-.5 2.5-.5" />
+                        </svg>
+                        <h3>Ocean</h3>
+                    </div>
+                    <p>Organize sua vida com a fluidez e serenidade do oceano. Uma plataforma que se adapta ao seu ritmo
+                        natural.</p>
+                </div>
+
+                <div class="footer-links">
+                    <h4>Produto</h4>
+                    <ul>
+                        <li><a href="#" class="ocean-transition">Funcionalidades</a></li>
+                        <li><a href="#" class="ocean-transition">Preços</a></li>
+                        <li><a href="#" class="ocean-transition">Integrações</a></li>
+                        <li><a href="#" class="ocean-transition">API</a></li>
+                        <li><a href="#" class="ocean-transition">Mobile App</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h4>Empresa</h4>
+                    <ul>
+                        <li><a href="#" class="ocean-transition">Sobre</a></li>
+                        <li><a href="#" class="ocean-transition">Blog</a></li>
+                        <li><a href="#" class="ocean-transition">Carreiras</a></li>
+                        <li><a href="#" class="ocean-transition">Imprensa</a></li>
+                        <li><a href="#" class="ocean-transition">Parceiros</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-contact">
+                    <h4>Contato</h4>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                                 <polyline points="22,6 12,13 2,6" />
                             </svg>
-                            <input type="email" id="email" placeholder="seu@email.com" required>
+                            <span>contato@ocean.com</span>
                         </div>
-                    </div>
-
-                    <div class="form-group fade-in-up stagger-3">
-                        <label for="password" class="form-label">Senha</label>
-                        <div class="input-container">
-                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                                <path d="m7 11V7a5 5 0 0 1 10 0v4" />
+                        <div class="contact-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                             </svg>
-                            <input type="password" id="password" placeholder="••••••••" required>
-                            <button type="button" id="togglePassword" class="password-toggle">
-                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                    <circle cx="12" cy="12" r="3" />
-                                </svg>
-                            </button>
+                            <span>+55 (11) 9999-9999</span>
+                        </div>
+                        <div class="contact-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                <circle cx="12" cy="10" r="3" />
+                            </svg>
+                            <span>São Paulo, Brasil</span>
                         </div>
                     </div>
-
-                    <div class="form-options fade-in-up stagger-4">
-                        <div class="checkbox-container">
-                            <input type="checkbox" id="remember">
-                            <label for="remember">Lembrar de mim</label>
-                        </div>
-                        <button type="button" class="forgot-password">Esqueceu a senha?</button>
-                    </div>
-
-                    <button type="submit" class="submit-btn fade-in-up stagger-4">
-                        <span class="btn-text">Entrar</span>
-                        <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M5 12h14" />
-                            <path d="M12 5l7 7-7 7" />
-                        </svg>
-                        <div class="loading-spinner" style="display: none;">
-                            <div class="spinner"></div>
-                            <span>Entrando...</span>
-                        </div>
-                    </button>
-                </form>
-
-                <div class="signup-link fade-in-up stagger-4">
-                    <p>Não tem uma conta? <button class="create-account">Criar conta</button></p>
+                    <button class="btn btn-outline-white">Fale Conosco</button>
                 </div>
             </div>
 
-            <!-- Footer -->
-            <div class="footer fade-in-up stagger-4">
-                <p>© 2024 Ocean. Todos os direitos reservados.</p>
+            <div class="newsletter">
+                <h4>Receba as Ondas de Novidades</h4>
+                <p>Fique por dentro das atualizações e dicas de produtividade</p>
+                <div class="newsletter-form">
+                    <input type="email" placeholder="Seu e-mail" class="newsletter-input">
+                    <button class="btn btn-secondary">Inscrever</button>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2024 Ocean. Todos os direitos reservados. Feito com 💙 para organizar o mundo.</p>
             </div>
         </div>
-    </div>
+    </footer>
 
-    <!-- Toast Container -->
-    <div id="toastContainer" class="toast-container"></div>
-
-    <script src="/scripts/logar.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>
