@@ -58,6 +58,15 @@ class Financa(db.Model):
 @app.before_first_request
 def criar_banco():
     db.create_all()
+    # Seed demo user if not exists
+    try:
+        if not Usuario.query.filter_by(usuario='demo@ocean.com').first():
+            demo = Usuario(usuario='demo@ocean.com')
+            demo.set_senha('demo123')
+            db.session.add(demo)
+            db.session.commit()
+    except Exception:
+        db.session.rollback()
 
 # Função utilitária para gerar token JWT
 def gerar_token(usuario_id):

@@ -14,7 +14,7 @@ class OceanLogin {
         // Toggle Password Visibility
         const togglePasswordBtn = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('password');
-        
+
         if (togglePasswordBtn && passwordInput) {
             togglePasswordBtn.addEventListener('click', () => {
                 this.togglePasswordVisibility(passwordInput, togglePasswordBtn);
@@ -33,7 +33,7 @@ class OceanLogin {
         const createAccountBtn = document.querySelector('.create-account');
         if (createAccountBtn) {
             createAccountBtn.addEventListener('click', () => {
-                this.showToast('Função Indisponível', 'Criação de conta ainda não implementada.', 'info');
+                window.location.href = '/paginas/registro.html';
             });
         }
 
@@ -48,10 +48,10 @@ class OceanLogin {
 
     togglePasswordVisibility(passwordInput, toggleBtn) {
         const isPassword = passwordInput.type === 'password';
-        
+
         // Toggle input type
         passwordInput.type = isPassword ? 'text' : 'password';
-        
+
         // Toggle icon
         const eyeIcon = toggleBtn.querySelector('.eye-icon');
         if (eyeIcon) {
@@ -74,7 +74,7 @@ class OceanLogin {
 
     async handleFormSubmit(e) {
         e.preventDefault();
-        
+
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const submitBtn = document.querySelector('.submit-btn');
@@ -97,19 +97,33 @@ class OceanLogin {
         this.setLoadingState(submitBtn, btnText, btnArrow, loadingSpinner, true);
 
         try {
-            // Simulate API call
-            await this.simulateLogin(email, password);
-            
-            // Success
+            // Real API call
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ usuario: email, senha: password })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.erro || 'Falha no login.');
+            }
+
+            // Store JWT and redirect
+            localStorage.setItem('token', result.token);
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('usuario', email);
+
             this.showToast('Login Realizado!', 'Bem-vindo ao Ocean Dashboard.', 'success');
-            
-            // Reset form after successful login
+
             setTimeout(() => {
-                document.getElementById('loginForm').reset();
-            }, 1500);
+                window.location.href = '/paginas/dashboard.html';
+            }, 1200);
 
         } catch (error) {
-            // Error
             this.showToast('Erro no Login', error.message, 'error');
         } finally {
             // Hide loading state
@@ -133,20 +147,7 @@ class OceanLogin {
         }
     }
 
-    simulateLogin(email, password) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                // Simple validation simulation
-                if (email === 'admin@ocean.com' && password === 'admin123') {
-                    resolve({ success: true });
-                } else if (email === 'demo@ocean.com' && password === 'demo123') {
-                    resolve({ success: true });
-                } else {
-                    reject(new Error('Credenciais inválidas. Tente: demo@ocean.com / demo123'));
-                }
-            }, 2000);
-        });
-    }
+    // simulateLogin removed in favor of real API
 
     validateEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -157,16 +158,16 @@ class OceanLogin {
         const toastContainer = document.getElementById('toastContainer');
         const toast = document.createElement('div');
         toast.className = 'toast';
-        
+
         // Add type-specific styling
         const typeColors = {
             success: 'hsl(142, 76%, 36%)',
             error: 'hsl(0, 84%, 60%)',
             info: 'hsl(210, 100%, 55%)'
         };
-        
+
         toast.style.borderLeft = `4px solid ${typeColors[type] || typeColors.info}`;
-        
+
         toast.innerHTML = `
             <div class="toast-title">${title}</div>
             <div class="toast-description">${description}</div>
@@ -188,7 +189,7 @@ class OceanLogin {
     startAnimations() {
         // Add entrance animations to elements
         const animatedElements = document.querySelectorAll('.fade-in-up');
-        
+
         // Intersection Observer for scroll-triggered animations
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -208,7 +209,7 @@ class OceanLogin {
 
     addRippleEffect() {
         const buttons = document.querySelectorAll('.submit-btn, .forgot-password, .create-account');
-        
+
         buttons.forEach(button => {
             button.addEventListener('click', (e) => {
                 const ripple = document.createElement('span');
@@ -216,16 +217,16 @@ class OceanLogin {
                 const size = Math.max(rect.width, rect.height);
                 const x = e.clientX - rect.left - size / 2;
                 const y = e.clientY - rect.top - size / 2;
-                
+
                 ripple.style.width = ripple.style.height = size + 'px';
                 ripple.style.left = x + 'px';
                 ripple.style.top = y + 'px';
                 ripple.classList.add('ripple');
-                
+
                 button.style.position = 'relative';
                 button.style.overflow = 'hidden';
                 button.appendChild(ripple);
-                
+
                 setTimeout(() => {
                     ripple.remove();
                 }, 600);
@@ -282,12 +283,12 @@ document.addEventListener('mousemove', (e) => {
     const liquidBlobs = document.querySelectorAll('.liquid-blob');
     const mouseX = e.clientX / window.innerWidth;
     const mouseY = e.clientY / window.innerHeight;
-    
+
     liquidBlobs.forEach((blob, index) => {
         const speed = (index + 1) * 0.02;
         const x = mouseX * speed * 20;
         const y = mouseY * speed * 20;
-        
+
         blob.style.transform += ` translate(${x}px, ${y}px)`;
     });
 });
@@ -301,7 +302,7 @@ document.addEventListener('keydown', (e) => {
             form.dispatchEvent(new Event('submit'));
         }
     }
-    
+
     // Escape key to clear form
     if (e.key === 'Escape') {
         const form = document.getElementById('loginForm');
@@ -320,3 +321,5 @@ if (navigator.hardwareConcurrency <= 2) {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = OceanLogin;
 }
+
+// removed legacy submit handler that bypassed backend
