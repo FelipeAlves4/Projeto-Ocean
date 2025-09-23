@@ -55,10 +55,12 @@ class Financa(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
 
 # Função para criar o banco de dados
-@app.before_first_request
-def criar_banco():
+"""
+Inicialização do banco e seed de usuário demo
+Nota: Flask 3 removeu before_first_request; usamos app.app_context() no import.
+"""
+with app.app_context():
     db.create_all()
-    # Seed demo user if not exists
     try:
         if not Usuario.query.filter_by(usuario='demo@ocean.com').first():
             demo = Usuario(usuario='demo@ocean.com')
@@ -67,6 +69,20 @@ def criar_banco():
             db.session.commit()
     except Exception:
         db.session.rollback()
+
+# Utilitários
+def parse_date(value):
+    """Aceita date em ISO (YYYY-MM-DD) e retorna datetime.date ou None."""
+    if not value:
+        return None
+    try:
+        if isinstance(value, datetime.date):
+            return value
+        if isinstance(value, str):
+            return datetime.datetime.strptime(value[:10], '%Y-%m-%d').date()
+    except Exception:
+        return None
+    return None
 
 # Função utilitária para gerar token JWT
 def gerar_token(usuario_id):
@@ -102,9 +118,10 @@ def login_required(f):
 # Rota de registro de usuário
 @app.route('/api/register', methods=['POST'])
 def registrar_usuario():
-    data = request.get_json()
-    usuario = data.get('usuario')
-    senha = data.get('senha')
+    data = request.get_json() or {}
+    # aceita tanto 'usuario' quanto 'email'
+    usuario = (data.get('usuario') or data.get('email') or '').strip().lower()
+    senha = (data.get('senha') or data.get('password') or '').strip()
     if not usuario or not senha:
         return jsonify({'erro': 'Usuário e senha são obrigatórios.'}), 400
     if Usuario.query.filter_by(usuario=usuario).first():
@@ -118,9 +135,9 @@ def registrar_usuario():
 # Rota de login
 @app.route('/api/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    usuario = data.get('usuario')
-    senha = data.get('senha')
+    data = request.get_json() or {}
+    usuario = (data.get('usuario') or data.get('email') or '').strip().lower()
+    senha = (data.get('senha') or data.get('password') or '').strip()
     if not usuario or not senha:
         return jsonify({'erro': 'Usuário e senha são obrigatórios.'}), 400
     user = Usuario.query.filter_by(usuario=usuario).first()
@@ -128,6 +145,15 @@ def login():
         return jsonify({'erro': 'Usuário ou senha inválidos.'}), 401
     token = gerar_token(user.id)
     return jsonify({'token': token}), 200
+
+# Info do usuário autenticado
+@app.route('/api/me', methods=['GET'])
+@login_required
+def me(usuario_id):
+    user = Usuario.query.get(usuario_id)
+    if not user:
+        return jsonify({'erro': 'Usuário não encontrado.'}), 404
+    return jsonify({'id': user.id, 'usuario': user.usuario})
 
 # --- CRUD TAREFAS ---
 @app.route('/api/tarefas', methods=['GET'])
@@ -203,8 +229,8 @@ def criar_meta(usuario_id):
     nova = Meta(
         titulo=data.get('titulo'),
         descricao=data.get('descricao'),
-        data_inicial=data.get('data_inicial'),
-        data_final=data.get('data_final'),
+        data_inicial=parse_date(data.get('data_inicial')),
+        data_final=parse_date(data.get('data_final')),
         usuario_id=usuario_id
     )
     db.session.add(nova)
@@ -220,8 +246,8 @@ def atualizar_meta(usuario_id, meta_id):
     data = request.get_json()
     meta.titulo = data.get('titulo', meta.titulo)
     meta.descricao = data.get('descricao', meta.descricao)
-    meta.data_inicial = data.get('data_inicial', meta.data_inicial)
-    meta.data_final = data.get('data_final', meta.data_final)
+    meta.data_inicial = parse_date(data.get('data_inicial')) or meta.data_inicial
+    meta.data_final = parse_date(data.get('data_final')) or meta.data_final
     db.session.commit()
     return jsonify({'mensagem': 'Meta atualizada!'})
 
@@ -259,7 +285,7 @@ def criar_financa(usuario_id):
         tipo=data.get('tipo'),
         valor=data.get('valor'),
         categoria=data.get('categoria'),
-        data=data.get('data'),
+        data=parse_date(data.get('data')),
         descricao=data.get('descricao'),
         usuario_id=usuario_id
     )
@@ -277,7 +303,8 @@ def atualizar_financa(usuario_id, financa_id):
     financa.tipo = data.get('tipo', financa.tipo)
     financa.valor = data.get('valor', financa.valor)
     financa.categoria = data.get('categoria', financa.categoria)
-    financa.data = data.get('data', financa.data)
+    parsed_data = parse_date(data.get('data'))
+    financa.data = parsed_data or financa.data
     financa.descricao = data.get('descricao', financa.descricao)
     db.session.commit()
     return jsonify({'mensagem': 'Finança atualizada!'})
