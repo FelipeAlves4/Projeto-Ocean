@@ -372,6 +372,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     atualizarInterfaceLogin();
+    aplicarAuthGuard();
 });
 
 // Modifica a função verificarLogin para não redirecionar automaticamente
@@ -379,6 +380,16 @@ function verificarLogin() {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
     if (!isLoggedIn) {
         atualizarInterfaceLogin();
+    }
+}
+
+// Redireciona para login se tentar acessar páginas internas sem autenticação
+function aplicarAuthGuard() {
+    const path = window.location.pathname || '';
+    const precisaAuth = ['dashboard.html', 'metas.html', 'tarefas.html', 'financas.html'].some(p => path.includes(p));
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    if (precisaAuth && !isLoggedIn) {
+        window.location.href = './login.html';
     }
 }
 
