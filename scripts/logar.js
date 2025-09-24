@@ -8,6 +8,7 @@ class OceanLogin {
     init() {
         this.setupEventListeners();
         this.startAnimations();
+        this.prefillFromRegistration();
     }
 
     setupEventListeners() {
@@ -114,13 +115,22 @@ class OceanLogin {
             */
 
             // LOGIN SIMPLES (sem backend) para testes locais
-            const allowed = [
+            const allowedDefaults = [
                 { u: 'demo@ocean.com', p: 'demo123' },
                 { u: 'admin@ocean.com', p: 'admin123' }
             ];
-            const isAllowed = allowed.some(c => c.u === email && c.p === password);
+            const storedUsersRaw = localStorage.getItem('users');
+            const storedUsers = storedUsersRaw ? JSON.parse(storedUsersRaw) : [];
+            const allUsers = [...allowedDefaults, ...storedUsers];
+            const isAllowed = allUsers.some(c => c.u.toLowerCase() === email.toLowerCase() && c.p === password);
             if (!isAllowed) {
                 throw new Error('Credenciais inválidas. Tente demo@ocean.com / demo123');
+            }
+
+            // Se veio de registro, limpar sugestão
+            const justRegistered = localStorage.getItem('justRegisteredEmail');
+            if (justRegistered && justRegistered.toLowerCase() === email.toLowerCase()) {
+                localStorage.removeItem('justRegisteredEmail');
             }
 
             // Persistência simples
@@ -243,6 +253,16 @@ class OceanLogin {
                 }, 600);
             });
         });
+    }
+
+    prefillFromRegistration() {
+        const justRegistered = localStorage.getItem('justRegisteredEmail');
+        if (justRegistered) {
+            const emailInput = document.getElementById('email');
+            if (emailInput && !emailInput.value) {
+                emailInput.value = justRegistered;
+            }
+        }
     }
 }
 

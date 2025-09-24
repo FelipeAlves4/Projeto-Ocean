@@ -34,16 +34,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
-            const resp = await fetch('/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ usuario, senha })
-            });
+            // Registro simples local (sem backend)
+            const usersRaw = localStorage.getItem('users');
+            const users = usersRaw ? JSON.parse(usersRaw) : [];
 
-            const data = await resp.json();
-            if (!resp.ok) {
-                throw new Error(data.erro || 'Falha no registro.');
+            const exists = users.some(u => (u.u || '').toLowerCase() === usuario.toLowerCase());
+            if (exists) {
+                throw new Error('Usuário já existe.');
             }
+
+            users.push({ u: usuario, p: senha });
+            localStorage.setItem('users', JSON.stringify(users));
+
+            // Sinaliza para a tela de login preencher o email recém cadastrado
+            localStorage.setItem('justRegisteredEmail', usuario);
 
             alert('Usuário registrado com sucesso! Redirecionando para o login...');
             window.location.href = './login.html';
