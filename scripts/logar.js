@@ -97,7 +97,8 @@ class OceanLogin {
         this.setLoadingState(submitBtn, btnText, btnArrow, loadingSpinner, true);
 
         try {
-            // Real API call
+            /*
+            // BACKEND LOGIN (desativado para testes sem backend)
             const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
@@ -105,15 +106,25 @@ class OceanLogin {
                 },
                 body: JSON.stringify({ usuario: email, senha: password })
             });
-
             const result = await response.json();
-
             if (!response.ok) {
                 throw new Error(result.erro || 'Falha no login.');
             }
-
-            // Store JWT and redirect
             localStorage.setItem('token', result.token);
+            */
+
+            // LOGIN SIMPLES (sem backend) para testes locais
+            const allowed = [
+                { u: 'demo@ocean.com', p: 'demo123' },
+                { u: 'admin@ocean.com', p: 'admin123' }
+            ];
+            const isAllowed = allowed.some(c => c.u === email && c.p === password);
+            if (!isAllowed) {
+                throw new Error('Credenciais inválidas. Tente demo@ocean.com / demo123');
+            }
+
+            // Persistência simples
+            localStorage.setItem('token', 'dev-token');
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('usuario', email);
 
