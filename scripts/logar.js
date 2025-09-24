@@ -141,7 +141,7 @@ class OceanLogin {
             this.showToast('Login Realizado!', 'Bem-vindo ao Ocean Dashboard.', 'success');
 
             setTimeout(() => {
-                window.location.href = '/paginas/dashboard.html';
+                window.location.href = '/adaptar/interface-match-dashboard-52-main/index.html';
             }, 1200);
 
         } catch (error) {

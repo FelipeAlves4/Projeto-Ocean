@@ -4,8 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configurações - Ocean</title>
+    <link rel="stylesheet" href="../css/ocean-dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.462.0/lucide.min.css" rel="stylesheet">
 </head>
-<body>
-    
+<body class="light-theme settings-view">
+    <!-- Header simplificado -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo-container">
+                <div class="logo-glow"></div>
+                <div class="logo-icon">
+                    <i data-lucide="settings"></i>
+                </div>
+            </div>
+            <h1 class="logo-text">Configurações</h1>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="tab-content active" id="settings">
+            <div class="settings-section">
+                <h1>Configurações</h1>
+                <p class="section-subtitle">Personalize sua experiência e gerencie suas preferências</p>
+
+                <div class="settings-group">
+                    <h2 class="settings-title">
+                        <i data-lucide="palette"></i>
+                        Aparência
+                    </h2>
+                    <p class="settings-description">Configure o tema e a aparência da aplicação</p>
+
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <label>Tema</label>
+                            <p>Escolha o tema da interface</p>
+                        </div>
+                        <select id="themeSelect" class="setting-select">
+                            <option value="light">Claro</option>
+                            <option value="dark">Escuro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h2 class="settings-title">
+                        <i data-lucide="bell"></i>
+                        Notificações
+                    </h2>
+                    <p class="settings-description">Configure como você recebe notificações</p>
+
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <label>Notificações Push</label>
+                            <p>Receba notificações em tempo real</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="notificationsToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <button class="save-btn" id="saveSettings">
+                    <i data-lucide="save"></i>
+                    Salvar Configurações
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="../scripts/ocean-dashboard.js"></script>
 </body>
 </html>
