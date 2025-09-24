@@ -34,6 +34,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
+            const terms = document.getElementById('termsAccept');
+            if (!terms || !terms.checked) {
+                throw new Error('Você deve aceitar os Termos de Uso.');
+            }
+
             // Registro simples local (sem backend)
             const usersRaw = localStorage.getItem('users');
             const users = usersRaw ? JSON.parse(usersRaw) : [];
