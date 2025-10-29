@@ -44,10 +44,10 @@
             <!-- Card de Login -->
             <div class="login-card fade-in-up stagger-1">
                 <div class="card-header">
-                    <h2 class="card-title">Fazer Login</h2>
+                    <h2 id="form-title" class="card-title">Fazer Login</h2>
                     <p class="card-description">Digite suas credenciais para acessar o dashboard</p>
                 </div>
-                <form id="loginForm" class="login-form">
+                <form id="loginForm" class="login-form" aria-labelledby="form-title">
                     <div class="form-group fade-in-up stagger-2">
                         <label for="email" class="form-label">Email</label>
                         <div class="input-container">
@@ -67,7 +67,7 @@
                                 <path d="m7 11V7a5 5 0 0 1 10 0v4" />
                             </svg>
                             <input type="password" id="password" placeholder="••••••••" required>
-                            <button type="button" id="togglePassword" class="password-toggle">
+                            <button type="button" id="togglePassword" class="password-toggle" aria-label="Mostrar ou ocultar senha" aria-pressed="false">
                                 <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                     <circle cx="12" cy="12" r="3" />
@@ -110,7 +110,7 @@
     </div>
 
     <!-- Toast Container -->
-    <div id="toastContainer" class="toast-container"></div>
+    <div id="toastContainer" class="toast-container" role="alert" aria-live="polite"></div>
 
     <script src="../scripts/logar.js"></script>
 </body>

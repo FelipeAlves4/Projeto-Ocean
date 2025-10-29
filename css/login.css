@@ -618,6 +618,12 @@ input[type="checkbox"] {
     animation-delay: 0.4s; 
 }
 
+/* Adicionado foco visível para botões */
+button:focus {
+    outline: 2px solid hsl(210, 100%, 55%);
+    outline-offset: 2px;
+}
+
 /* Responsive Design */
 @media (max-width: 640px) {
     .login-container {
@@ -636,5 +642,15 @@ input[type="checkbox"] {
     .liquid-1, .liquid-2, .liquid-3, .liquid-4 {
         width: 6rem;
         height: 6rem;
+    }
+}
+
+/* Melhorias para dispositivos de baixa resolução */
+@media (max-width: 600px) {
+    .login-container {
+        padding: 1rem;
+    }
+    .login-card {
+        width: 100%;
     }
 }
