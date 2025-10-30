@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
             localStorage.setItem('justRegisteredEmail', usuario);
 
             alert('Usuário registrado com sucesso! Redirecionando para o login...');
-            window.location.href = './login.html';
+            window.location.href = '../paginas/login.html';
         } catch (err) {
             alert(err.message);
         } finally {
