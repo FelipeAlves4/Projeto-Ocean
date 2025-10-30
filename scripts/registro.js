@@ -19,11 +19,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!usuario || !senha) {
             showToast('Campos obrigatórios', 'Por favor, preencha email e senha.', 'warning');
+            if (!usuario && emailInput) emailInput.focus(); else if (passwordInput) passwordInput.focus();
             return;
         }
 
         if (senha.length < 6) {
             showToast('Senha muito curta', 'A senha deve ter ao menos 6 caracteres.', 'error');
+            if (passwordInput) passwordInput.focus();
             return;
         }
 
@@ -51,28 +53,40 @@ document.addEventListener('DOMContentLoaded', function () {
                     password: senha
                 }),
             });
-            const result = await response.json();
+
+            let result = {};
+            try { result = await response.json(); } catch (_) {}
+
             if (!response.ok || !result.success) {
-                throw new Error(result.message || 'Erro no cadastro.');
+                const message = result.message || (response.status === 409 ? 'Usuário já existe.' : 'Erro no cadastro.');
+                const type = response.status === 409 ? 'warning' : 'error';
+                throw new Error(message);
             }
 
             // Sucesso! Preencher email para tela de login
             localStorage.setItem('justRegisteredEmail', usuario);
 
             showToast('Cadastro realizado', 'Usuário registrado com sucesso! Redirecionando...', 'success');
+            // Mantém o botão desabilitado até o redirecionamento para evitar duplo envio
             setTimeout(() => {
-                window.location.href = '../paginas/login.html';
-            }, 1100);
+                window.location.href = './login.html';
+            }, 1300);
         } catch (err) {
-            showToast('Erro ao registrar', err.message, 'error');
+            const msg = (err && err.message) ? err.message : 'Falha ao conectar. Verifique sua conexão.';
+            showToast('Erro ao registrar', msg, msg.includes('existe') ? 'warning' : 'error');
+            if (msg.toLowerCase().includes('senha')) { if (passwordInput) passwordInput.focus(); }
+            else if (emailInput) { emailInput.focus(); }
         } finally {
             if (submitBtn && btnText && btnArrow && loadingSpinner) {
                 setTimeout(() => {
-                    submitBtn.disabled = false;
-                    btnText.style.display = 'inline';
-                    btnArrow.style.display = 'inline';
-                    loadingSpinner.style.display = 'none';
-                }, 1000);
+                    // Se houve sucesso, o redirect já ocorrerá e não reabilitamos o botão antes disso
+                    if (!window.location.href.endsWith('./login.html')) {
+                        submitBtn.disabled = false;
+                        btnText.style.display = 'inline';
+                        btnArrow.style.display = 'inline';
+                        loadingSpinner.style.display = 'none';
+                    }
+                }, 800);
             }
         }
     });
