@@ -1,3 +1,5 @@
+import { showToast, showConfirm, showPrompt } from '../scripts/utils.js'
+
 // ============================================
 // DATA MANAGEMENT
 // ============================================
@@ -108,8 +110,6 @@ navItems.forEach((item) => {
 })
 
 function handleNavigation(section) {
-    console.log(`[v0] Navigating to: ${section}`)
-
     const allSections = document.querySelectorAll(".page-section")
     allSections.forEach((s) => s.classList.remove("active"))
 
@@ -235,10 +235,19 @@ function renderTasks() {
     })
 
     document.querySelectorAll(".task-delete-btn").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
+        btn.addEventListener("click", async (e) => {
             e.stopPropagation()
             const taskId = Number.parseInt(btn.dataset.taskId)
-            deleteTask(taskId)
+            const confirmed = await showConfirm({
+                title: 'Excluir tarefa',
+                message: 'Tem certeza que deseja excluir esta tarefa? Esta ação não pode ser desfeita.',
+                confirmText: 'Excluir',
+                danger: true
+            })
+            if (confirmed) {
+                deleteTask(taskId)
+                showToast('Tarefa excluída', 'A tarefa foi removida com sucesso.', 'success')
+            }
         })
     })
 }
@@ -285,16 +294,41 @@ function renderGoals() {
 
     // Add event listeners for goal actions
     document.querySelectorAll(".goal-update-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", async () => {
             const goalId = Number.parseInt(btn.dataset.goalId)
-            updateGoalProgress(goalId)
+            const goal = appData.goals.find((g) => g.id === goalId)
+            const newProgress = await showPrompt({
+                title: 'Atualizar progresso',
+                message: `Meta: ${goal.title}<br/>Progresso atual: ${goal.progress}%`,
+                placeholder: 'Novo progresso (0-100)',
+                defaultValue: String(goal.progress)
+            })
+            if (newProgress !== null) {
+                const progress = Math.min(100, Math.max(0, Number.parseInt(newProgress) || 0))
+                goal.progress = progress
+                goal.current = (progress / 100) * goal.target
+                saveData(appData)
+                renderGoals()
+                renderSummaryCards()
+                animateProgressBars()
+                showToast('Progresso atualizado', 'A meta foi atualizada com sucesso.', 'success')
+            }
         })
     })
 
     document.querySelectorAll(".goal-delete-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", async () => {
             const goalId = Number.parseInt(btn.dataset.goalId)
-            deleteGoal(goalId)
+            const confirmed = await showConfirm({
+                title: 'Excluir meta',
+                message: 'Tem certeza que deseja excluir esta meta? Esta ação não pode ser desfeita.',
+                confirmText: 'Excluir',
+                danger: true
+            })
+            if (confirmed) {
+                deleteGoal(goalId)
+                showToast('Meta excluída', 'A meta foi removida com sucesso.', 'success')
+            }
         })
     })
 }
@@ -320,16 +354,16 @@ function toggleTaskStatus(taskId, action) {
         renderTasks()
         renderSummaryCards()
         animateProgressBars()
+        const verb = action === 'complete' ? 'concluída' : 'marcada como pendente'
+        showToast('Tarefa atualizada', `Tarefa ${verb}.`, 'success')
     }
 }
 
-function deleteTask(taskId) {
-    if (confirm("Tem certeza que deseja excluir esta tarefa?")) {
-        appData.tasks = appData.tasks.filter((t) => t.id !== taskId)
-        saveData(appData)
-        renderTasks()
-        renderSummaryCards()
-    }
+async function deleteTask(taskId) {
+    appData.tasks = appData.tasks.filter((t) => t.id !== taskId)
+    saveData(appData)
+    renderTasks()
+    renderSummaryCards()
 }
 
 function addTask(taskName) {
@@ -343,34 +377,21 @@ function addTask(taskName) {
     saveData(appData)
     renderTasks()
     renderSummaryCards()
+    showToast('Tarefa adicionada', 'A nova tarefa foi criada.', 'success')
 }
 
 function updateGoalProgress(goalId) {
     const goal = appData.goals.find((g) => g.id === goalId)
     if (goal) {
-        const newProgress = prompt(
-            `Atualizar progresso de "${goal.title}":\nProgresso atual: ${goal.progress}%\n\nDigite o novo progresso (0-100):`,
-            goal.progress,
-        )
-        if (newProgress !== null) {
-            const progress = Math.min(100, Math.max(0, Number.parseInt(newProgress) || 0))
-            goal.progress = progress
-            goal.current = (progress / 100) * goal.target
-            saveData(appData)
-            renderGoals()
-            renderSummaryCards()
-            animateProgressBars()
-        }
+        // handled via showPrompt in renderGoals
     }
 }
 
 function deleteGoal(goalId) {
-    if (confirm("Tem certeza que deseja excluir esta meta?")) {
-        appData.goals = appData.goals.filter((g) => g.id !== goalId)
-        saveData(appData)
-        renderGoals()
-        renderSummaryCards()
-    }
+    appData.goals = appData.goals.filter((g) => g.id !== goalId)
+    saveData(appData)
+    renderGoals()
+    renderSummaryCards()
 }
 
 function addGoal(title, description, target) {
@@ -386,6 +407,7 @@ function addGoal(title, description, target) {
     saveData(appData)
     renderGoals()
     renderSummaryCards()
+    showToast('Meta adicionada', 'A nova meta foi criada.', 'success')
 }
 
 // ============================================
@@ -393,32 +415,30 @@ function addGoal(title, description, target) {
 // ============================================
 
 // "Adicionar" button functionality
-document.querySelector(".btn-outline").addEventListener("click", () => {
+document.querySelector(".btn-outline").addEventListener("click", async () => {
     const activeNav = document.querySelector(".nav-item.active")
     const section = activeNav ? activeNav.dataset.section : "dashboard"
 
     if (section === "tarefas" || section === "dashboard") {
-        const taskName = prompt("Digite o nome da nova tarefa:")
+        const taskName = await showPrompt({ title: 'Nova tarefa', message: 'Digite o nome da nova tarefa:' })
         if (taskName && taskName.trim()) {
             addTask(taskName.trim())
-            // Switch to tasks tab
             const tasksTab = document.querySelector('[data-tab="tarefas"]')
             if (tasksTab) tasksTab.click()
         }
     } else if (section === "metas") {
-        const title = prompt("Digite o título da meta:")
+        const title = await showPrompt({ title: 'Nova meta', message: 'Digite o título da meta:' })
         if (title && title.trim()) {
-            const description = prompt("Digite a descrição da meta:")
-            const target = prompt("Digite o valor alvo (número):")
+            const description = await showPrompt({ title: 'Descrição', message: 'Digite a descrição da meta:' })
+            const target = await showPrompt({ title: 'Valor alvo', message: 'Digite o valor alvo (número):', placeholder: 'Ex: 100' })
             if (description && target) {
                 addGoal(title.trim(), description.trim(), Number.parseFloat(target) || 100)
-                // Switch to goals tab
                 const goalsTab = document.querySelector('[data-tab="progresso"]')
                 if (goalsTab) goalsTab.click()
             }
         }
     } else {
-        alert("Funcionalidade de adicionar disponível para Tarefas e Metas")
+        showToast('Ação indisponível', 'Adicionar está disponível apenas para Tarefas e Metas.', 'info')
     }
 })
 
@@ -430,7 +450,8 @@ document.querySelector(".btn-primary").addEventListener("click", () => {
         month: "long",
         day: "numeric",
     })
-    alert(`Hoje é ${today}\n\nTarefas pendentes: ${appData.tasks.filter((t) => t.status === "pending").length}`)
+    const pending = appData.tasks.filter((t) => t.status === "pending").length
+    showToast('Hoje', `${today} — Tarefas pendentes: ${pending}`, 'info')
 })
 
 // ============================================
@@ -513,8 +534,8 @@ window.addEventListener("load", () => {
     // Add task button
     const addTaskBtn = document.getElementById("addTaskBtn")
     if (addTaskBtn) {
-        addTaskBtn.addEventListener("click", () => {
-            const taskName = prompt("Digite o nome da nova tarefa:")
+        addTaskBtn.addEventListener("click", async () => {
+            const taskName = await showPrompt({ title: 'Nova tarefa', message: 'Digite o nome da nova tarefa:' })
             if (taskName && taskName.trim()) {
                 addTask(taskName.trim())
                 renderFullTasksList()
@@ -525,11 +546,11 @@ window.addEventListener("load", () => {
     // Add goal button
     const addGoalBtn = document.getElementById("addGoalBtn")
     if (addGoalBtn) {
-        addGoalBtn.addEventListener("click", () => {
-            const title = prompt("Digite o título da meta:")
+        addGoalBtn.addEventListener("click", async () => {
+            const title = await showPrompt({ title: 'Nova meta', message: 'Digite o título da meta:' })
             if (title && title.trim()) {
-                const description = prompt("Digite a descrição da meta:")
-                const target = prompt("Digite o valor alvo (número):")
+                const description = await showPrompt({ title: 'Descrição', message: 'Digite a descrição da meta:' })
+                const target = await showPrompt({ title: 'Valor alvo', message: 'Digite o valor alvo (número):', placeholder: 'Ex: 100' })
                 if (description && target) {
                     addGoal(title.trim(), description.trim(), Number.parseFloat(target) || 100)
                     renderFullGoalsList()
@@ -542,17 +563,24 @@ window.addEventListener("load", () => {
     const addTransactionBtn = document.getElementById("addTransactionBtn")
     if (addTransactionBtn) {
         addTransactionBtn.addEventListener("click", () => {
-            alert("Funcionalidade de adicionar transação em desenvolvimento")
+            showToast('Em breve', 'Funcionalidade de adicionar transação em desenvolvimento.', 'info')
         })
     }
 
     // Clear data button
     const clearDataBtn = document.getElementById("clearDataBtn")
     if (clearDataBtn) {
-        clearDataBtn.addEventListener("click", () => {
-            if (confirm("Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.")) {
+        clearDataBtn.addEventListener("click", async () => {
+            const confirmed = await showConfirm({
+                title: 'Limpar dados',
+                message: 'Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.',
+                confirmText: 'Limpar',
+                danger: true
+            })
+            if (confirmed) {
                 localStorage.removeItem("oceanDashboardData")
-                location.reload()
+                showToast('Dados limpos', 'Seus dados locais foram removidos.', 'success')
+                setTimeout(() => location.reload(), 600)
             }
         })
     }
@@ -569,6 +597,7 @@ window.addEventListener("load", () => {
             link.download = "ocean-data.json"
             link.click()
             URL.revokeObjectURL(url)
+            showToast('Exportado', 'Seus dados foram exportados como JSON.', 'success')
         })
     }
 
@@ -579,20 +608,15 @@ window.addEventListener("load", () => {
             const faqItem = question.parentElement
             const isActive = faqItem.classList.contains("active")
 
-            // Close all FAQ items
             document.querySelectorAll(".faq-item").forEach((item) => {
                 item.classList.remove("active")
             })
 
-            // Open clicked item if it wasn't active
             if (!isActive) {
                 faqItem.classList.add("active")
             }
         })
     })
-
-    console.log("[v0] Ocean Dashboard initialized successfully")
-    console.log("[v0] Data loaded:", appData)
 })
 
 // ============================================
@@ -648,7 +672,6 @@ function renderFullTasksList() {
         tasksList.appendChild(taskItem)
     })
 
-    // Add event listeners for task actions
     document.querySelectorAll("#fullTasksList .task-action-btn").forEach((btn) => {
         btn.addEventListener("click", (e) => {
             e.stopPropagation()
@@ -660,11 +683,20 @@ function renderFullTasksList() {
     })
 
     document.querySelectorAll("#fullTasksList .task-delete-btn").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
+        btn.addEventListener("click", async (e) => {
             e.stopPropagation()
             const taskId = Number.parseInt(btn.dataset.taskId)
-            deleteTask(taskId)
-            renderFullTasksList()
+            const confirmed = await showConfirm({
+                title: 'Excluir tarefa',
+                message: 'Tem certeza que deseja excluir esta tarefa? Esta ação não pode ser desfeita.',
+                confirmText: 'Excluir',
+                danger: true
+            })
+            if (confirmed) {
+                deleteTask(taskId)
+                renderFullTasksList()
+                showToast('Tarefa excluída', 'A tarefa foi removida com sucesso.', 'success')
+            }
         })
     })
 }
@@ -726,20 +758,43 @@ function renderFullGoalsList() {
         goalsGrid.appendChild(goalCard)
     })
 
-    // Add event listeners for goal actions
     document.querySelectorAll("#fullGoalsList .goal-update-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", async () => {
             const goalId = Number.parseInt(btn.dataset.goalId)
-            updateGoalProgress(goalId)
-            renderFullGoalsList()
+            const goal = appData.goals.find((g) => g.id === goalId)
+            const newProgress = await showPrompt({
+                title: 'Atualizar progresso',
+                message: `Meta: ${goal.title}<br/>Progresso atual: ${goal.progress}%`,
+                placeholder: 'Novo progresso (0-100)',
+                defaultValue: String(goal.progress)
+            })
+            if (newProgress !== null) {
+                const progress = Math.min(100, Math.max(0, Number.parseInt(newProgress) || 0))
+                goal.progress = progress
+                goal.current = (progress / 100) * goal.target
+                saveData(appData)
+                renderFullGoalsList()
+                renderSummaryCards()
+                animateProgressBars()
+                showToast('Progresso atualizado', 'A meta foi atualizada com sucesso.', 'success')
+            }
         })
     })
 
     document.querySelectorAll("#fullGoalsList .goal-delete-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", async () => {
             const goalId = Number.parseInt(btn.dataset.goalId)
-            deleteGoal(goalId)
-            renderFullGoalsList()
+            const confirmed = await showConfirm({
+                title: 'Excluir meta',
+                message: 'Tem certeza que deseja excluir esta meta? Esta ação não pode ser desfeita.',
+                confirmText: 'Excluir',
+                danger: true
+            })
+            if (confirmed) {
+                deleteGoal(goalId)
+                renderFullGoalsList()
+                showToast('Meta excluída', 'A meta foi removida com sucesso.', 'success')
+            }
         })
     })
 }

@@ -1,3 +1,5 @@
+import { showToast } from './utils.js';
+
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('registerForm');
     if (!form) return;
@@ -16,12 +18,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const senha = (passwordInput && passwordInput.value || '').trim();
 
         if (!usuario || !senha) {
-            alert('Por favor, preencha email e senha.');
+            showToast('Campos obrigatórios', 'Por favor, preencha email e senha.', 'warning');
             return;
         }
 
         if (senha.length < 6) {
-            alert('A senha deve ter ao menos 6 caracteres.');
+            showToast('Senha muito curta', 'A senha deve ter ao menos 6 caracteres.', 'error');
             return;
         }
 
@@ -57,10 +59,12 @@ document.addEventListener('DOMContentLoaded', function () {
             // Sucesso! Preencher email para tela de login
             localStorage.setItem('justRegisteredEmail', usuario);
 
-            alert('Usuário registrado com sucesso! Redirecionando para o login...');
-            window.location.href = '../paginas/login.html';
+            showToast('Cadastro realizado', 'Usuário registrado com sucesso! Redirecionando...', 'success');
+            setTimeout(() => {
+                window.location.href = '../paginas/login.html';
+            }, 1100);
         } catch (err) {
-            alert(err.message);
+            showToast('Erro ao registrar', err.message, 'error');
         } finally {
             if (submitBtn && btnText && btnArrow && loadingSpinner) {
                 setTimeout(() => {
