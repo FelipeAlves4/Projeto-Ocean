@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // loading
         if (submitBtn && btnText && btnArrow && loadingSpinner) {
             submitBtn.disabled = true;
             btnText.style.display = 'none';
@@ -39,19 +38,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 throw new Error('Você deve aceitar os Termos de Uso.');
             }
 
-            // Registro simples local (sem backend)
-            const usersRaw = localStorage.getItem('users');
-            const users = usersRaw ? JSON.parse(usersRaw) : [];
-
-            const exists = users.some(u => (u.u || '').toLowerCase() === usuario.toLowerCase());
-            if (exists) {
-                throw new Error('Usuário já existe.');
+            // Cadastro de usuário via backend Flask
+            const response = await fetch('http://localhost:5000/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: usuario,
+                    password: senha
+                }),
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Erro no cadastro.');
             }
 
-            users.push({ u: usuario, p: senha });
-            localStorage.setItem('users', JSON.stringify(users));
-
-            // Sinaliza para a tela de login preencher o email recém cadastrado
+            // Sucesso! Preencher email para tela de login
             localStorage.setItem('justRegisteredEmail', usuario);
 
             alert('Usuário registrado com sucesso! Redirecionando para o login...');

@@ -100,23 +100,24 @@ class OceanLogin {
 
         try {
             // Backend login request
-            const response = await fetch('http://localhost:3000/api/login', {
+            const response = await fetch('http://localhost:5000/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, senha: password }),
+                body: JSON.stringify({
+                    username: email,
+                    password: password
+                }),
             });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.erro || errorData.message || 'Falha no login.');
-            }
 
             const result = await response.json();
 
-            // Save token and user data to localStorage
-            localStorage.setItem('token', result.token);
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Falha no login.');
+            }
+
+            // Save user data to localStorage (token fictício para fins locais)
             localStorage.setItem('usuario', email);
             localStorage.setItem('isLoggedIn', 'true');
 
