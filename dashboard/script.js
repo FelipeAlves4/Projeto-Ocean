@@ -110,6 +110,14 @@ navItems.forEach((item) => {
 function handleNavigation(section) {
     console.log(`[v0] Navigating to: ${section}`)
 
+    const allSections = document.querySelectorAll(".page-section")
+    allSections.forEach((s) => s.classList.remove("active"))
+
+    const targetSection = document.querySelector(`[data-section-content="${section}"]`)
+    if (targetSection) {
+        targetSection.classList.add("active")
+    }
+
     // Update page title based on section
     const pageTitle = document.querySelector(".page-title")
     const pageSubtitle = document.querySelector(".page-subtitle")
@@ -127,6 +135,14 @@ function handleNavigation(section) {
     if (sectionTitles[section]) {
         pageTitle.textContent = sectionTitles[section].title
         pageSubtitle.textContent = sectionTitles[section].subtitle
+    }
+
+    if (section === "tarefas") {
+        renderFullTasksList()
+    } else if (section === "metas") {
+        renderFullGoalsList()
+    } else if (section === "financas") {
+        renderFinancesPage()
     }
 }
 
@@ -183,28 +199,28 @@ function renderTasks() {
         const taskItem = document.createElement("div")
         taskItem.className = "task-item"
         taskItem.innerHTML = `
-        <div class="task-info">
-          <div class="task-indicator ${task.status === "completed" ? "task-indicator-success" : ""}"></div>
-          <span class="task-name">${task.name}</span>
-        </div>
-        <div style="display: flex; gap: 0.5rem; align-items: center;">
-          <span class="task-badge ${task.status === "completed" ? "badge-completed" : "badge-pending"}">
-            ${task.status === "completed" ? "Concluída" : "Pendente"}
-          </span>
-          <button class="task-action-btn" data-task-id="${task.id}" data-action="${task.status === "completed" ? "uncomplete" : "complete"}" 
-                  style="background: none; border: none; cursor: pointer; padding: 0.5rem; color: var(--text-secondary); transition: var(--transition);"
-                  onmouseover="this.style.color='var(--accent-primary)'" 
-                  onmouseout="this.style.color='var(--text-secondary)'">
-            ${task.status === "completed" ? "↶" : "✓"}
-          </button>
-          <button class="task-delete-btn" data-task-id="${task.id}"
-                  style="background: none; border: none; cursor: pointer; padding: 0.5rem; color: var(--text-secondary); transition: var(--transition);"
-                  onmouseover="this.style.color='var(--danger)'" 
-                  onmouseout="this.style.color='var(--text-secondary)'">
-            ✕
-          </button>
-        </div>
-      `
+          <div class="task-info">
+            <div class="task-indicator ${task.status === "completed" ? "task-indicator-success" : ""}"></div>
+            <span class="task-name">${task.name}</span>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span class="task-badge ${task.status === "completed" ? "badge-completed" : "badge-pending"}">
+              ${task.status === "completed" ? "Concluída" : "Pendente"}
+            </span>
+            <button class="task-action-btn" data-task-id="${task.id}" data-action="${task.status === "completed" ? "uncomplete" : "complete"}" 
+                    style="background: none; border: none; cursor: pointer; padding: 0.5rem; color: var(--text-secondary); transition: var(--transition);"
+                    onmouseover="this.style.color='var(--accent-primary)'" 
+                    onmouseout="this.style.color='var(--text-secondary)'">
+              ${task.status === "completed" ? "↶" : "✓"}
+            </button>
+            <button class="task-delete-btn" data-task-id="${task.id}"
+                    style="background: none; border: none; cursor: pointer; padding: 0.5rem; color: var(--text-secondary); transition: var(--transition);"
+                    onmouseover="this.style.color='var(--danger)'" 
+                    onmouseout="this.style.color='var(--text-secondary)'">
+              ✕
+            </button>
+          </div>
+        `
         tasksList.appendChild(taskItem)
     })
 
@@ -241,29 +257,29 @@ function renderGoals() {
         else progressClass = "progress-warning"
 
         goalCard.innerHTML = `
-        <div class="goal-header">
-          <h4 class="goal-title">${goal.title}</h4>
-          <span class="goal-percentage">${goal.progress}%</span>
-        </div>
-        <div class="progress-bar progress-bar-large">
-          <div class="progress-fill ${progressClass}" style="width: ${goal.progress}%"></div>
-        </div>
-        <p class="goal-description">${goal.description}</p>
-        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-          <button class="goal-update-btn" data-goal-id="${goal.id}"
-                  style="flex: 1; padding: 0.5rem; background: var(--accent-primary); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; transition: var(--transition);"
-                  onmouseover="this.style.background='var(--accent-hover)'" 
-                  onmouseout="this.style.background='var(--accent-primary)'">
-            Atualizar Progresso
-          </button>
-          <button class="goal-delete-btn" data-goal-id="${goal.id}"
-                  style="padding: 0.5rem 1rem; background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; transition: var(--transition);"
-                  onmouseover="this.style.background='var(--danger-light)'" 
-                  onmouseout="this.style.background='transparent'">
-            Excluir
-          </button>
-        </div>
-      `
+          <div class="goal-header">
+            <h4 class="goal-title">${goal.title}</h4>
+            <span class="goal-percentage">${goal.progress}%</span>
+          </div>
+          <div class="progress-bar progress-bar-large">
+            <div class="progress-fill ${progressClass}" style="width: ${goal.progress}%"></div>
+          </div>
+          <p class="goal-description">${goal.description}</p>
+          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+            <button class="goal-update-btn" data-goal-id="${goal.id}"
+                    style="flex: 1; padding: 0.5rem; background: var(--accent-primary); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; transition: var(--transition);"
+                    onmouseover="this.style.background='var(--accent-hover)'" 
+                    onmouseout="this.style.background='var(--accent-primary)'">
+              Atualizar Progresso
+            </button>
+            <button class="goal-delete-btn" data-goal-id="${goal.id}"
+                    style="padding: 0.5rem 1rem; background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; transition: var(--transition);"
+                    onmouseover="this.style.background='var(--danger-light)'" 
+                    onmouseout="this.style.background='transparent'">
+              Excluir
+            </button>
+          </div>
+        `
         goalsGrid.appendChild(goalCard)
     })
 
@@ -488,9 +504,264 @@ window.addEventListener("load", () => {
     animateProgressBars()
     animateOnScroll()
 
+    // Task filter
+    const taskFilter = document.getElementById("taskFilter")
+    if (taskFilter) {
+        taskFilter.addEventListener("change", renderFullTasksList)
+    }
+
+    // Add task button
+    const addTaskBtn = document.getElementById("addTaskBtn")
+    if (addTaskBtn) {
+        addTaskBtn.addEventListener("click", () => {
+            const taskName = prompt("Digite o nome da nova tarefa:")
+            if (taskName && taskName.trim()) {
+                addTask(taskName.trim())
+                renderFullTasksList()
+            }
+        })
+    }
+
+    // Add goal button
+    const addGoalBtn = document.getElementById("addGoalBtn")
+    if (addGoalBtn) {
+        addGoalBtn.addEventListener("click", () => {
+            const title = prompt("Digite o título da meta:")
+            if (title && title.trim()) {
+                const description = prompt("Digite a descrição da meta:")
+                const target = prompt("Digite o valor alvo (número):")
+                if (description && target) {
+                    addGoal(title.trim(), description.trim(), Number.parseFloat(target) || 100)
+                    renderFullGoalsList()
+                }
+            }
+        })
+    }
+
+    // Add transaction button
+    const addTransactionBtn = document.getElementById("addTransactionBtn")
+    if (addTransactionBtn) {
+        addTransactionBtn.addEventListener("click", () => {
+            alert("Funcionalidade de adicionar transação em desenvolvimento")
+        })
+    }
+
+    // Clear data button
+    const clearDataBtn = document.getElementById("clearDataBtn")
+    if (clearDataBtn) {
+        clearDataBtn.addEventListener("click", () => {
+            if (confirm("Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.")) {
+                localStorage.removeItem("oceanDashboardData")
+                location.reload()
+            }
+        })
+    }
+
+    // Export data button
+    const exportDataBtn = document.getElementById("exportDataBtn")
+    if (exportDataBtn) {
+        exportDataBtn.addEventListener("click", () => {
+            const dataStr = JSON.stringify(appData, null, 2)
+            const dataBlob = new Blob([dataStr], { type: "application/json" })
+            const url = URL.createObjectURL(dataBlob)
+            const link = document.createElement("a")
+            link.href = url
+            link.download = "ocean-data.json"
+            link.click()
+            URL.revokeObjectURL(url)
+        })
+    }
+
+    // FAQ accordion
+    const faqQuestions = document.querySelectorAll(".faq-question")
+    faqQuestions.forEach((question) => {
+        question.addEventListener("click", () => {
+            const faqItem = question.parentElement
+            const isActive = faqItem.classList.contains("active")
+
+            // Close all FAQ items
+            document.querySelectorAll(".faq-item").forEach((item) => {
+                item.classList.remove("active")
+            })
+
+            // Open clicked item if it wasn't active
+            if (!isActive) {
+                faqItem.classList.add("active")
+            }
+        })
+    })
+
     console.log("[v0] Ocean Dashboard initialized successfully")
     console.log("[v0] Data loaded:", appData)
 })
+
+// ============================================
+// FULL TASKS LIST RENDERING
+// ============================================
+
+function renderFullTasksList() {
+    const tasksList = document.getElementById("fullTasksList")
+    if (!tasksList) return
+
+    tasksList.innerHTML = ""
+
+    const filter = document.getElementById("taskFilter")?.value || "all"
+    const filteredTasks = filter === "all" ? appData.tasks : appData.tasks.filter((t) => t.status === filter)
+
+    if (filteredTasks.length === 0) {
+        tasksList.innerHTML = `
+              <div class="empty-state">
+                  <div class="empty-icon">📋</div>
+                  <h3>Nenhuma tarefa encontrada</h3>
+                  <p>Adicione uma nova tarefa para começar</p>
+              </div>
+          `
+        return
+    }
+
+    filteredTasks.forEach((task) => {
+        const taskItem = document.createElement("div")
+        taskItem.className = "task-item"
+        taskItem.innerHTML = `
+          <div class="task-info">
+            <div class="task-indicator ${task.status === "completed" ? "task-indicator-success" : ""}"></div>
+            <span class="task-name">${task.name}</span>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span class="task-badge ${task.status === "completed" ? "badge-completed" : "badge-pending"}">
+              ${task.status === "completed" ? "Concluída" : "Pendente"}
+            </span>
+            <button class="task-action-btn" data-task-id="${task.id}" data-action="${task.status === "completed" ? "uncomplete" : "complete"}" 
+                    style="background: none; border: none; cursor: pointer; padding: 0.5rem; color: var(--text-secondary); transition: var(--transition);"
+                    onmouseover="this.style.color='var(--accent-primary)'" 
+                    onmouseout="this.style.color='var(--text-secondary)'">
+              ${task.status === "completed" ? "↶" : "✓"}
+            </button>
+            <button class="task-delete-btn" data-task-id="${task.id}"
+                    style="background: none; border: none; cursor: pointer; padding: 0.5rem; color: var(--text-secondary); transition: var(--transition);"
+                    onmouseover="this.style.color='var(--danger)'" 
+                    onmouseout="this.style.color='var(--text-secondary)'">
+              ✕
+            </button>
+          </div>
+        `
+        tasksList.appendChild(taskItem)
+    })
+
+    // Add event listeners for task actions
+    document.querySelectorAll("#fullTasksList .task-action-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation()
+            const taskId = Number.parseInt(btn.dataset.taskId)
+            const action = btn.dataset.action
+            toggleTaskStatus(taskId, action)
+            renderFullTasksList()
+        })
+    })
+
+    document.querySelectorAll("#fullTasksList .task-delete-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation()
+            const taskId = Number.parseInt(btn.dataset.taskId)
+            deleteTask(taskId)
+            renderFullTasksList()
+        })
+    })
+}
+
+// ============================================
+// FULL GOALS LIST RENDERING
+// ============================================
+
+function renderFullGoalsList() {
+    const goalsGrid = document.getElementById("fullGoalsList")
+    if (!goalsGrid) return
+
+    goalsGrid.innerHTML = ""
+
+    if (appData.goals.length === 0) {
+        goalsGrid.innerHTML = `
+              <div class="empty-state" style="grid-column: 1 / -1;">
+                  <div class="empty-icon">🎯</div>
+                  <h3>Nenhuma meta cadastrada</h3>
+                  <p>Crie sua primeira meta para começar a acompanhar seu progresso</p>
+              </div>
+          `
+        return
+    }
+
+    appData.goals.forEach((goal) => {
+        const goalCard = document.createElement("div")
+        goalCard.className = "goal-card"
+
+        let progressClass = ""
+        if (goal.progress >= 70) progressClass = ""
+        else if (goal.progress >= 50) progressClass = "progress-success"
+        else progressClass = "progress-warning"
+
+        goalCard.innerHTML = `
+          <div class="goal-header">
+            <h4 class="goal-title">${goal.title}</h4>
+            <span class="goal-percentage">${goal.progress}%</span>
+          </div>
+          <div class="progress-bar progress-bar-large">
+            <div class="progress-fill ${progressClass}" style="width: ${goal.progress}%"></div>
+          </div>
+          <p class="goal-description">${goal.description}</p>
+          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+            <button class="goal-update-btn" data-goal-id="${goal.id}"
+                    style="flex: 1; padding: 0.5rem; background: var(--accent-primary); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; transition: var(--transition);"
+                    onmouseover="this.style.background='var(--accent-hover)'" 
+                    onmouseout="this.style.background='var(--accent-primary)'">
+              Atualizar Progresso
+            </button>
+            <button class="goal-delete-btn" data-goal-id="${goal.id}"
+                    style="padding: 0.5rem 1rem; background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; transition: var(--transition);"
+                    onmouseover="this.style.background='var(--danger-light)'" 
+                    onmouseout="this.style.background='transparent'">
+              Excluir
+            </button>
+          </div>
+        `
+        goalsGrid.appendChild(goalCard)
+    })
+
+    // Add event listeners for goal actions
+    document.querySelectorAll("#fullGoalsList .goal-update-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const goalId = Number.parseInt(btn.dataset.goalId)
+            updateGoalProgress(goalId)
+            renderFullGoalsList()
+        })
+    })
+
+    document.querySelectorAll("#fullGoalsList .goal-delete-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const goalId = Number.parseInt(btn.dataset.goalId)
+            deleteGoal(goalId)
+            renderFullGoalsList()
+        })
+    })
+}
+
+// ============================================
+// FINANCES PAGE RENDERING
+// ============================================
+
+function renderFinancesPage() {
+    renderFinances()
+
+    const transactionsList = document.getElementById("transactionsList")
+    if (!transactionsList) return
+
+    transactionsList.innerHTML = `
+          <div class="empty-state">
+              <div class="empty-icon">💰</div>
+              <h3>Nenhuma transação registrada</h3>
+              <p>Adicione transações para acompanhar suas finanças</p>
+          </div>
+      `
+}
 
 // Smooth scroll
 document.documentElement.style.scrollBehavior = "smooth"

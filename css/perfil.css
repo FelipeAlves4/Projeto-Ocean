@@ -1,0 +1,39 @@
+/* Estilos específicos para a página de perfil */
+
+.profile-banner {
+    height: 200px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+    border-radius: var(--radius-md);
+    margin-bottom: -60px;
+  }
+  
+  .profile-content {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .profile-edit-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  
+  .profile-edit-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-primary);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .profile-stats {
+      grid-template-columns: 1fr;
+    }
+  }
+  

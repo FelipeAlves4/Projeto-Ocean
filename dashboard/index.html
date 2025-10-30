@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ocean - Dashboard de Produtividade</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <!-- Mobile Menu Button -->
     <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
-        <svg class="menu-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="menu-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
-        <svg class="close-icon hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="close-icon hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -29,11 +33,14 @@
             <!-- Logo -->
             <div class="logo">
                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                    <circle cx="20" cy="20" r="18" fill="#4a90e2" opacity="0.2"/>
-                    <path d="M12 20C12 15.5817 15.5817 12 20 12C24.4183 12 28 15.5817 28 20C28 22.7614 26.5 25.5 24 27C21.5 28.5 18.5 28.5 16 27C13.5 25.5 12 22.7614 12 20Z" fill="#4a90e2"/>
-                    <ellipse cx="17" cy="18" rx="1.5" ry="2" fill="white"/>
-                    <ellipse cx="23" cy="18" rx="1.5" ry="2" fill="white"/>
-                    <path d="M16 24C16 24 18 26 20 26C22 26 24 24 24 24" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                    <circle cx="20" cy="20" r="18" fill="#4a90e2" opacity="0.2" />
+                    <path
+                        d="M12 20C12 15.5817 15.5817 12 20 12C24.4183 12 28 15.5817 28 20C28 22.7614 26.5 25.5 24 27C21.5 28.5 18.5 28.5 16 27C13.5 25.5 12 22.7614 12 20Z"
+                        fill="#4a90e2" />
+                    <ellipse cx="17" cy="18" rx="1.5" ry="2" fill="white" />
+                    <ellipse cx="23" cy="18" rx="1.5" ry="2" fill="white" />
+                    <path d="M16 24C16 24 18 26 20 26C22 26 24 24 24 24" stroke="white" stroke-width="1.5"
+                        stroke-linecap="round" />
                 </svg>
                 <span class="logo-text">Ocean</span>
             </div>
@@ -94,7 +101,9 @@
                 <button class="nav-item" data-section="configuracoes">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m-6 0l-4.2 4.2"></path>
+                        <path
+                            d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m-6 0l-4.2 4.2">
+                        </path>
                     </svg>
                     <span>Configurações</span>
                 </button>
@@ -129,194 +138,502 @@
                 </div>
             </header>
 
-            <!-- Summary Cards -->
-            <div class="summary-grid">
-                <div class="summary-card">
-                    <div class="card-header">
-                        <h3 class="card-title">Tarefas Concluídas</h3>
-                        <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
+            <!-- Dashboard Section -->
+            <div class="page-section active" data-section-content="dashboard">
+                <!-- Summary Cards -->
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Tarefas Concluídas</h3>
+                            <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-value">12/20</p>
+                            <p class="card-subtitle">+2 concluídas desde ontem</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-content">
-                        <p class="card-value">12/20</p>
-                        <p class="card-subtitle">+2 concluídas desde ontem</p>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 60%"></div>
+
+                    <div class="summary-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Tempo Produtivo</h3>
+                            <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-value">5.2h</p>
+                            <p class="card-subtitle">+1.2h em relação à média</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Metas Ativas</h3>
+                            <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="12" r="6"></circle>
+                                <circle cx="12" cy="12" r="2"></circle>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-value">4</p>
+                            <p class="card-subtitle">3 em progresso, 1 atrasada</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Balanço Financeiro</h3>
+                            <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-value">R$ 2.840</p>
+                            <p class="card-subtitle">+12% em relação ao mês passado</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-success" style="width: 82%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="summary-card">
-                    <div class="card-header">
-                        <h3 class="card-title">Tempo Produtivo</h3>
-                        <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <polyline points="12 6 12 12 16 14"></polyline>
-                        </svg>
+                <!-- Tabs -->
+                <div class="tabs-section">
+                    <div class="tabs-header">
+                        <button class="tab-btn" data-tab="tarefas">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <line x1="8" y1="6" x2="21" y2="6"></line>
+                                <line x1="8" y1="12" x2="21" y2="12"></line>
+                                <line x1="8" y1="18" x2="21" y2="18"></line>
+                                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                            </svg>
+                            Tarefas Recentes
+                        </button>
+                        <button class="tab-btn active" data-tab="progresso">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                            </svg>
+                            Progresso de Metas
+                        </button>
+                        <button class="tab-btn" data-tab="financeira">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"></path>
+                            </svg>
+                            Visão Financeira
+                        </button>
                     </div>
-                    <div class="card-content">
-                        <p class="card-value">5.2h</p>
-                        <p class="card-subtitle">+1.2h em relação à média</p>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 70%"></div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="summary-card">
-                    <div class="card-header">
-                        <h3 class="card-title">Metas Ativas</h3>
-                        <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <circle cx="12" cy="12" r="6"></circle>
-                            <circle cx="12" cy="12" r="2"></circle>
-                        </svg>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-value">4</p>
-                        <p class="card-subtitle">3 em progresso, 1 atrasada</p>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 75%"></div>
+                    <!-- Tab Content -->
+                    <div class="tab-content">
+                        <!-- Tarefas Tab -->
+                        <div class="tab-panel" data-panel="tarefas">
+                            <h2 class="section-title">Tarefas Recentes</h2>
+                            <p class="section-subtitle">Visualize e gerencie suas tarefas pendentes e concluídas</p>
+                            <div class="tasks-list">
+                                <div class="task-item">
+                                    <div class="task-info">
+                                        <div class="task-indicator"></div>
+                                        <span class="task-name">Reunião de planejamento</span>
+                                    </div>
+                                    <span class="task-badge badge-pending">Pendente</span>
+                                </div>
+                                <div class="task-item">
+                                    <div class="task-info">
+                                        <div class="task-indicator"></div>
+                                        <span class="task-name">Revisar documentação</span>
+                                    </div>
+                                    <span class="task-badge badge-pending">Pendente</span>
+                                </div>
+                                <div class="task-item">
+                                    <div class="task-info">
+                                        <div class="task-indicator task-indicator-success"></div>
+                                        <span class="task-name">Atualizar relatório</span>
+                                    </div>
+                                    <span class="task-badge badge-completed">Concluída</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="summary-card">
-                    <div class="card-header">
-                        <h3 class="card-title">Balanço Financeiro</h3>
-                        <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="1" x2="12" y2="23"></line>
-                            <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path>
-                        </svg>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-value">R$ 2.840</p>
-                        <p class="card-subtitle">+12% em relação ao mês passado</p>
-                        <div class="progress-bar">
-                            <div class="progress-fill progress-success" style="width: 82%"></div>
+                        <!-- Progresso Tab -->
+                        <div class="tab-panel active" data-panel="progresso">
+                            <h2 class="section-title">Progresso de Metas</h2>
+                            <p class="section-subtitle">Acompanhe o desenvolvimento das suas metas ativas</p>
+                            <div class="goals-grid">
+                                <div class="goal-card">
+                                    <div class="goal-header">
+                                        <h4 class="goal-title">Aumentar Produtividade</h4>
+                                        <span class="goal-percentage">75%</span>
+                                    </div>
+                                    <div class="progress-bar progress-bar-large">
+                                        <div class="progress-fill" style="width: 75%"></div>
+                                    </div>
+                                    <p class="goal-description">Completar 20 tarefas por semana</p>
+                                </div>
+                                <div class="goal-card">
+                                    <div class="goal-header">
+                                        <h4 class="goal-title">Economia Mensal</h4>
+                                        <span class="goal-percentage">60%</span>
+                                    </div>
+                                    <div class="progress-bar progress-bar-large">
+                                        <div class="progress-fill progress-success" style="width: 60%"></div>
+                                    </div>
+                                    <p class="goal-description">Economizar R$ 1.000 este mês</p>
+                                </div>
+                                <div class="goal-card">
+                                    <div class="goal-header">
+                                        <h4 class="goal-title">Aprendizado Contínuo</h4>
+                                        <span class="goal-percentage">45%</span>
+                                    </div>
+                                    <div class="progress-bar progress-bar-large">
+                                        <div class="progress-fill progress-warning" style="width: 45%"></div>
+                                    </div>
+                                    <p class="goal-description">Estudar 10 horas por semana</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Financeira Tab -->
+                        <div class="tab-panel" data-panel="financeira">
+                            <h2 class="section-title">Visão Financeira</h2>
+                            <p class="section-subtitle">Acompanhe suas receitas, despesas e investimentos</p>
+                            <div class="finance-grid">
+                                <div class="finance-card finance-income">
+                                    <p class="finance-label">Receitas</p>
+                                    <p class="finance-value">R$ 4.200</p>
+                                </div>
+                                <div class="finance-card finance-expense">
+                                    <p class="finance-label">Despesas</p>
+                                    <p class="finance-value">R$ 1.360</p>
+                                </div>
+                                <div class="finance-card finance-balance">
+                                    <p class="finance-label">Saldo</p>
+                                    <p class="finance-value">R$ 2.840</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Tabs -->
-            <div class="tabs-section">
-                <div class="tabs-header">
-                    <button class="tab-btn" data-tab="tarefas">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="8" y1="6" x2="21" y2="6"></line>
-                            <line x1="8" y1="12" x2="21" y2="12"></line>
-                            <line x1="8" y1="18" x2="21" y2="18"></line>
-                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                        </svg>
-                        Tarefas Recentes
-                    </button>
-                    <button class="tab-btn active" data-tab="progresso">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                        </svg>
-                        Progresso de Metas
-                    </button>
-                    <button class="tab-btn" data-tab="financeira">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                            <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"></path>
-                        </svg>
-                        Visão Financeira
-                    </button>
+            <!-- Tarefas Section -->
+            <div class="page-section" data-section-content="tarefas">
+                <div class="section-header">
+                    <div class="section-header-actions">
+                        <button class="btn btn-primary" id="addTaskBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Nova Tarefa
+                        </button>
+                        <select class="filter-select" id="taskFilter">
+                            <option value="all">Todas</option>
+                            <option value="pending">Pendentes</option>
+                            <option value="completed">Concluídas</option>
+                        </select>
+                    </div>
                 </div>
 
-                <!-- Tab Content -->
-                <div class="tab-content">
-                    <!-- Tarefas Tab -->
-                    <div class="tab-panel" data-panel="tarefas">
-                        <h2 class="section-title">Tarefas Recentes</h2>
-                        <p class="section-subtitle">Visualize e gerencie suas tarefas pendentes e concluídas</p>
-                        <div class="tasks-list">
-                            <div class="task-item">
-                                <div class="task-info">
-                                    <div class="task-indicator"></div>
-                                    <span class="task-name">Reunião de planejamento</span>
-                                </div>
-                                <span class="task-badge badge-pending">Pendente</span>
+                <div class="tasks-container">
+                    <div class="tasks-list" id="fullTasksList">
+                        <!-- Tasks will be rendered here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metas Section -->
+            <div class="page-section" data-section-content="metas">
+                <div class="section-header">
+                    <div class="section-header-actions">
+                        <button class="btn btn-primary" id="addGoalBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Nova Meta
+                        </button>
+                    </div>
+                </div>
+
+                <div class="goals-container">
+                    <div class="goals-grid" id="fullGoalsList">
+                        <!-- Goals will be rendered here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Finanças Section -->
+            <div class="page-section" data-section-content="financas">
+                <div class="section-header">
+                    <div class="section-header-actions">
+                        <button class="btn btn-primary" id="addTransactionBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Nova Transação
+                        </button>
+                    </div>
+                </div>
+
+                <div class="finance-summary">
+                    <div class="finance-grid">
+                        <div class="finance-card finance-income">
+                            <p class="finance-label">Receitas</p>
+                            <p class="finance-value" id="totalIncome">R$ 4.200</p>
+                        </div>
+                        <div class="finance-card finance-expense">
+                            <p class="finance-label">Despesas</p>
+                            <p class="finance-value" id="totalExpenses">R$ 1.360</p>
+                        </div>
+                        <div class="finance-card finance-balance">
+                            <p class="finance-label">Saldo</p>
+                            <p class="finance-value" id="totalBalance">R$ 2.840</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="transactions-container">
+                    <h3 class="section-title">Transações Recentes</h3>
+                    <div class="transactions-list" id="transactionsList">
+                        <!-- Transactions will be rendered here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configurações Section -->
+            <div class="page-section" data-section-content="configuracoes">
+                <div class="settings-container">
+                    <div class="settings-card">
+                        <h3 class="settings-title">Aparência</h3>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <p class="settings-item-label">Tema Escuro</p>
+                                <p class="settings-item-description">Ativar modo escuro para melhor visualização</p>
                             </div>
-                            <div class="task-item">
-                                <div class="task-info">
-                                    <div class="task-indicator"></div>
-                                    <span class="task-name">Revisar documentação</span>
-                                </div>
-                                <span class="task-badge badge-pending">Pendente</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="darkModeToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3 class="settings-title">Notificações</h3>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <p class="settings-item-label">Notificações de Tarefas</p>
+                                <p class="settings-item-description">Receber lembretes sobre tarefas pendentes</p>
                             </div>
-                            <div class="task-item">
-                                <div class="task-info">
-                                    <div class="task-indicator task-indicator-success"></div>
-                                    <span class="task-name">Atualizar relatório</span>
-                                </div>
-                                <span class="task-badge badge-completed">Concluída</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="taskNotifications" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <p class="settings-item-label">Notificações de Metas</p>
+                                <p class="settings-item-description">Receber atualizações sobre progresso de metas</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="goalNotifications" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3 class="settings-title">Dados</h3>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <p class="settings-item-label">Limpar Dados</p>
+                                <p class="settings-item-description">Remover todos os dados salvos localmente</p>
+                            </div>
+                            <button class="btn btn-danger" id="clearDataBtn">Limpar</button>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <p class="settings-item-label">Exportar Dados</p>
+                                <p class="settings-item-description">Baixar seus dados em formato JSON</p>
+                            </div>
+                            <button class="btn btn-outline" id="exportDataBtn">Exportar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Perfil Section -->
+            <div class="page-section" data-section-content="perfil">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        <h2 class="profile-name">Usuário Ocean</h2>
+                        <p class="profile-email">usuario@ocean.com</p>
+                    </div>
+
+                    <div class="profile-stats">
+                        <div class="profile-stat-card">
+                            <p class="profile-stat-value">24</p>
+                            <p class="profile-stat-label">Tarefas Concluídas</p>
+                        </div>
+                        <div class="profile-stat-card">
+                            <p class="profile-stat-value">8</p>
+                            <p class="profile-stat-label">Metas Ativas</p>
+                        </div>
+                        <div class="profile-stat-card">
+                            <p class="profile-stat-value">15</p>
+                            <p class="profile-stat-label">Dias de Uso</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-form">
+                        <h3 class="section-title">Informações Pessoais</h3>
+                        <div class="form-group">
+                            <label class="form-label">Nome</label>
+                            <input type="text" class="form-input" value="Usuário Ocean" placeholder="Seu nome">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" value="usuario@ocean.com"
+                                placeholder="seu@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Bio</label>
+                            <textarea class="form-textarea" rows="4"
+                                placeholder="Conte um pouco sobre você..."></textarea>
+                        </div>
+                        <button class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ajuda Section -->
+            <div class="page-section" data-section-content="ajuda">
+                <div class="help-container">
+                    <div class="help-search">
+                        <input type="text" class="search-input" placeholder="Buscar ajuda...">
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </div>
+
+                    <div class="help-categories">
+                        <h3 class="section-title">Perguntas Frequentes</h3>
+
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Como adicionar uma nova tarefa?</span>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Para adicionar uma nova tarefa, clique no botão "Adicionar" no topo da página ou use
+                                    o atalho Ctrl+K. Você também pode ir até a seção de Tarefas e clicar em "Nova
+                                    Tarefa".</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Como acompanhar o progresso das minhas metas?</span>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Acesse a seção "Metas" no menu lateral. Lá você pode visualizar todas as suas metas,
+                                    atualizar o progresso clicando em "Atualizar Progresso" e acompanhar a porcentagem
+                                    de conclusão de cada uma.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Como gerenciar minhas finanças?</span>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Na seção "Finanças", você pode adicionar receitas e despesas, visualizar seu saldo
+                                    total e acompanhar transações recentes. Use o botão "Nova Transação" para registrar
+                                    movimentações financeiras.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Como exportar meus dados?</span>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Vá até "Configurações" e role até a seção "Dados". Clique em "Exportar Dados" para
+                                    baixar um arquivo JSON com todas as suas informações.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Meus dados estão seguros?</span>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Sim! Todos os seus dados são armazenados localmente no seu navegador usando
+                                    localStorage. Nenhuma informação é enviada para servidores externos.</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Progresso Tab -->
-                    <div class="tab-panel active" data-panel="progresso">
-                        <h2 class="section-title">Progresso de Metas</h2>
-                        <p class="section-subtitle">Acompanhe o desenvolvimento das suas metas ativas</p>
-                        <div class="goals-grid">
-                            <div class="goal-card">
-                                <div class="goal-header">
-                                    <h4 class="goal-title">Aumentar Produtividade</h4>
-                                    <span class="goal-percentage">75%</span>
-                                </div>
-                                <div class="progress-bar progress-bar-large">
-                                    <div class="progress-fill" style="width: 75%"></div>
-                                </div>
-                                <p class="goal-description">Completar 20 tarefas por semana</p>
-                            </div>
-                            <div class="goal-card">
-                                <div class="goal-header">
-                                    <h4 class="goal-title">Economia Mensal</h4>
-                                    <span class="goal-percentage">60%</span>
-                                </div>
-                                <div class="progress-bar progress-bar-large">
-                                    <div class="progress-fill progress-success" style="width: 60%"></div>
-                                </div>
-                                <p class="goal-description">Economizar R$ 1.000 este mês</p>
-                            </div>
-                            <div class="goal-card">
-                                <div class="goal-header">
-                                    <h4 class="goal-title">Aprendizado Contínuo</h4>
-                                    <span class="goal-percentage">45%</span>
-                                </div>
-                                <div class="progress-bar progress-bar-large">
-                                    <div class="progress-fill progress-warning" style="width: 45%"></div>
-                                </div>
-                                <p class="goal-description">Estudar 10 horas por semana</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Financeira Tab -->
-                    <div class="tab-panel" data-panel="financeira">
-                        <h2 class="section-title">Visão Financeira</h2>
-                        <p class="section-subtitle">Acompanhe suas receitas, despesas e investimentos</p>
-                        <div class="finance-grid">
-                            <div class="finance-card finance-income">
-                                <p class="finance-label">Receitas</p>
-                                <p class="finance-value">R$ 4.200</p>
-                            </div>
-                            <div class="finance-card finance-expense">
-                                <p class="finance-label">Despesas</p>
-                                <p class="finance-value">R$ 1.360</p>
-                            </div>
-                            <div class="finance-card finance-balance">
-                                <p class="finance-label">Saldo</p>
-                                <p class="finance-value">R$ 2.840</p>
-                            </div>
-                        </div>
+                    <div class="help-contact">
+                        <h3 class="section-title">Precisa de mais ajuda?</h3>
+                        <p class="help-contact-text">Entre em contato conosco através do email: suporte@ocean.com</p>
+                        <button class="btn btn-primary">Enviar Mensagem</button>
                     </div>
                 </div>
             </div>
@@ -325,4 +642,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
