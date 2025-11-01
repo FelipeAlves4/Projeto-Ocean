@@ -48,7 +48,7 @@ class OceanLogin {
         }
     }
 
-    
+
 
     async handleFormSubmit(e) {
         e.preventDefault();

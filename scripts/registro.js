@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const togglePasswordBtn = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
     if (togglePasswordBtn && passwordInput) {
-        togglePasswordBtn.addEventListener('click', function() {
+        togglePasswordBtn.addEventListener('click', function () {
             togglePasswordVisibility(passwordInput, togglePasswordBtn);
         });
     }
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             let result = {};
-            try { result = await response.json(); } catch (_) {}
+            try { result = await response.json(); } catch (_) { }
 
             if (!response.ok || !result.success) {
                 const message = result.message || (response.status === 409 ? 'Usuário já existe.' : 'Erro no cadastro.');

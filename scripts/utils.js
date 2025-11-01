@@ -30,17 +30,17 @@ export function togglePasswordVisibility(passwordInput, toggleBtn) {
     if (!eyeIcon) return;
 
     if (isPassword) {
-        // Switch to eye-off (with a slash)
+        // Switch to eye-off (with a slash) - password is now visible
         eyeIcon.innerHTML = `
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-            <circle cx="12" cy="12" r="3" />
-            <path d="M21 4L3 20" />
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none" />
+            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none" />
+            <path d="M21 4L3 20" stroke="currentColor" stroke-width="2" fill="none" />
         `;
     } else {
-        // Switch to eye (open)
+        // Switch to eye (open) - password is now hidden
         eyeIcon.innerHTML = `
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-            <circle cx="12" cy="12" r="3" />
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none" />
+            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none" />
         `;
     }
 }
