@@ -14,6 +14,37 @@ export function validateEmail(email) {
     return emailRegex.test(email);
 }
 
+// Toggle visibility of a password input and update the eye icon
+export function togglePasswordVisibility(passwordInput, toggleBtn) {
+    if (!passwordInput || !toggleBtn) return;
+    const isPassword = passwordInput.type === 'password';
+
+    // Toggle input type
+    passwordInput.type = isPassword ? 'text' : 'password';
+
+    // Toggle aria-pressed attribute for accessibility
+    toggleBtn.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
+
+    // Update the icon inside the button (expects an element with class .eye-icon)
+    const eyeIcon = toggleBtn.querySelector('.eye-icon');
+    if (!eyeIcon) return;
+
+    if (isPassword) {
+        // Switch to eye-off (with a slash)
+        eyeIcon.innerHTML = `
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+            <path d="M21 4L3 20" />
+        `;
+    } else {
+        // Switch to eye (open)
+        eyeIcon.innerHTML = `
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+        `;
+    }
+}
+
 // Injetar estilos base de toast e modais uma única vez
 function ensureBaseStyles() {
     if (document.getElementById('ocean-ui-styles')) return;

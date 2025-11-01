@@ -1,8 +1,17 @@
-import { showToast } from './utils.js';
+import { showToast, togglePasswordVisibility } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('registerForm');
     if (!form) return;
+
+    // Setup password toggle
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    if (togglePasswordBtn && passwordInput) {
+        togglePasswordBtn.addEventListener('click', function() {
+            togglePasswordVisibility(passwordInput, togglePasswordBtn);
+        });
+    }
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();

@@ -49,12 +49,16 @@ body {
     background: var(--gradient-ocean);
     color: var(--foreground);
     min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Login Container */
 .login-container {
     min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -295,15 +299,21 @@ input[type="password"]:focus {
 
 .password-toggle {
     position: absolute;
-    right: 0.75rem;
-    top: 0.75rem;
-    width: 1rem;
-    height: 1rem;
+    right: 0.5rem;
+    top: 0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
     background: none;
     border: none;
     color: var(--muted-foreground);
     cursor: pointer;
     transition: color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .password-toggle:hover {
@@ -313,6 +323,7 @@ input[type="password"]:focus {
 .eye-icon {
     width: 1rem;
     height: 1rem;
+    flex-shrink: 0;
 }
 
 /* Form Options */
@@ -326,6 +337,7 @@ input[type="password"]:focus {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 input[type="checkbox"] {
@@ -334,11 +346,26 @@ input[type="checkbox"] {
     border-radius: 0.25rem;
     border: 1px solid hsla(220, 20%, 20%, 0.5);
     background: var(--input);
+    cursor: pointer;
+    flex-shrink: 0;
 }
 
 .checkbox-container label {
     font-size: 0.875rem;
     color: var(--foreground);
+    cursor: pointer;
+    line-height: 1.4;
+}
+
+.checkbox-container label a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.checkbox-container label a:hover {
+    color: var(--primary-glow);
+    text-decoration: underline;
 }
 
 .forgot-password {
@@ -348,6 +375,8 @@ input[type="checkbox"] {
     border: none;
     cursor: pointer;
     transition: color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 .forgot-password:hover {
@@ -372,6 +401,8 @@ input[type="checkbox"] {
     transition: all 0.3s;
     box-shadow: var(--shadow-glow);
     position: relative;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 .submit-btn:hover {
@@ -422,6 +453,8 @@ input[type="checkbox"] {
     font-weight: 500;
     cursor: pointer;
     transition: color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 .create-account:hover {
@@ -625,32 +658,474 @@ button:focus {
 }
 
 /* Responsive Design */
+@media (max-width: 768px) {
+    .title {
+        font-size: 1.5rem;
+    }
+    
+    .card-title {
+        font-size: 1.25rem;
+    }
+    
+    .logo-container {
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+    
+    .logo-icon {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+    
+    .login-card {
+        padding: 1.75rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .blob-1 {
+        width: 16rem;
+        height: 16rem;
+    }
+    
+    .blob-2 {
+        width: 14rem;
+        height: 14rem;
+    }
+    
+    .blob-3 {
+        width: 12rem;
+        height: 12rem;
+    }
+}
+
 @media (max-width: 640px) {
     .login-container {
-        padding: 0.5rem;
+        padding: 0.75rem;
     }
     
     .login-card {
         padding: 1.5rem;
     }
     
+    .title {
+        font-size: 1.375rem;
+    }
+    
+    .subtitle {
+        font-size: 0.875rem;
+    }
+    
+    .card-title {
+        font-size: 1.125rem;
+    }
+    
+    .card-description {
+        font-size: 0.8125rem;
+    }
+    
     .blob-1, .blob-2, .blob-3 {
-        width: 12rem;
-        height: 12rem;
+        width: 10rem;
+        height: 10rem;
     }
     
     .liquid-1, .liquid-2, .liquid-3, .liquid-4 {
         width: 6rem;
         height: 6rem;
     }
+    
+    .ocean-wave {
+        height: 4rem;
+    }
+    
+    .wave-1 {
+        opacity: 0.15;
+    }
+    
+    .wave-2 {
+        opacity: 0.2;
+    }
 }
 
-/* Melhorias para dispositivos de baixa resolução */
-@media (max-width: 600px) {
+@media (max-width: 480px) {
     .login-container {
+        padding: 0.5rem;
+    }
+    
+    .login-card {
+        padding: 1.25rem;
+    }
+    
+    .header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .logo-container {
+        width: 3rem;
+        height: 3rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .logo-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+    
+    .title {
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .subtitle {
+        font-size: 0.8125rem;
+    }
+    
+    .card-title {
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .card-description {
+        font-size: 0.75rem;
+    }
+    
+    .login-form {
+        gap: 1.25rem;
+    }
+    
+    .form-group {
+        gap: 0.375rem;
+    }
+    
+    .form-label {
+        font-size: 0.8125rem;
+    }
+    
+    input[type="email"],
+    input[type="password"] {
+        padding: 0.625rem 0.625rem 0.625rem 2.25rem;
+        font-size: 0.875rem;
+    }
+    
+    .input-icon {
+        width: 1.125rem;
+        height: 1.125rem;
+        left: 0.625rem;
+        top: 0.625rem;
+    }
+    
+    .password-toggle {
+        width: 1.5rem;
+        height: 1.5rem;
+        right: 0.5rem;
+        top: 0.5rem;
+        padding: 0.25rem;
+    }
+    
+    .eye-icon {
+        width: 1rem;
+        height: 1rem;
+    }
+    
+    .form-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .checkbox-container label {
+        font-size: 0.8125rem;
+    }
+    
+    .forgot-password {
+        font-size: 0.8125rem;
+        width: 100%;
+        text-align: left;
+    }
+    
+    .submit-btn {
+        padding: 1.25rem;
+        font-size: 0.9375rem;
+    }
+    
+    .blob-1, .blob-2, .blob-3 {
+        width: 8rem;
+        height: 8rem;
+    }
+    
+    .liquid-1 {
+        width: 5rem;
+        height: 5rem;
+    }
+    
+    .liquid-2 {
+        width: 4rem;
+        height: 4rem;
+    }
+    
+    .liquid-3 {
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+    
+    .liquid-4 {
+        width: 4.5rem;
+        height: 4.5rem;
+    }
+    
+    .ocean-wave {
+        height: 3rem;
+    }
+    
+    .wave-1 {
+        opacity: 0.1;
+    }
+    
+    .wave-2 {
+        opacity: 0.15;
+    }
+    
+    .signup-link p {
+        font-size: 0.8125rem;
+    }
+    
+    .footer p {
+        font-size: 0.6875rem;
+    }
+    
+    .footer {
+        margin-top: 1.5rem;
+    }
+    
+    .login-content {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .login-container {
+        padding: 0.375rem;
+    }
+    
+    .login-card {
         padding: 1rem;
     }
-    .login-card {
-        width: 100%;
+    
+    .title {
+        font-size: 1.125rem;
     }
+    
+    .card-title {
+        font-size: 0.9375rem;
+    }
+    
+    .submit-btn {
+        padding: 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .login-form {
+        gap: 1rem;
+    }
+}
+
+/* Melhorias para orientação paisagem (landscape) em dispositivos móveis */
+@media (max-height: 600px) and (orientation: landscape) {
+    .login-container {
+        padding: 0.5rem;
+    }
+    
+    .header {
+        margin-bottom: 1rem;
+    }
+    
+    .logo-container {
+        width: 2.5rem;
+        height: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .logo-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+    
+    .title {
+        font-size: 1.125rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .subtitle {
+        font-size: 0.75rem;
+    }
+    
+    .login-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .card-title {
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .card-description {
+        font-size: 0.75rem;
+    }
+    
+    .login-form {
+        gap: 0.75rem;
+    }
+    
+    .form-group {
+        gap: 0.25rem;
+    }
+    
+    .form-label {
+        font-size: 0.75rem;
+    }
+    
+    input[type="email"],
+    input[type="password"] {
+        padding: 0.5rem 0.5rem 0.5rem 2rem;
+        font-size: 0.875rem;
+    }
+    
+    .input-icon {
+        width: 1rem;
+        height: 1rem;
+        left: 0.5rem;
+        top: 0.5rem;
+    }
+    
+    .password-toggle {
+        width: 1.5rem;
+        height: 1.5rem;
+        right: 0.5rem;
+        top: 0.5rem;
+        padding: 0.25rem;
+    }
+    
+    .eye-icon {
+        width: 1rem;
+        height: 1rem;
+    }
+    
+    .form-options {
+        margin: 0.5rem 0;
+    }
+    
+    .checkbox-container label {
+        font-size: 0.75rem;
+    }
+    
+    .forgot-password {
+        font-size: 0.75rem;
+    }
+    
+    .submit-btn {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .signup-link {
+        margin-top: 0.75rem;
+    }
+    
+    .signup-link p {
+        font-size: 0.75rem;
+    }
+    
+    .footer {
+        margin-top: 0.75rem;
+    }
+    
+    .footer p {
+        font-size: 0.625rem;
+    }
+    
+    .background-elements {
+        opacity: 0.05;
+    }
+    
+    .ocean-wave {
+        height: 2rem;
+    }
+    
+    .blob-1, .blob-2, .blob-3 {
+        width: 6rem;
+        height: 6rem;
+    }
+    
+    .liquid-1, .liquid-2, .liquid-3, .liquid-4 {
+        width: 3rem;
+        height: 3rem;
+    }
+}
+
+/* Ajustes para telas muito pequenas em altura */
+@media (max-height: 500px) {
+    .login-container {
+        align-items: flex-start;
+        padding: 0.5rem;
+        padding-top: 0.25rem;
+    }
+    
+    .header {
+        margin-bottom: 0.5rem;
+    }
+    
+    .title {
+        font-size: 1rem;
+    }
+    
+    .subtitle {
+        font-size: 0.6875rem;
+    }
+    
+    .login-card {
+        padding: 0.75rem;
+    }
+    
+    .card-title {
+        font-size: 0.875rem;
+    }
+    
+    .card-description {
+        font-size: 0.6875rem;
+    }
+    
+    .login-form {
+        gap: 0.5rem;
+    }
+    
+    .submit-btn {
+        padding: 0.5rem;
+        font-size: 0.8125rem;
+    }
+}
+
+/* Suporte para zoom e texto maior */
+@media (min-width: 320px) {
+    .login-content {
+        min-width: 280px;
+    }
+    
+    input[type="email"],
+    input[type="password"] {
+        min-height: 44px;
+    }
+    
+    .submit-btn {
+        min-height: 44px;
+    }
+    
+    .forgot-password,
+    .create-account {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Password toggle já tem tamanho adequado em todos os breakpoints */
 }

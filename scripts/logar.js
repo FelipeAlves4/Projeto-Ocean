@@ -1,6 +1,6 @@
 // Ocean Login - JavaScript Functions
 
-import { debounce, validateEmail } from './utils.js';
+import { debounce, validateEmail, togglePasswordVisibility } from './utils.js';
 
 class OceanLogin {
     constructor() {
@@ -19,7 +19,7 @@ class OceanLogin {
         const passwordInput = document.getElementById('password');
         if (togglePasswordBtn && passwordInput) {
             togglePasswordBtn.addEventListener('click', () => {
-                this.togglePasswordVisibility(passwordInput, togglePasswordBtn);
+                togglePasswordVisibility(passwordInput, togglePasswordBtn);
             });
         }
 
@@ -48,31 +48,7 @@ class OceanLogin {
         }
     }
 
-    togglePasswordVisibility(passwordInput, toggleBtn) {
-        const isPassword = passwordInput.type === 'password';
-
-        // Toggle input type
-        passwordInput.type = isPassword ? 'text' : 'password';
-
-        // Toggle icon
-        const eyeIcon = toggleBtn.querySelector('.eye-icon');
-        if (eyeIcon) {
-            if (isPassword) {
-                // Show eye-off icon
-                eyeIcon.innerHTML = `
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M21 4L3 20"/>
-                `;
-            } else {
-                // Show eye icon
-                eyeIcon.innerHTML = `
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                `;
-            }
-        }
-    }
+    
 
     async handleFormSubmit(e) {
         e.preventDefault();
