@@ -1,5 +1,20 @@
-Flask
-Flask-SQLAlchemy
-Flask-Cors
-PyJWT
-Werkzeug
+# Core Flask Framework
+Flask>=2.3.0,<3.0.0
+
+# Database ORM
+Flask-SQLAlchemy>=3.0.0,<4.0.0
+
+# CORS Support
+Flask-Cors>=4.0.0,<5.0.0
+
+# Security & Password Hashing
+Werkzeug>=2.3.0,<3.0.0
+
+# JWT Authentication (opcional, para uso futuro)
+PyJWT>=2.8.0,<3.0.0
+
+# Python Standard Library (não precisa instalar, apenas para referência):
+# - re (regex)
+# - logging
+# - os
+# - datetime
