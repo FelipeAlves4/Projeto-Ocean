@@ -73,6 +73,12 @@ const defaultData = {
         expenses: 1360,
         balance: 2840,
     },
+    transactions: [
+        { id: 1, type: 'income', description: 'Salário', amount: 4200, date: new Date().toISOString(), category: 'Trabalho' },
+        { id: 2, type: 'expense', description: 'Aluguel', amount: 800, date: new Date().toISOString(), category: 'Moradia' },
+        { id: 3, type: 'expense', description: 'Supermercado', amount: 350, date: new Date().toISOString(), category: 'Alimentação' },
+        { id: 4, type: 'expense', description: 'Transporte', amount: 210, date: new Date().toISOString(), category: 'Transporte' },
+    ],
     stats: {
         tasksCompleted: 12,
         tasksTotal: 20,
@@ -620,7 +626,57 @@ window.addEventListener("load", () => {
     const addTransactionBtn = document.getElementById("addTransactionBtn")
     if (addTransactionBtn) {
         addTransactionBtn.addEventListener("click", () => {
-            showToast('Em breve', 'Funcionalidade de adicionar transação em desenvolvimento.', 'info')
+            showAddTransactionModal()
+        })
+    }
+
+    // Transaction filter
+    const transactionFilter = document.getElementById("transactionFilter")
+    if (transactionFilter) {
+        transactionFilter.addEventListener("change", () => {
+            renderTransactions()
+        })
+    }
+
+    // Generate report button
+    const generateReportBtn = document.getElementById("generateReportBtn")
+    if (generateReportBtn) {
+        generateReportBtn.addEventListener("click", () => {
+            generateFinancialReport()
+        })
+    }
+
+    // Close report modal
+    const closeReportBtn = document.getElementById("closeReportBtn")
+    const reportModal = document.getElementById("reportModal")
+    if (closeReportBtn) {
+        closeReportBtn.addEventListener("click", () => {
+            closeReportModal()
+        })
+    }
+    
+    // Close modal when clicking outside
+    if (reportModal) {
+        reportModal.addEventListener("click", (e) => {
+            if (e.target === reportModal) {
+                closeReportModal()
+            }
+        })
+    }
+
+    // Export report button
+    const exportReportBtn = document.getElementById("exportReportBtn")
+    if (exportReportBtn) {
+        exportReportBtn.addEventListener("click", () => {
+            exportReportToPDF()
+        })
+    }
+
+    // Upgrade report button
+    const upgradeReportBtn = document.getElementById("upgradeReportBtn")
+    if (upgradeReportBtn) {
+        upgradeReportBtn.addEventListener("click", () => {
+            showUpgradeModal()
         })
     }
 
@@ -886,18 +942,366 @@ function renderFullGoalsList() {
 // ============================================
 
 function renderFinancesPage() {
+    // Recalculate finances from transactions
+    recalculateFinances()
     renderFinances()
+    renderTransactions()
+}
 
+// Recalculate finances from transactions
+function recalculateFinances() {
+    if (!appData.transactions || appData.transactions.length === 0) {
+        // Keep default values if no transactions
+        return
+    }
+    
+    let totalIncome = 0
+    let totalExpenses = 0
+    
+    appData.transactions.forEach(transaction => {
+        if (transaction.type === 'income') {
+            totalIncome += transaction.amount
+        } else if (transaction.type === 'expense') {
+            totalExpenses += transaction.amount
+        }
+    })
+    
+    appData.finances.income = totalIncome
+    appData.finances.expenses = totalExpenses
+    appData.finances.balance = totalIncome - totalExpenses
+    
+    saveData(appData)
+}
+
+// Render transactions list
+function renderTransactions() {
     const transactionsList = document.getElementById("transactionsList")
     if (!transactionsList) return
 
-    transactionsList.innerHTML = `
+    const filter = document.getElementById("transactionFilter")?.value || "all"
+    let transactions = appData.transactions || []
+    
+    // Filter transactions
+    if (filter !== "all") {
+        transactions = transactions.filter(t => t.type === filter)
+    }
+    
+    // Sort by date (newest first)
+    transactions = transactions.sort((a, b) => new Date(b.date) - new Date(a.date))
+
+    if (transactions.length === 0) {
+        transactionsList.innerHTML = `
           <div class="empty-state">
               <div class="empty-icon">💰</div>
               <h3>Nenhuma transação registrada</h3>
               <p>Adicione transações para acompanhar suas finanças</p>
           </div>
       `
+        return
+    }
+
+    transactionsList.innerHTML = ""
+    
+    transactions.forEach(transaction => {
+        const transactionItem = document.createElement("div")
+        transactionItem.className = "transaction-item"
+        transactionItem.style.cssText = `
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 0.75rem;
+            transition: var(--transition);
+        `
+        transactionItem.onmouseenter = function() {
+            this.style.background = "var(--bg-hover)"
+            this.style.transform = "translateX(4px)"
+        }
+        transactionItem.onmouseleave = function() {
+            this.style.background = "var(--bg-card)"
+            this.style.transform = "translateX(0)"
+        }
+
+        const isIncome = transaction.type === 'income'
+        const amountColor = isIncome ? 'var(--success)' : 'var(--danger)'
+        const amountPrefix = isIncome ? '+' : '-'
+        const date = new Date(transaction.date).toLocaleDateString('pt-BR')
+
+        transactionItem.innerHTML = `
+            <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
+                    <div style="
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 50%;
+                        background: ${amountColor};
+                    "></div>
+                    <strong style="color: var(--text-primary);">${transaction.description}</strong>
+                    ${transaction.category ? `<span style="
+                        background: var(--bg-secondary);
+                        color: var(--text-secondary);
+                        padding: 0.25rem 0.5rem;
+                        border-radius: 12px;
+                        font-size: 0.75rem;
+                    ">${transaction.category}</span>` : ''}
+                </div>
+                <div style="color: var(--text-secondary); font-size: 0.875rem; margin-left: 1.5rem;">
+                    ${date}
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span style="
+                    color: ${amountColor};
+                    font-weight: 700;
+                    font-size: 1.125rem;
+                ">${amountPrefix} R$ ${transaction.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                <button class="transaction-delete-btn" data-transaction-id="${transaction.id}"
+                    style="
+                        background: none;
+                        border: none;
+                        cursor: pointer;
+                        padding: 0.5rem;
+                        color: var(--text-secondary);
+                        transition: var(--transition);
+                        border-radius: var(--radius-sm);
+                    "
+                    onmouseover="this.style.color='var(--danger)'; this.style.background='var(--danger-light)'"
+                    onmouseout="this.style.color='var(--text-secondary)'; this.style.background='transparent'"
+                    title="Excluir transação">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </div>
+        `
+        transactionsList.appendChild(transactionItem)
+    })
+
+    // Add delete event listeners
+    document.querySelectorAll(".transaction-delete-btn").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+            e.stopPropagation()
+            const transactionId = Number.parseInt(btn.dataset.transactionId)
+            const confirmed = await showConfirm({
+                title: 'Excluir transação',
+                message: 'Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.',
+                confirmText: 'Excluir',
+                danger: true
+            })
+            if (confirmed) {
+                deleteTransaction(transactionId)
+                showToast('Transação excluída', 'A transação foi removida com sucesso.', 'success')
+            }
+        })
+    })
+}
+
+// Show add transaction modal
+function showAddTransactionModal() {
+    // Create custom modal for transaction form
+    const overlay = document.createElement('div')
+    overlay.className = 'modal-overlay'
+    
+    const modal = document.createElement('div')
+    modal.className = 'modal'
+    
+    modal.innerHTML = `
+        <div class="modal-header">
+            Nova Transação
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Tipo *</label>
+                <select id="transactionType" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                ">
+                    <option value="income">Receita</option>
+                    <option value="expense">Despesa</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Descrição *</label>
+                <input type="text" id="transactionDescription" placeholder="Ex: Salário, Aluguel, Supermercado..." style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                ">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Valor (R$) *</label>
+                <input type="number" id="transactionAmount" placeholder="0.00" step="0.01" min="0" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                ">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Categoria</label>
+                <input type="text" id="transactionCategory" placeholder="Ex: Trabalho, Moradia, Alimentação..." style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                ">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Data</label>
+                <input type="date" id="transactionDate" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                ">
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" id="cancelTransactionBtn">Cancelar</button>
+            <button class="btn btn-primary" id="saveTransactionBtn">Salvar</button>
+        </div>
+    `
+    
+    overlay.appendChild(modal)
+    document.body.appendChild(overlay)
+    
+    // Set default date to today
+    const dateInput = document.getElementById('transactionDate')
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0]
+        dateInput.value = today
+    }
+    
+    // Focus on description input
+    setTimeout(() => {
+        document.getElementById('transactionDescription')?.focus()
+    }, 100)
+    
+    // Event listeners
+    document.getElementById('cancelTransactionBtn').addEventListener('click', () => {
+        document.body.removeChild(overlay)
+    })
+    
+    const saveBtn = document.getElementById('saveTransactionBtn')
+    saveBtn.addEventListener('click', () => {
+        const type = document.getElementById('transactionType').value
+        const description = document.getElementById('transactionDescription').value.trim()
+        const amountInput = document.getElementById('transactionAmount').value
+        const amount = parseFloat(amountInput)
+        const category = document.getElementById('transactionCategory').value.trim()
+        const date = document.getElementById('transactionDate').value || new Date().toISOString().split('T')[0]
+        
+        // Validation
+        if (!description) {
+            showToast('Campo obrigatório', 'A descrição é obrigatória.', 'error')
+            document.getElementById('transactionDescription').focus()
+            return
+        }
+        
+        if (!amountInput || isNaN(amount) || amount <= 0) {
+            showToast('Valor inválido', 'O valor deve ser maior que zero.', 'error')
+            document.getElementById('transactionAmount').focus()
+            return
+        }
+        
+        // Add transaction
+        addTransaction({
+            type,
+            description,
+            amount,
+            category: category || null,
+            date: new Date(date).toISOString()
+        })
+        
+        // Close modal
+        document.body.removeChild(overlay)
+        showToast('Transação adicionada', 'A transação foi registrada com sucesso.', 'success')
+    })
+    
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            document.body.removeChild(overlay)
+        }
+    })
+    
+    // Enter key to save (only when in input fields)
+    const handleKeyDown = function(e) {
+        if (e.key === 'Escape') {
+            if (document.body.contains(overlay)) {
+                document.body.removeChild(overlay)
+            }
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    
+    // Prevent form submission on Enter in inputs
+    modal.querySelectorAll('input, select').forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') {
+                e.preventDefault()
+                saveBtn.click()
+            }
+        })
+    })
+}
+
+// Add transaction
+function addTransaction(transaction) {
+    if (!appData.transactions) {
+        appData.transactions = []
+    }
+    
+    const newId = appData.transactions.length > 0 
+        ? Math.max(...appData.transactions.map(t => t.id)) + 1 
+        : 1
+    
+    const newTransaction = {
+        id: newId,
+        ...transaction
+    }
+    
+    appData.transactions.push(newTransaction)
+    
+    saveData(appData)
+    recalculateFinances()
+    renderFinances()
+    renderTransactions()
+}
+
+// Delete transaction
+function deleteTransaction(transactionId) {
+    const transaction = appData.transactions.find(t => t.id === transactionId)
+    if (!transaction) return
+    
+    // Remove transaction
+    appData.transactions = appData.transactions.filter(t => t.id !== transactionId)
+    
+    saveData(appData)
+    recalculateFinances()
+    renderFinances()
+    renderTransactions()
 }
 
 // Smooth scroll
@@ -915,6 +1319,377 @@ document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && sidebar.classList.contains("active")) {
         toggleMobileMenu()
     }
+    
+    // Escape to close report modal
+    if (e.key === "Escape") {
+        const reportModal = document.getElementById("reportModal")
+        if (reportModal && reportModal.style.display === "flex") {
+            closeReportModal()
+        }
+    }
 })
+
+// ============================================
+// FINANCIAL REPORT GENERATION
+// ============================================
+
+// Check if user has premium plan
+function isPremiumUser() {
+    return localStorage.getItem('isPremium') === 'true'
+}
+
+// Generate financial report
+function generateFinancialReport() {
+    const reportModal = document.getElementById('reportModal')
+    const reportBody = document.getElementById('reportBody')
+    const reportTitle = document.getElementById('reportTitle')
+    const upgradeBtn = document.getElementById('upgradeReportBtn')
+    
+    if (!reportModal || !reportBody) return
+    
+    const isPremium = isPremiumUser()
+    const finances = appData.finances
+    
+    // Calculate additional metrics
+    const savingsRate = finances.income > 0 ? ((finances.balance / finances.income) * 100).toFixed(1) : 0
+    const expenseRate = finances.income > 0 ? ((finances.expenses / finances.income) * 100).toFixed(1) : 0
+    
+    // Build report HTML
+    let reportHTML = `
+        <div class="report-section">
+            <div class="report-summary">
+                <div class="report-summary-card">
+                    <div class="label">Receitas Totais</div>
+                    <div class="value" style="color: var(--success);">R$ ${finances.income.toLocaleString('pt-BR')}</div>
+                </div>
+                <div class="report-summary-card">
+                    <div class="label">Despesas Totais</div>
+                    <div class="value" style="color: var(--danger);">R$ ${finances.expenses.toLocaleString('pt-BR')}</div>
+                </div>
+                <div class="report-summary-card">
+                    <div class="label">Saldo</div>
+                    <div class="value" style="color: var(--accent-primary);">R$ ${finances.balance.toLocaleString('pt-BR')}</div>
+                </div>
+                <div class="report-summary-card">
+                    <div class="label">Taxa de Poupança</div>
+                    <div class="value">${savingsRate}%</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="report-section">
+            <h3>Gráfico de Receitas vs Despesas</h3>
+            <div class="report-chart-container">
+                <canvas id="incomeExpenseChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="report-section">
+            <h3>Distribuição Financeira</h3>
+            <div class="report-chart-container">
+                <canvas id="distributionChart"></canvas>
+            </div>
+        </div>
+    `
+    
+    // Add premium features if user is premium
+    if (isPremium) {
+        reportHTML += `
+            <div class="report-section">
+                <h3>Análise de Tendências <span class="report-premium-badge">PREMIUM</span></h3>
+                <div class="report-chart-container">
+                    <canvas id="trendsChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="report-section">
+                <h3>Projeções Futuras <span class="report-premium-badge">PREMIUM</span></h3>
+                <div class="report-chart-container">
+                    <canvas id="projectionsChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="report-section">
+                <h3>Recomendações Personalizadas <span class="report-premium-badge">PREMIUM</span></h3>
+                <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: var(--radius-md);">
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">
+                            <strong>💡 Economia:</strong> Com base nos seus dados, você pode economizar até R$ ${(finances.expenses * 0.15).toFixed(2)} reduzindo despesas em 15%.
+                        </li>
+                        <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">
+                            <strong>📈 Investimento:</strong> Considere investir 20% do seu saldo (R$ ${(finances.balance * 0.2).toFixed(2)}) para crescimento a longo prazo.
+                        </li>
+                        <li style="padding: 0.75rem 0;">
+                            <strong>🎯 Meta:</strong> Mantenha uma taxa de poupança acima de 30% para alcançar suas metas financeiras.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        `
+        upgradeBtn.style.display = 'none'
+    } else {
+        reportHTML += `
+            <div class="report-upgrade-banner">
+                <h4>🚀 Desbloqueie Relatórios Premium!</h4>
+                <p>Obtenha análises avançadas, projeções futuras e recomendações personalizadas</p>
+                <button class="btn" style="background: white; color: var(--accent-primary); border: none;" onclick="showUpgradeModal()">
+                    Fazer Upgrade Agora
+                </button>
+            </div>
+        `
+        upgradeBtn.style.display = 'block'
+    }
+    
+    reportBody.innerHTML = reportHTML
+    reportTitle.textContent = `Relatório Financeiro - ${new Date().toLocaleDateString('pt-BR')}`
+    reportModal.style.display = 'flex'
+    
+    // Initialize charts
+    setTimeout(() => {
+        initializeReportCharts(isPremium)
+    }, 100)
+}
+
+// Initialize report charts
+function initializeReportCharts(isPremium) {
+    const finances = appData.finances
+    
+    // Income vs Expense Chart
+    const incomeExpenseCtx = document.getElementById('incomeExpenseChart')
+    if (incomeExpenseCtx && typeof Chart !== 'undefined') {
+        new Chart(incomeExpenseCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Receitas', 'Despesas'],
+                datasets: [{
+                    label: 'Valores (R$)',
+                    data: [finances.income, finances.expenses],
+                    backgroundColor: [
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(239, 68, 68, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(239, 68, 68, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'R$ ' + value.toLocaleString('pt-BR')
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+    
+    // Distribution Chart (Pie)
+    const distributionCtx = document.getElementById('distributionChart')
+    if (distributionCtx && typeof Chart !== 'undefined') {
+        new Chart(distributionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Receitas', 'Despesas', 'Saldo'],
+                datasets: [{
+                    data: [finances.income, finances.expenses, finances.balance],
+                    backgroundColor: [
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(239, 68, 68, 0.8)',
+                        'rgba(74, 144, 226, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(239, 68, 68, 1)',
+                        'rgba(74, 144, 226, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': R$ ' + context.parsed.toLocaleString('pt-BR')
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+    
+    // Premium charts
+    if (isPremium) {
+        // Trends Chart (Line)
+        const trendsCtx = document.getElementById('trendsChart')
+        if (trendsCtx && typeof Chart !== 'undefined') {
+            // Simulated monthly data
+            const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun']
+            const incomeData = months.map(() => finances.income + (Math.random() * 500 - 250))
+            const expenseData = months.map(() => finances.expenses + (Math.random() * 300 - 150))
+            
+            new Chart(trendsCtx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Receitas',
+                        data: incomeData,
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Despesas',
+                        data: expenseData,
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + value.toLocaleString('pt-BR')
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+        }
+        
+        // Projections Chart
+        const projectionsCtx = document.getElementById('projectionsChart')
+        if (projectionsCtx && typeof Chart !== 'undefined') {
+            const futureMonths = ['Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+            const projectedIncome = futureMonths.map(() => finances.income * 1.05)
+            const projectedExpenses = futureMonths.map(() => finances.expenses * 0.95)
+            
+            new Chart(projectionsCtx, {
+                type: 'bar',
+                data: {
+                    labels: futureMonths,
+                    datasets: [{
+                        label: 'Receitas Projetadas',
+                        data: projectedIncome,
+                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 2
+                    }, {
+                        label: 'Despesas Projetadas',
+                        data: projectedExpenses,
+                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + value.toLocaleString('pt-BR')
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+        }
+    }
+}
+
+// Close report modal
+function closeReportModal() {
+    const reportModal = document.getElementById('reportModal')
+    if (reportModal) {
+        reportModal.style.display = 'none'
+        // Destroy charts to free memory
+        Chart.getChart('incomeExpenseChart')?.destroy()
+        Chart.getChart('distributionChart')?.destroy()
+        Chart.getChart('trendsChart')?.destroy()
+        Chart.getChart('projectionsChart')?.destroy()
+    }
+}
+
+// Export report to PDF
+function exportReportToPDF() {
+    showToast('Exportando...', 'A funcionalidade de exportação PDF será implementada em breve.', 'info')
+    // TODO: Implement PDF export using jsPDF or similar library
+}
+
+// Show upgrade modal
+function showUpgradeModal() {
+    showConfirm({
+        title: '🚀 Upgrade para Premium',
+        message: `
+            <div style="text-align: left; padding: 1rem 0;">
+                <p><strong>Benefícios do Premium:</strong></p>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 0.5rem 0;">✅ Relatórios avançados com análises detalhadas</li>
+                    <li style="padding: 0.5rem 0;">✅ Projeções futuras e tendências</li>
+                    <li style="padding: 0.5rem 0;">✅ Recomendações personalizadas de investimento</li>
+                    <li style="padding: 0.5rem 0;">✅ Exportação em múltiplos formatos</li>
+                    <li style="padding: 0.5rem 0;">✅ Suporte prioritário</li>
+                </ul>
+                <p style="margin-top: 1rem;"><strong>Preço: R$ 29,90/mês</strong></p>
+            </div>
+        `,
+        confirmText: 'Fazer Upgrade',
+        cancelText: 'Agora Não'
+    }).then(confirmed => {
+        if (confirmed) {
+            // Simulate premium upgrade
+            localStorage.setItem('isPremium', 'true')
+            showToast('Upgrade realizado!', 'Agora você tem acesso a todos os recursos Premium.', 'success')
+            setTimeout(() => {
+                generateFinancialReport()
+            }, 1000)
+        }
+    })
+}
+
+// Make functions globally available
+window.showUpgradeModal = showUpgradeModal
 
 console.log("[v0] All functions are now fully operational")
