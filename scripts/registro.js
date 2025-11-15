@@ -74,6 +74,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Sucesso! Preencher email para tela de login
             localStorage.setItem('justRegisteredEmail', usuario);
+            
+            // Also save to localStorage for fallback login
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+            registeredUsers[usuario] = senha;
+            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
 
             showToast('Cadastro realizado', 'Usuário registrado com sucesso! Redirecionando...', 'success');
             // Mantém o botão desabilitado até o redirecionamento para evitar duplo envio

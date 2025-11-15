@@ -1,8 +1,37 @@
 import { showToast, showConfirm, showPrompt } from '../scripts/utils.js'
 
 // ============================================
-// DATA MANAGEMENT
+// AUTHENTICATION CHECK
 // ============================================
+
+function checkAuthentication() {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const usuario = localStorage.getItem('usuario');
+    
+    if (!isLoggedIn || !usuario) {
+        // Redirect to login if not authenticated
+        showToast('Acesso Negado', 'Você precisa fazer login para acessar o dashboard.', 'error');
+        setTimeout(() => {
+            window.location.href = '../paginas/login.html';
+        }, 1500);
+        return false;
+    }
+    
+    return true;
+}
+
+// Check authentication on page load
+if (!checkAuthentication()) {
+    // Stop execution if not authenticated
+    throw new Error('User not authenticated');
+}
+
+// ============================================
+// DATA MANAGEMENT (User-specific)
+// ============================================
+
+// Get current user email
+const currentUser = localStorage.getItem('usuario') || 'guest';
 
 // Default data structure
 const defaultData = {
@@ -52,19 +81,47 @@ const defaultData = {
     },
 }
 
-// Load data from localStorage or use default
+// Load data from localStorage or use default (user-specific)
 function loadData() {
-    const savedData = localStorage.getItem("oceanDashboardData")
-    return savedData ? JSON.parse(savedData) : defaultData
+    const userDataKey = `oceanDashboardData_${currentUser}`;
+    const savedData = localStorage.getItem(userDataKey);
+    return savedData ? JSON.parse(savedData) : defaultData;
 }
 
-// Save data to localStorage
+// Save data to localStorage (user-specific)
 function saveData(data) {
-    localStorage.setItem("oceanDashboardData", JSON.stringify(data))
+    const userDataKey = `oceanDashboardData_${currentUser}`;
+    localStorage.setItem(userDataKey, JSON.stringify(data));
 }
 
 // Initialize data
 const appData = loadData()
+
+// ============================================
+// UPDATE USER PROFILE INFO
+// ============================================
+
+function updateUserProfile() {
+    const userEmail = localStorage.getItem('usuario') || 'usuario@ocean.com';
+    const profileEmail = document.getElementById('profileEmail');
+    const profileEmailInput = document.getElementById('profileEmailInput');
+    const profileName = document.getElementById('profileName');
+    
+    if (profileEmail) {
+        profileEmail.textContent = userEmail;
+    }
+    if (profileEmailInput) {
+        profileEmailInput.value = userEmail;
+    }
+    if (profileName) {
+        // Extract name from email (before @) or use default
+        const emailName = userEmail.split('@')[0];
+        profileName.textContent = emailName.charAt(0).toUpperCase() + emailName.slice(1);
+    }
+}
+
+// Update profile on page load
+updateUserProfile();
 
 // ============================================
 // DOM ELEMENTS
@@ -567,6 +624,30 @@ window.addEventListener("load", () => {
         })
     }
 
+    // Logout button
+    const logoutBtn = document.getElementById("logoutBtn")
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", async () => {
+            const confirmed = await showConfirm({
+                title: 'Fazer Logout',
+                message: 'Tem certeza que deseja sair? Você precisará fazer login novamente.',
+                confirmText: 'Sair',
+                cancelText: 'Cancelar',
+                danger: false
+            })
+            if (confirmed) {
+                // Clear authentication data
+                localStorage.removeItem('isLoggedIn')
+                localStorage.removeItem('usuario')
+                localStorage.removeItem('loginTime')
+                showToast('Logout realizado', 'Você foi desconectado com sucesso.', 'success')
+                setTimeout(() => {
+                    window.location.href = '../paginas/login.html'
+                }, 1000)
+            }
+        })
+    }
+
     // Clear data button
     const clearDataBtn = document.getElementById("clearDataBtn")
     if (clearDataBtn) {
@@ -578,7 +659,8 @@ window.addEventListener("load", () => {
                 danger: true
             })
             if (confirmed) {
-                localStorage.removeItem("oceanDashboardData")
+                const userDataKey = `oceanDashboardData_${currentUser}`;
+                localStorage.removeItem(userDataKey)
                 showToast('Dados limpos', 'Seus dados locais foram removidos.', 'success')
                 setTimeout(() => location.reload(), 600)
             }

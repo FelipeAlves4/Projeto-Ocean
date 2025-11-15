@@ -462,6 +462,17 @@
                     </div>
 
                     <div class="settings-card">
+                        <h3 class="settings-title">Conta</h3>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <p class="settings-item-label">Fazer Logout</p>
+                                <p class="settings-item-description">Sair da sua conta e retornar à página de login</p>
+                            </div>
+                            <button class="btn btn-danger" id="logoutBtn">Sair</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
                         <h3 class="settings-title">Dados</h3>
                         <div class="settings-item">
                             <div class="settings-item-info">
@@ -492,8 +503,8 @@
                                 <circle cx="12" cy="7" r="4"></circle>
                             </svg>
                         </div>
-                        <h2 class="profile-name">Usuário Ocean</h2>
-                        <p class="profile-email">usuario@ocean.com</p>
+                        <h2 class="profile-name" id="profileName">Usuário Ocean</h2>
+                        <p class="profile-email" id="profileEmail">usuario@ocean.com</p>
                     </div>
 
                     <div class="profile-stats">
@@ -519,8 +530,8 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-input" value="usuario@ocean.com"
-                                placeholder="seu@email.com">
+                            <input type="email" class="form-input" id="profileEmailInput" value="usuario@ocean.com"
+                                placeholder="seu@email.com" readonly>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Bio</label>

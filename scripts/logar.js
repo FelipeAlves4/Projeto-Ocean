@@ -35,7 +35,7 @@ class OceanLogin {
         const createAccountBtn = document.querySelector('.create-account');
         if (createAccountBtn) {
             createAccountBtn.addEventListener('click', () => {
-                window.location.href = '/paginas/registro.html';
+                window.location.href = './registro.html';
             });
         }
 
@@ -75,32 +75,50 @@ class OceanLogin {
         this.setLoadingState(submitBtn, btnText, btnArrow, loadingSpinner, true);
 
         try {
-            // Backend login request
-            const response = await fetch('http://localhost:5000/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: email,
-                    password: password
-                }),
-            });
+            // Try backend login first
+            let loginSuccess = false;
+            try {
+                const response = await fetch('http://localhost:5000/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: email,
+                        password: password
+                    }),
+                });
 
-            const result = await response.json();
+                const result = await response.json();
 
-            if (!response.ok || !result.success) {
-                throw new Error(result.message || 'Falha no login.');
+                if (response.ok && result.success) {
+                    loginSuccess = true;
+                } else {
+                    throw new Error(result.message || 'Falha no login.');
+                }
+            } catch (backendError) {
+                // If backend is not available, check localStorage for registered users
+                const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+                if (registeredUsers[email] && registeredUsers[email] === password) {
+                    loginSuccess = true;
+                } else {
+                    throw new Error('Usuário ou senha incorretos. Verifique se o backend está rodando ou se você está registrado.');
+                }
             }
 
-            // Save user data to localStorage (token fictício para fins locais)
+            if (!loginSuccess) {
+                throw new Error('Falha na autenticação.');
+            }
+
+            // Save user data to localStorage
             localStorage.setItem('usuario', email);
             localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('loginTime', new Date().toISOString());
 
             // Redirect to dashboard
             this.showToast('Login Realizado!', 'Bem-vindo ao Ocean Dashboard.', 'success');
             setTimeout(() => {
-                window.location.href = '/dashboard/index.html';
+                window.location.href = '../dashboard/index.html';
             }, 1200);
         } catch (error) {
             this.showToast('Erro no Login', error.message, 'error');
