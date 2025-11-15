@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página Não Encontrada | Ocean</title>
+    <meta name="description" content="A página que você está procurando não foi encontrada. Retorne à página inicial do Ocean." />
+    
+    <link rel="stylesheet" href="./css/inicio.css">
+    <link rel="stylesheet" href="./css/404.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Background Ocean Elements -->
+    <div class="hero-background" style="opacity: 0.05;"></div>
+    
+    <div class="not-found-container">
+        <div class="not-found-content">
+            <!-- Logo -->
+            <div class="brand-container" style="margin-bottom: 2rem;">
+                <img src="./img/Ocean_logo_n1.png" alt="Ocean Logo" class="logo" style="max-width: 150px;">
+            </div>
+
+            <!-- 404 Number with Ocean Animation -->
+            <div class="not-found-title ocean-animate-float" style="font-size: 8rem; margin-bottom: 1.5rem;">
+                404
+            </div>
+
+            <!-- Subtitle -->
+            <h2 class="not-found-subtitle">Ondas Perdidas</h2>
+            
+            <!-- Description -->
+            <p class="not-found-description">
+                A página que você está procurando foi levada pelas correntes oceânicas. 
+                Ela pode ter mudado de lugar ou não existir mais.
+            </p>
+
+            <!-- Animated Wave Icon -->
+            <div class="ocean-animate-wave" style="margin: 2rem 0; color: var(--primary);">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
+                    <path d="m10 15-3-3 3-3" />
+                    <path d="m14 9 3 3-3 3" />
+                </svg>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="not-found-actions">
+                <a href="./index.html">
+                    <button class="btn btn-primary">
+                        Voltar ao Início
+                        <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14m-7-7 7 7-7 7" />
+                        </svg>
+                    </button>
+                </a>
+                <a href="./dashboard/index.html">
+                    <button class="btn btn-outline">
+                        Ir ao Dashboard
+                    </button>
+                </a>
+            </div>
+
+            <!-- Helpful Links -->
+            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                <p style="color: var(--muted-foreground); margin-bottom: 1rem; font-size: 0.875rem;">
+                    Ou tente uma dessas páginas:
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+                    <a href="./paginas/login.html" style="color: var(--primary); text-decoration: none; font-size: 0.875rem;">
+                        Login
+                    </a>
+                    <a href="./paginas/registro.html" style="color: var(--primary); text-decoration: none; font-size: 0.875rem;">
+                        Registro
+                    </a>
+                    <a href="./dashboard/index.html" style="color: var(--primary); text-decoration: none; font-size: 0.875rem;">
+                        Dashboard
+                    </a>
+                    <a href="./manual-usuario-ocean.pdf" target="_blank" style="color: var(--primary); text-decoration: none; font-size: 0.875rem;">
+                        Manual do Usuário
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Ocean Elements (Decorative) -->
+    <div style="position: fixed; bottom: 0; left: 0; right: 0; height: 200px; overflow: hidden; pointer-events: none; z-index: -1;">
+        <div class="ocean-animate-float" style="position: absolute; bottom: 0; left: 10%; width: 100px; height: 100px; background: var(--primary); opacity: 0.1; border-radius: 50%; animation-delay: 0s;"></div>
+        <div class="ocean-animate-float" style="position: absolute; bottom: 0; right: 15%; width: 150px; height: 150px; background: var(--accent); opacity: 0.1; border-radius: 50%; animation-delay: 2s;"></div>
+        <div class="ocean-animate-float" style="position: absolute; bottom: 0; left: 50%; width: 80px; height: 80px; background: var(--primary-glow); opacity: 0.1; border-radius: 50%; animation-delay: 4s;"></div>
+    </div>
+
+    <script src="./scripts/inicio.js"></script>
+</body>
+
+</html>
+

@@ -1,4 +1,4 @@
-/* Estilos específicos para a página 404 */
+/* Estilos específicos para a página 404 - Ocean Theme */
 
 .not-found-container {
     min-height: 100vh;
@@ -6,29 +6,41 @@
     align-items: center;
     justify-content: center;
     padding: 2rem;
+    position: relative;
+    background: var(--gradient-wave);
 }
 
 .not-found-content {
     text-align: center;
-    max-width: 28rem;
+    max-width: 32rem;
+    position: relative;
+    z-index: 10;
 }
 
 .not-found-title {
-    font-size: 6rem;
+    font-size: 8rem;
     font-weight: 700;
     line-height: 1;
-    color: var(--primary);
+    background: var(--gradient-ocean);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     margin-bottom: 1rem;
+    text-shadow: 0 0 40px rgba(74, 144, 226, 0.3);
 }
 
 .not-found-subtitle {
-    font-size: 1.5rem;
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: var(--foreground);
     margin-bottom: 1rem;
 }
 
 .not-found-description {
     color: var(--muted-foreground);
     margin-bottom: 2rem;
+    font-size: 1.125rem;
+    line-height: 1.6;
 }
 
 .not-found-actions {
@@ -36,7 +48,7 @@
     flex-direction: column;
     gap: 1rem;
     margin: 0 auto;
-    max-width: 16rem;
+    max-width: 20rem;
 }
 
 @media (min-width: 480px) {
@@ -44,5 +56,23 @@
         flex-direction: row;
         justify-content: center;
         max-width: none;
+    }
+    
+    .not-found-title {
+        font-size: 10rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .not-found-title {
+        font-size: 6rem;
+    }
+    
+    .not-found-subtitle {
+        font-size: 1.5rem;
+    }
+    
+    .not-found-description {
+        font-size: 1rem;
     }
 } 
