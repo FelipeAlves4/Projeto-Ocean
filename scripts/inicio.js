@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize interactive elements
     initializeInteractiveElements();
+    
+    // Add loading states (only for buttons without links)
+    addLoadingStates();
 });
 
 // Features data
@@ -261,12 +264,14 @@ function initializeParallax() {
 // Initialize parallax after page load
 window.addEventListener('load', initializeParallax);
 
-// Add dynamic loading states
+// Add dynamic loading states (only for buttons without links)
 function addLoadingStates() {
     const buttons = document.querySelectorAll('.btn');
 
     buttons.forEach(button => {
-        if (button.textContent.includes('Começar')) {
+        // Only add loading state to buttons that are not inside an <a> tag
+        const parentLink = button.closest('a');
+        if (!parentLink && button.textContent.includes('Começar')) {
             button.addEventListener('click', function (e) {
                 e.preventDefault();
 

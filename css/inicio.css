@@ -160,6 +160,17 @@ body {
     margin-bottom: 1.5rem;
 }
 
+.logo {
+    max-width: 200px;
+    height: auto;
+    object-fit: contain;
+    transition: var(--transition-ocean);
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
 .wave-icon {
     height: 3rem;
     width: 3rem;
