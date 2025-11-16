@@ -89,6 +89,13 @@
                     </svg>
                     <span>Finanças</span>
                 </button>
+                <button class="nav-item" data-section="produtos">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="6" y="2" width="12" height="20" rx="2" ry="2"></rect>
+                        <path d="M10 6h4M10 10h4M10 14h4"></path>
+                    </svg>
+                    <span>Produtos</span>
+                </button>
                 <button class="nav-item" data-section="configuracoes">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="3"></circle>
@@ -237,6 +244,14 @@
                             </svg>
                             Visão Financeira
                         </button>
+                        <button class="tab-btn" data-tab="produtos">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="6" y="2" width="12" height="20" rx="2" ry="2"></rect>
+                                <path d="M10 6h4M10 10h4M10 14h4"></path>
+                            </svg>
+                            Produtos
+                        </button>
                     </div>
 
                     <!-- Tab Content -->
@@ -325,6 +340,15 @@
                                     <p class="finance-label">Saldo</p>
                                     <p class="finance-value">R$ 2.840</p>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Produtos Tab -->
+                        <div class="tab-panel" data-panel="produtos">
+                            <h2 class="section-title">Produtos</h2>
+                            <p class="section-subtitle">Visualize seus produtos mais recentes</p>
+                            <div class="products-grid-dashboard" id="dashboardProductsGrid">
+                                <!-- Products will be rendered here -->
                             </div>
                         </div>
                     </div>
@@ -438,6 +462,49 @@
                 </div>
             </div>
 
+            <!-- Produtos Section -->
+            <div class="page-section" data-section-content="produtos">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Gerencie seu catálogo de produtos</h2>
+                    </div>
+                    <div class="section-header-actions">
+                        <button class="btn btn-primary" id="addProductBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            <span>Novo Produto</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="products-container">
+                    <div class="products-filters">
+                        <select class="filter-select" id="productCategoryFilter">
+                            <option value="all">Todas as Categorias</option>
+                            <option value="eletrônicos">Eletrônicos</option>
+                            <option value="roupas">Roupas</option>
+                            <option value="alimentos">Alimentos</option>
+                            <option value="casa">Casa</option>
+                            <option value="esportes">Esportes</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                        <select class="filter-select" id="productStatusFilter">
+                            <option value="all">Todos os Status</option>
+                            <option value="ativo">Ativo</option>
+                            <option value="inativo">Inativo</option>
+                            <option value="esgotado">Esgotado</option>
+                        </select>
+                        <input type="text" class="search-input" id="productSearchInput" placeholder="Buscar produtos...">
+                    </div>
+
+                    <div class="products-grid" id="productsGrid">
+                        <!-- Products will be rendered here -->
+                    </div>
+                </div>
+            </div>
+
             <!-- Configurações Section -->
             <div class="page-section" data-section-content="configuracoes">
                 <div class="settings-container">
@@ -527,15 +594,15 @@
 
                     <div class="profile-stats">
                         <div class="profile-stat-card">
-                            <p class="profile-stat-value">24</p>
+                            <p class="profile-stat-value" id="profileTasksCompleted">0</p>
                             <p class="profile-stat-label">Tarefas Concluídas</p>
                         </div>
                         <div class="profile-stat-card">
-                            <p class="profile-stat-value">8</p>
+                            <p class="profile-stat-value" id="profileActiveGoals">0</p>
                             <p class="profile-stat-label">Metas Ativas</p>
                         </div>
                         <div class="profile-stat-card">
-                            <p class="profile-stat-value">15</p>
+                            <p class="profile-stat-value" id="profileDaysUsed">0</p>
                             <p class="profile-stat-label">Dias de Uso</p>
                         </div>
                     </div>
@@ -544,7 +611,7 @@
                         <h3 class="section-title">Informações Pessoais</h3>
                         <div class="form-group">
                             <label class="form-label">Nome</label>
-                            <input type="text" class="form-input" value="Usuário Ocean" placeholder="Seu nome">
+                            <input type="text" class="form-input" id="profileNameInput" value="Usuário Ocean" placeholder="Seu nome">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Email</label>
@@ -553,10 +620,10 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Bio</label>
-                            <textarea class="form-textarea" rows="4"
+                            <textarea class="form-textarea" id="profileBio" rows="4"
                                 placeholder="Conte um pouco sobre você..."></textarea>
                         </div>
-                        <button class="btn btn-primary">Salvar Alterações</button>
+                        <button class="btn btn-primary" id="saveProfileBtn">Salvar Alterações</button>
                     </div>
                 </div>
             </div>

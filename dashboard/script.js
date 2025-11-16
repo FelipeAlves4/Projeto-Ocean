@@ -85,6 +85,38 @@ const defaultData = {
         productiveTime: 5.2,
         activeGoals: 4,
     },
+    products: [
+        {
+            id: 1,
+            name: "Notebook Dell",
+            description: "Notebook Dell Inspiron 15 com processador Intel i5",
+            price: 3299.99,
+            category: "eletrônicos",
+            status: "ativo",
+            stock: 15,
+            createdAt: new Date().toISOString()
+        },
+        {
+            id: 2,
+            name: "Camiseta Básica",
+            description: "Camiseta 100% algodão, várias cores disponíveis",
+            price: 49.90,
+            category: "roupas",
+            status: "ativo",
+            stock: 50,
+            createdAt: new Date().toISOString()
+        },
+        {
+            id: 3,
+            name: "Café Premium",
+            description: "Café em grãos torrado, pacote 500g",
+            price: 24.90,
+            category: "alimentos",
+            status: "ativo",
+            stock: 30,
+            createdAt: new Date().toISOString()
+        },
+    ],
 }
 
 // Load data from localStorage or use default (user-specific)
@@ -112,6 +144,12 @@ function updateUserProfile() {
     const profileEmail = document.getElementById('profileEmail');
     const profileEmailInput = document.getElementById('profileEmailInput');
     const profileName = document.getElementById('profileName');
+    const profileNameInput = document.getElementById('profileNameInput');
+    
+    // Get saved profile data or use defaults
+    const savedProfile = appData.profile || {};
+    const displayName = savedProfile.name || userEmail.split('@')[0];
+    const capitalizedName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
     
     if (profileEmail) {
         profileEmail.textContent = userEmail;
@@ -120,10 +158,66 @@ function updateUserProfile() {
         profileEmailInput.value = userEmail;
     }
     if (profileName) {
-        // Extract name from email (before @) or use default
-        const emailName = userEmail.split('@')[0];
-        profileName.textContent = emailName.charAt(0).toUpperCase() + emailName.slice(1);
+        profileName.textContent = capitalizedName;
     }
+    if (profileNameInput) {
+        profileNameInput.value = savedProfile.name || capitalizedName;
+    }
+}
+
+// Render profile page with synchronized data
+function renderProfilePage() {
+    // Update user profile info
+    updateUserProfile()
+    
+    // Update profile statistics
+    const completedTasks = appData.tasks.filter((t) => t.status === "completed").length
+    const activeGoals = appData.goals.length
+    
+    // Calculate days of use (from first task creation or default to 1)
+    let daysUsed = 1
+    if (appData.tasks && appData.tasks.length > 0) {
+        const taskDates = appData.tasks
+            .map(t => new Date(t.createdAt).getTime())
+            .filter(date => !isNaN(date))
+        
+        if (taskDates.length > 0) {
+            const firstTaskDate = new Date(Math.min(...taskDates))
+            const today = new Date()
+            const diffTime = Math.abs(today - firstTaskDate)
+            daysUsed = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)))
+        }
+    }
+    
+    // Update profile stats
+    const tasksCompletedEl = document.getElementById('profileTasksCompleted')
+    const activeGoalsEl = document.getElementById('profileActiveGoals')
+    const daysUsedEl = document.getElementById('profileDaysUsed')
+    const profileBioEl = document.getElementById('profileBio')
+    const profileNameInput = document.getElementById('profileNameInput')
+    
+    if (tasksCompletedEl) {
+        tasksCompletedEl.textContent = completedTasks
+    }
+    if (activeGoalsEl) {
+        activeGoalsEl.textContent = activeGoals
+    }
+    if (daysUsedEl) {
+        daysUsedEl.textContent = daysUsed
+    }
+    
+    // Load saved profile data
+    if (appData.profile) {
+        if (profileNameInput && appData.profile.name) {
+            profileNameInput.value = appData.profile.name
+        }
+        if (profileBioEl && appData.profile.bio) {
+            profileBioEl.value = appData.profile.bio
+        }
+    }
+    
+    // Update header name display
+    updateUserProfile()
 }
 
 // Update profile on page load
@@ -190,6 +284,7 @@ function handleNavigation(section) {
         tarefas: { title: "Tarefas", subtitle: "Gerencie todas as suas tarefas e projetos." },
         metas: { title: "Metas", subtitle: "Acompanhe o progresso das suas metas." },
         financas: { title: "Finanças", subtitle: "Controle suas receitas e despesas." },
+        produtos: { title: "Produtos", subtitle: "Gerencie seu catálogo de produtos." },
         configuracoes: { title: "Configurações", subtitle: "Personalize sua experiência." },
         perfil: { title: "Perfil", subtitle: "Gerencie suas informações pessoais." },
         ajuda: { title: "Ajuda", subtitle: "Encontre respostas para suas dúvidas." },
@@ -206,6 +301,10 @@ function handleNavigation(section) {
         renderFullGoalsList()
     } else if (section === "financas") {
         renderFinancesPage()
+    } else if (section === "produtos") {
+        renderProductsPage()
+    } else if (section === "perfil") {
+        renderProfilePage()
     }
 }
 
@@ -225,6 +324,11 @@ tabBtns.forEach((btn) => {
         if (targetPanel) {
             targetPanel.classList.add("active")
         }
+        
+        // Update finances when switching to finance tab
+        if (targetTab === "financeira") {
+            renderFinances()
+        }
     })
 })
 
@@ -233,6 +337,9 @@ tabBtns.forEach((btn) => {
 // ============================================
 
 function renderSummaryCards() {
+    // Recalculate finances before rendering to ensure values are up to date
+    recalculateFinances()
+    
     const completedTasks = appData.tasks.filter((t) => t.status === "completed").length
     const totalTasks = appData.tasks.length
     const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0
@@ -397,12 +504,38 @@ function renderGoals() {
 }
 
 function renderFinances() {
-    document.querySelector(".finance-income .finance-value").textContent =
-        `R$ ${appData.finances.income.toLocaleString("pt-BR")}`
-    document.querySelector(".finance-expense .finance-value").textContent =
-        `R$ ${appData.finances.expenses.toLocaleString("pt-BR")}`
-    document.querySelector(".finance-balance .finance-value").textContent =
-        `R$ ${appData.finances.balance.toLocaleString("pt-BR")}`
+    // Always recalculate before rendering to ensure values are accurate
+    recalculateFinances()
+    
+    // Update all finance income elements (there may be multiple - dashboard and finances page)
+    document.querySelectorAll(".finance-income .finance-value").forEach(el => {
+        el.textContent = `R$ ${appData.finances.income.toLocaleString("pt-BR")}`
+    })
+    
+    // Update all finance expense elements
+    document.querySelectorAll(".finance-expense .finance-value").forEach(el => {
+        el.textContent = `R$ ${appData.finances.expenses.toLocaleString("pt-BR")}`
+    })
+    
+    // Update all finance balance elements
+    document.querySelectorAll(".finance-balance .finance-value").forEach(el => {
+        el.textContent = `R$ ${appData.finances.balance.toLocaleString("pt-BR")}`
+    })
+    
+    // Also update by ID if they exist (for the finances page)
+    const totalIncomeEl = document.getElementById("totalIncome")
+    const totalExpensesEl = document.getElementById("totalExpenses")
+    const totalBalanceEl = document.getElementById("totalBalance")
+    
+    if (totalIncomeEl) {
+        totalIncomeEl.textContent = `R$ ${appData.finances.income.toLocaleString("pt-BR")}`
+    }
+    if (totalExpensesEl) {
+        totalExpensesEl.textContent = `R$ ${appData.finances.expenses.toLocaleString("pt-BR")}`
+    }
+    if (totalBalanceEl) {
+        totalBalanceEl.textContent = `R$ ${appData.finances.balance.toLocaleString("pt-BR")}`
+    }
 }
 
 // ============================================
@@ -581,10 +714,14 @@ window.addEventListener("resize", () => {
 // ============================================
 
 window.addEventListener("load", () => {
+    // Recalculate finances on page load to ensure values are accurate
+    recalculateFinances()
+    
     renderSummaryCards()
     renderTasks()
     renderGoals()
     renderFinances()
+    renderDashboardProducts()
     animateProgressBars()
     animateOnScroll()
 
@@ -680,6 +817,36 @@ window.addEventListener("load", () => {
         })
     }
 
+    // Save profile button
+    const saveProfileBtn = document.getElementById("saveProfileBtn")
+    if (saveProfileBtn) {
+        saveProfileBtn.addEventListener("click", () => {
+            const profileNameInput = document.getElementById("profileNameInput")
+            const profileBio = document.getElementById("profileBio")
+            
+            // Initialize profile object if it doesn't exist
+            if (!appData.profile) {
+                appData.profile = {}
+            }
+            
+            // Save profile data
+            if (profileNameInput) {
+                appData.profile.name = profileNameInput.value.trim()
+            }
+            if (profileBio) {
+                appData.profile.bio = profileBio.value.trim()
+            }
+            
+            // Save to localStorage
+            saveData(appData)
+            
+            // Update profile display
+            updateUserProfile()
+            
+            showToast('Perfil atualizado', 'Suas informações foram salvas com sucesso.', 'success')
+        })
+    }
+
     // Logout button
     const logoutBtn = document.getElementById("logoutBtn")
     if (logoutBtn) {
@@ -755,6 +922,35 @@ window.addEventListener("load", () => {
             }
         })
     })
+
+    // Products page event listeners
+    const addProductBtn = document.getElementById("addProductBtn")
+    if (addProductBtn) {
+        addProductBtn.addEventListener("click", () => {
+            showProductModal()
+        })
+    }
+
+    const productCategoryFilter = document.getElementById("productCategoryFilter")
+    if (productCategoryFilter) {
+        productCategoryFilter.addEventListener("change", () => {
+            renderProducts()
+        })
+    }
+
+    const productStatusFilter = document.getElementById("productStatusFilter")
+    if (productStatusFilter) {
+        productStatusFilter.addEventListener("change", () => {
+            renderProducts()
+        })
+    }
+
+    const productSearchInput = document.getElementById("productSearchInput")
+    if (productSearchInput) {
+        productSearchInput.addEventListener("input", () => {
+            renderProducts()
+        })
+    }
 })
 
 // ============================================
@@ -950,26 +1146,41 @@ function renderFinancesPage() {
 
 // Recalculate finances from transactions
 function recalculateFinances() {
-    if (!appData.transactions || appData.transactions.length === 0) {
-        // Keep default values if no transactions
-        return
+    // Initialize transactions array if it doesn't exist
+    if (!appData.transactions) {
+        appData.transactions = []
+    }
+    
+    // Initialize finances object if it doesn't exist
+    if (!appData.finances) {
+        appData.finances = {
+            income: 0,
+            expenses: 0,
+            balance: 0
+        }
     }
     
     let totalIncome = 0
     let totalExpenses = 0
     
-    appData.transactions.forEach(transaction => {
-        if (transaction.type === 'income') {
-            totalIncome += transaction.amount
-        } else if (transaction.type === 'expense') {
-            totalExpenses += transaction.amount
-        }
-    })
+    // Calculate totals from all transactions
+    if (appData.transactions && appData.transactions.length > 0) {
+        appData.transactions.forEach(transaction => {
+            const amount = parseFloat(transaction.amount) || 0
+            if (transaction.type === 'income') {
+                totalIncome += amount
+            } else if (transaction.type === 'expense') {
+                totalExpenses += amount
+            }
+        })
+    }
     
+    // Always update finances object (even if totals are 0 - this ensures values are always accurate)
     appData.finances.income = totalIncome
     appData.finances.expenses = totalExpenses
     appData.finances.balance = totalIncome - totalExpenses
     
+    // Save updated data
     saveData(appData)
 }
 
@@ -1691,5 +1902,446 @@ function showUpgradeModal() {
 
 // Make functions globally available
 window.showUpgradeModal = showUpgradeModal
+
+// ============================================
+// PRODUCTS MANAGEMENT
+// ============================================
+
+// Initialize products array if it doesn't exist
+if (!appData.products) {
+    appData.products = []
+    saveData(appData)
+}
+
+// Render products page
+function renderProductsPage() {
+    renderProducts()
+}
+
+// Render products in dashboard
+function renderDashboardProducts() {
+    const productsGrid = document.getElementById("dashboardProductsGrid")
+    if (!productsGrid) return
+
+    // Get first 6 products (most recent)
+    const products = (appData.products || []).slice(0, 6)
+
+    // Clear grid
+    productsGrid.innerHTML = ""
+
+    if (products.length === 0) {
+        productsGrid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <div class="empty-icon">📦</div>
+                <h3>Nenhum produto cadastrado</h3>
+                <p>Adicione produtos para começar a gerenciar seu catálogo</p>
+            </div>
+        `
+        return
+    }
+
+    // Render products
+    products.forEach(product => {
+        const productCard = document.createElement("div")
+        productCard.className = "product-card-dashboard"
+        
+        const statusClass = product.status === "ativo" ? "status-active" : 
+                          product.status === "esgotado" ? "status-out-of-stock" : "status-inactive"
+        const statusText = product.status === "ativo" ? "Ativo" : 
+                          product.status === "esgotado" ? "Esgotado" : "Inativo"
+        
+        productCard.innerHTML = `
+            <div class="product-header">
+                <h3 class="product-name">${product.name}</h3>
+                <span class="product-status ${statusClass}">${statusText}</span>
+            </div>
+            <p class="product-description">${product.description}</p>
+            <div class="product-details">
+                <div class="product-detail-item">
+                    <span class="detail-label">Categoria:</span>
+                    <span class="detail-value">${product.category}</span>
+                </div>
+                <div class="product-detail-item">
+                    <span class="detail-label">Preço:</span>
+                    <span class="detail-value price">R$ ${product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                </div>
+                <div class="product-detail-item">
+                    <span class="detail-label">Estoque:</span>
+                    <span class="detail-value ${product.stock <= 5 ? 'low-stock' : ''}">${product.stock} unidades</span>
+                </div>
+            </div>
+        `
+        
+        productsGrid.appendChild(productCard)
+    })
+}
+
+// Render products grid
+function renderProducts() {
+    const productsGrid = document.getElementById("productsGrid")
+    if (!productsGrid) return
+
+    // Get filters
+    const categoryFilter = document.getElementById("productCategoryFilter")?.value || "all"
+    const statusFilter = document.getElementById("productStatusFilter")?.value || "all"
+    const searchInput = document.getElementById("productSearchInput")?.value.toLowerCase() || ""
+
+    // Filter products
+    let filteredProducts = appData.products || []
+    
+    if (categoryFilter !== "all") {
+        filteredProducts = filteredProducts.filter(p => p.category === categoryFilter)
+    }
+    
+    if (statusFilter !== "all") {
+        filteredProducts = filteredProducts.filter(p => p.status === statusFilter)
+    }
+    
+    if (searchInput) {
+        filteredProducts = filteredProducts.filter(p => 
+            p.name.toLowerCase().includes(searchInput) || 
+            p.description.toLowerCase().includes(searchInput)
+        )
+    }
+
+    // Clear grid
+    productsGrid.innerHTML = ""
+
+    if (filteredProducts.length === 0) {
+        productsGrid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <div class="empty-icon">📦</div>
+                <h3>Nenhum produto encontrado</h3>
+                <p>Adicione produtos para começar a gerenciar seu catálogo</p>
+            </div>
+        `
+        return
+    }
+
+    // Render products
+    filteredProducts.forEach(product => {
+        const productCard = document.createElement("div")
+        productCard.className = "product-card"
+        
+        const statusClass = product.status === "ativo" ? "status-active" : 
+                          product.status === "esgotado" ? "status-out-of-stock" : "status-inactive"
+        const statusText = product.status === "ativo" ? "Ativo" : 
+                          product.status === "esgotado" ? "Esgotado" : "Inativo"
+        
+        productCard.innerHTML = `
+            <div class="product-header">
+                <h3 class="product-name">${product.name}</h3>
+                <span class="product-status ${statusClass}">${statusText}</span>
+            </div>
+            <p class="product-description">${product.description}</p>
+            <div class="product-details">
+                <div class="product-detail-item">
+                    <span class="detail-label">Categoria:</span>
+                    <span class="detail-value">${product.category}</span>
+                </div>
+                <div class="product-detail-item">
+                    <span class="detail-label">Preço:</span>
+                    <span class="detail-value price">R$ ${product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                </div>
+                <div class="product-detail-item">
+                    <span class="detail-label">Estoque:</span>
+                    <span class="detail-value ${product.stock <= 5 ? 'low-stock' : ''}">${product.stock} unidades</span>
+                </div>
+            </div>
+            <div class="product-actions">
+                <button class="btn btn-outline product-edit-btn" data-product-id="${product.id}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Editar
+                </button>
+                <button class="btn btn-danger product-delete-btn" data-product-id="${product.id}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Excluir
+                </button>
+            </div>
+        `
+        
+        productsGrid.appendChild(productCard)
+    })
+
+    // Add event listeners
+    document.querySelectorAll(".product-edit-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const productId = Number.parseInt(btn.dataset.productId)
+            editProduct(productId)
+        })
+    })
+
+    document.querySelectorAll(".product-delete-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const productId = Number.parseInt(btn.dataset.productId)
+            const confirmed = await showConfirm({
+                title: 'Excluir produto',
+                message: 'Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.',
+                confirmText: 'Excluir',
+                danger: true
+            })
+            if (confirmed) {
+                deleteProduct(productId)
+                showToast('Produto excluído', 'O produto foi removido com sucesso.', 'success')
+            }
+        })
+    })
+}
+
+// Show add/edit product modal
+function showProductModal(productId = null) {
+    const product = productId ? appData.products.find(p => p.id === productId) : null
+    const isEdit = !!product
+
+    const overlay = document.createElement('div')
+    overlay.className = 'modal-overlay'
+    
+    const modal = document.createElement('div')
+    modal.className = 'modal'
+    
+    modal.innerHTML = `
+        <div class="modal-header">
+            ${isEdit ? 'Editar Produto' : 'Novo Produto'}
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Nome *</label>
+                <input type="text" id="productName" placeholder="Nome do produto" 
+                    value="${product ? product.name : ''}" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                ">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Descrição *</label>
+                <textarea id="productDescription" rows="3" placeholder="Descrição do produto" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                    resize: vertical;
+                ">${product ? product.description : ''}</textarea>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Preço (R$) *</label>
+                <input type="number" id="productPrice" placeholder="0.00" step="0.01" min="0" 
+                    value="${product ? product.price : ''}" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                ">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Categoria *</label>
+                <select id="productCategory" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                ">
+                    <option value="eletrônicos" ${product && product.category === 'eletrônicos' ? 'selected' : ''}>Eletrônicos</option>
+                    <option value="roupas" ${product && product.category === 'roupas' ? 'selected' : ''}>Roupas</option>
+                    <option value="alimentos" ${product && product.category === 'alimentos' ? 'selected' : ''}>Alimentos</option>
+                    <option value="casa" ${product && product.category === 'casa' ? 'selected' : ''}>Casa</option>
+                    <option value="esportes" ${product && product.category === 'esportes' ? 'selected' : ''}>Esportes</option>
+                    <option value="outros" ${product && product.category === 'outros' ? 'selected' : ''}>Outros</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Estoque *</label>
+                <input type="number" id="productStock" placeholder="0" min="0" 
+                    value="${product ? product.stock : ''}" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                ">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Status *</label>
+                <select id="productStatus" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                ">
+                    <option value="ativo" ${product && product.status === 'ativo' ? 'selected' : ''}>Ativo</option>
+                    <option value="inativo" ${product && product.status === 'inativo' ? 'selected' : ''}>Inativo</option>
+                    <option value="esgotado" ${product && product.status === 'esgotado' ? 'selected' : ''}>Esgotado</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" id="cancelProductBtn">Cancelar</button>
+            <button class="btn btn-primary" id="saveProductBtn">${isEdit ? 'Salvar' : 'Adicionar'}</button>
+        </div>
+    `
+    
+    overlay.appendChild(modal)
+    document.body.appendChild(overlay)
+    
+    // Focus on name input
+    setTimeout(() => {
+        document.getElementById('productName')?.focus()
+    }, 100)
+    
+    // Event listeners
+    document.getElementById('cancelProductBtn').addEventListener('click', () => {
+        document.body.removeChild(overlay)
+    })
+    
+    const saveBtn = document.getElementById('saveProductBtn')
+    saveBtn.addEventListener('click', () => {
+        const name = document.getElementById('productName').value.trim()
+        const description = document.getElementById('productDescription').value.trim()
+        const priceInput = document.getElementById('productPrice').value
+        const price = parseFloat(priceInput)
+        const category = document.getElementById('productCategory').value
+        const stockInput = document.getElementById('productStock').value
+        const stock = Number.parseInt(stockInput)
+        const status = document.getElementById('productStatus').value
+        
+        // Validation
+        if (!name) {
+            showToast('Campo obrigatório', 'O nome é obrigatório.', 'error')
+            document.getElementById('productName').focus()
+            return
+        }
+        
+        if (!description) {
+            showToast('Campo obrigatório', 'A descrição é obrigatória.', 'error')
+            document.getElementById('productDescription').focus()
+            return
+        }
+        
+        if (!priceInput || isNaN(price) || price < 0) {
+            showToast('Valor inválido', 'O preço deve ser um número válido maior ou igual a zero.', 'error')
+            document.getElementById('productPrice').focus()
+            return
+        }
+        
+        if (!stockInput || isNaN(stock) || stock < 0) {
+            showToast('Estoque inválido', 'O estoque deve ser um número válido maior ou igual a zero.', 'error')
+            document.getElementById('productStock').focus()
+            return
+        }
+        
+        // Save product
+        if (isEdit) {
+            updateProduct(productId, {
+                name,
+                description,
+                price,
+                category,
+                stock,
+                status
+            })
+        } else {
+            addProduct({
+                name,
+                description,
+                price,
+                category,
+                stock,
+                status
+            })
+        }
+        
+        // Close modal
+        document.body.removeChild(overlay)
+        showToast(
+            isEdit ? 'Produto atualizado' : 'Produto adicionado',
+            isEdit ? 'O produto foi atualizado com sucesso.' : 'O produto foi adicionado com sucesso.',
+            'success'
+        )
+    })
+    
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            document.body.removeChild(overlay)
+        }
+    })
+    
+    // Escape key to close
+    const handleKeyDown = function(e) {
+        if (e.key === 'Escape') {
+            if (document.body.contains(overlay)) {
+                document.body.removeChild(overlay)
+            }
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+}
+
+// Add product
+function addProduct(productData) {
+    if (!appData.products) {
+        appData.products = []
+    }
+    
+    const newId = appData.products.length > 0 
+        ? Math.max(...appData.products.map(p => p.id)) + 1 
+        : 1
+    
+    const newProduct = {
+        id: newId,
+        ...productData,
+        createdAt: new Date().toISOString()
+    }
+    
+    appData.products.push(newProduct)
+    saveData(appData)
+    renderProducts()
+}
+
+// Update product
+function updateProduct(productId, productData) {
+    const product = appData.products.find(p => p.id === productId)
+    if (!product) return
+    
+    Object.assign(product, productData)
+    saveData(appData)
+    renderProducts()
+}
+
+// Edit product
+function editProduct(productId) {
+    showProductModal(productId)
+}
+
+// Delete product
+function deleteProduct(productId) {
+    appData.products = appData.products.filter(p => p.id !== productId)
+    saveData(appData)
+    renderProducts()
+}
 
 console.log("[v0] All functions are now fully operational")
