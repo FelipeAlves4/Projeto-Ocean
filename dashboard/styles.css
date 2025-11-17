@@ -5,8 +5,10 @@
     box-sizing: border-box;
 }
 
-:root {
-    /* Ocean Theme Colors */
+/* Tema Escuro (padrão) */
+:root,
+[data-theme="dark"] {
+    /* Ocean Theme Colors - Dark Mode */
     --bg-primary: #0a1628;
     --bg-secondary: #1e2a3a;
     --bg-sidebar: #1a2332;

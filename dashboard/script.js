@@ -890,6 +890,27 @@ window.addEventListener("load", () => {
         })
     }
 
+    // Theme toggle functionality
+    const darkModeToggle = document.getElementById("darkModeToggle")
+    if (darkModeToggle) {
+        // Carregar tema salvo ou usar padrão (dark)
+        const savedTheme = localStorage.getItem('dashboardTheme') || 'dark'
+        document.documentElement.setAttribute('data-theme', savedTheme)
+        darkModeToggle.checked = savedTheme === 'dark'
+
+        // Event listener para mudança de tema
+        darkModeToggle.addEventListener("change", (e) => {
+            const newTheme = e.target.checked ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', newTheme)
+            localStorage.setItem('dashboardTheme', newTheme)
+            showToast(
+                newTheme === 'dark' ? 'Tema escuro ativado' : 'Tema claro ativado',
+                'A aparência foi alterada com sucesso.',
+                'success'
+            )
+        })
+    }
+
     // Export data button
     const exportDataBtn = document.getElementById("exportDataBtn")
     if (exportDataBtn) {
