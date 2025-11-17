@@ -2366,3 +2366,174 @@ function deleteProduct(productId) {
 }
 
 console.log("[v0] All functions are now fully operational")
+
+// ============================================
+// CHAT DE SUPORTE
+// ============================================
+
+// Respostas automáticas do chat
+const chatResponses = {
+    "tarefa": {
+        message: "Para adicionar uma tarefa, você pode:\n\n1. Clicar no botão 'Adicionar' no topo da página\n2. Usar o atalho Ctrl+K\n3. Ir até a seção 'Tarefas' e clicar em 'Nova Tarefa'\n\nPrecisa de mais ajuda?",
+        keywords: ["tarefa", "adicionar tarefa", "criar tarefa", "nova tarefa"]
+    },
+    "finança": {
+        message: "Para gerenciar suas finanças:\n\n1. Acesse a seção 'Finanças' no menu\n2. Clique em 'Nova Transação' para adicionar receitas ou despesas\n3. Visualize seu saldo total e transações recentes\n4. Use 'Gerar Relatório' para análises detalhadas\n\nAlguma dúvida específica?",
+        keywords: ["finança", "financeiro", "transação", "receita", "despesa", "saldo", "dinheiro"]
+    },
+    "produto": {
+        message: "Para gerenciar produtos:\n\n1. Acesse a seção 'Produtos' no menu\n2. Clique em 'Novo Produto' para adicionar\n3. Use os filtros para buscar produtos\n4. Edite ou exclua produtos conforme necessário\n\nPrecisa de ajuda com algo específico?",
+        keywords: ["produto", "produtos", "estoque", "catálogo"]
+    },
+    "meta": {
+        message: "Para gerenciar metas:\n\n1. Acesse a seção 'Metas' no menu\n2. Clique em 'Nova Meta' para criar\n3. Acompanhe o progresso visualmente\n4. Atualize o progresso clicando em 'Atualizar Progresso'\n\nTem alguma dúvida?",
+        keywords: ["meta", "metas", "objetivo", "progresso"]
+    },
+    "perfil": {
+        message: "Para editar seu perfil:\n\n1. Acesse a seção 'Perfil' no menu\n2. Edite suas informações pessoais\n3. Clique em 'Salvar Alterações'\n\nAlgo mais?",
+        keywords: ["perfil", "conta", "informações", "dados pessoais"]
+    },
+    "configuração": {
+        message: "Nas configurações você pode:\n\n1. Alterar o tema (claro/escuro)\n2. Gerenciar notificações\n3. Exportar ou limpar dados\n4. Fazer logout\n\nPrecisa de ajuda com alguma configuração específica?",
+        keywords: ["configuração", "configurações", "ajustes", "tema", "notificação"]
+    },
+    "default": {
+        message: "Entendi! Como posso ajudá-lo? Você pode perguntar sobre:\n\n• Como adicionar tarefas\n• Como gerenciar finanças\n• Como usar produtos\n• Como criar metas\n• Configurações\n• Perfil\n\nOu digite sua dúvida específica!"
+    }
+}
+
+// Função para encontrar resposta baseada na mensagem
+function findChatResponse(message) {
+    const lowerMessage = message.toLowerCase()
+    
+    for (const [key, response] of Object.entries(chatResponses)) {
+        if (key === "default") continue
+        
+        for (const keyword of response.keywords) {
+            if (lowerMessage.includes(keyword)) {
+                return response.message
+            }
+        }
+    }
+    
+    return chatResponses.default.message
+}
+
+// Função para adicionar mensagem ao chat
+function addChatMessage(text, isUser = false) {
+    const messagesContainer = document.getElementById('chatMessages')
+    const messageDiv = document.createElement('div')
+    messageDiv.className = `chat-message ${isUser ? 'chat-message-user' : 'chat-message-bot'}`
+    
+    const now = new Date()
+    const timeString = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    
+    messageDiv.innerHTML = `
+        <div class="message-avatar">
+            ${isUser ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>'}
+        </div>
+        <div class="message-content">
+            <div class="message-bubble">
+                <p>${text.replace(/\n/g, '<br>')}</p>
+            </div>
+            <span class="message-time">${timeString}</span>
+        </div>
+    `
+    
+    messagesContainer.appendChild(messageDiv)
+    messagesContainer.scrollTop = messagesContainer.scrollHeight
+    
+    // Remover sugestões após primeira mensagem do usuário
+    if (isUser) {
+        const suggestions = document.getElementById('chatSuggestions')
+        if (suggestions) {
+            suggestions.style.display = 'none'
+        }
+    }
+}
+
+// Inicializar chat de suporte
+function initSupportChat() {
+    const chatButton = document.getElementById('supportChatButton')
+    const chatWindow = document.getElementById('supportChatWindow')
+    const chatMinimizeBtn = document.getElementById('chatMinimizeBtn')
+    const chatInput = document.getElementById('chatInput')
+    const chatSendBtn = document.getElementById('chatSendBtn')
+    const chatSuggestions = document.getElementById('chatSuggestions')
+    
+    if (!chatButton || !chatWindow) return
+    
+    // Toggle chat window
+    chatButton.addEventListener('click', () => {
+        const isActive = chatWindow.classList.contains('active')
+        
+        if (isActive) {
+            chatWindow.classList.remove('active')
+            chatButton.classList.remove('active')
+        } else {
+            chatWindow.classList.add('active')
+            chatButton.classList.add('active')
+            chatInput.focus()
+        }
+    })
+    
+    // Minimizar chat
+    if (chatMinimizeBtn) {
+        chatMinimizeBtn.addEventListener('click', () => {
+            chatWindow.classList.remove('active')
+            chatButton.classList.remove('active')
+        })
+    }
+    
+    // Enviar mensagem
+    function sendMessage() {
+        const message = chatInput.value.trim()
+        if (!message) return
+        
+        // Adicionar mensagem do usuário
+        addChatMessage(message, true)
+        chatInput.value = ''
+        
+        // Simular digitação do bot
+        setTimeout(() => {
+            const response = findChatResponse(message)
+            addChatMessage(response, false)
+        }, 1000)
+    }
+    
+    // Botão enviar
+    if (chatSendBtn) {
+        chatSendBtn.addEventListener('click', sendMessage)
+    }
+    
+    // Enter para enviar
+    if (chatInput) {
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage()
+            }
+        })
+    }
+    
+    // Sugestões de mensagens
+    if (chatSuggestions) {
+        const suggestionBtns = chatSuggestions.querySelectorAll('.suggestion-btn')
+        suggestionBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const suggestion = btn.dataset.suggestion
+                addChatMessage(suggestion, true)
+                chatSuggestions.style.display = 'none'
+                
+                setTimeout(() => {
+                    const response = findChatResponse(suggestion)
+                    addChatMessage(response, false)
+                }, 1000)
+            })
+        })
+    }
+}
+
+// Inicializar chat quando a página carregar
+window.addEventListener('load', () => {
+    initSupportChat()
+})

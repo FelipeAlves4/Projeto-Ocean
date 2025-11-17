@@ -430,3 +430,50 @@
     box-shadow: var(--shadow-sm);
 }
 
+/* Chat de suporte no tema claro */
+[data-theme="light"] .support-chat-button {
+    background: var(--accent-gradient);
+    box-shadow: var(--shadow-accent);
+}
+
+[data-theme="light"] .support-chat-button:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+[data-theme="light"] .support-chat-window {
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .chat-avatar {
+    background: var(--accent-gradient);
+    box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .message-avatar {
+    background: var(--accent-gradient);
+}
+
+[data-theme="light"] .chat-message-user .message-avatar {
+    background: var(--bg-hover);
+    border: 1.5px solid var(--accent-primary);
+}
+
+[data-theme="light"] .chat-send-btn {
+    background: var(--accent-gradient);
+    box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .chat-send-btn:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+[data-theme="light"] .suggestion-btn:hover {
+    background: var(--accent-light);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    box-shadow: var(--shadow-sm);
+}
+

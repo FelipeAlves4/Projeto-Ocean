@@ -748,6 +748,86 @@
         </div>
     </div>
 
+    <!-- Chat de Suporte -->
+    <div class="support-chat-container" id="supportChatContainer">
+        <!-- Botão flutuante do chat -->
+        <button class="support-chat-button" id="supportChatButton" aria-label="Abrir chat de suporte">
+            <svg class="chat-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            <span class="chat-badge" id="chatBadge" style="display: none;">1</span>
+        </button>
+
+        <!-- Janela do chat -->
+        <div class="support-chat-window" id="supportChatWindow">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <div class="chat-avatar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div class="chat-header-text">
+                        <h3 class="chat-title">Suporte Ocean</h3>
+                        <p class="chat-status">
+                            <span class="status-dot"></span>
+                            Online agora
+                        </p>
+                    </div>
+                </div>
+                <button class="chat-minimize-btn" id="chatMinimizeBtn" aria-label="Minimizar chat">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message chat-message-bot">
+                    <div class="message-avatar">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <p>Olá! 👋 Bem-vindo ao suporte Ocean. Como posso ajudá-lo hoje?</p>
+                        </div>
+                        <span class="message-time">Agora</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-suggestions" id="chatSuggestions">
+                <button class="suggestion-btn" data-suggestion="Como adicionar uma tarefa?">
+                    Como adicionar uma tarefa?
+                </button>
+                <button class="suggestion-btn" data-suggestion="Como gerenciar minhas finanças?">
+                    Como gerenciar finanças?
+                </button>
+                <button class="suggestion-btn" data-suggestion="Preciso de ajuda com produtos">
+                    Ajuda com produtos
+                </button>
+            </div>
+
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Digite sua mensagem..." autocomplete="off">
+                <button class="chat-send-btn" id="chatSendBtn" aria-label="Enviar mensagem">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script type="module" src="script.js"></script>
