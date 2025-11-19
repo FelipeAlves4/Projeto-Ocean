@@ -823,6 +823,18 @@ window.addEventListener("load", () => {
         })
     }
 
+    // Função para atualizar logo baseada no tema
+    function updateLogoByTheme(theme) {
+        const logoImage = document.getElementById('dashboardLogo')
+        if (logoImage) {
+            if (theme === 'light') {
+                logoImage.src = '../img/logo_light.png'
+            } else {
+                logoImage.src = '../img/logo2.png'
+            }
+        }
+    }
+
     // Theme toggle functionality
     const darkModeToggle = document.getElementById("darkModeToggle")
     if (darkModeToggle) {
@@ -830,12 +842,19 @@ window.addEventListener("load", () => {
         const savedTheme = localStorage.getItem('dashboardTheme') || 'dark'
         document.documentElement.setAttribute('data-theme', savedTheme)
         darkModeToggle.checked = savedTheme === 'dark'
+        
+        // Atualizar logo baseado no tema salvo
+        updateLogoByTheme(savedTheme)
 
         // Event listener para mudança de tema
         darkModeToggle.addEventListener("change", (e) => {
             const newTheme = e.target.checked ? 'dark' : 'light'
             document.documentElement.setAttribute('data-theme', newTheme)
             localStorage.setItem('dashboardTheme', newTheme)
+            
+            // Atualizar logo quando o tema mudar
+            updateLogoByTheme(newTheme)
+            
             showToast(
                 newTheme === 'dark' ? 'Tema escuro ativado' : 'Tema claro ativado',
                 'A aparência foi alterada com sucesso.',

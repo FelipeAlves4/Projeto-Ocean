@@ -141,14 +141,17 @@ body {
 }
 
 .logo-image {
-    width: 150px;
-    height: 100px;
+    width: 200px;
+    height: auto;
+    max-height: 140px;
     object-fit: contain;
     transition: var(--transition);
+    display: block;
 }
 
 .logo-image:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
+    opacity: 0.9;
 }
 
 .logo-text {

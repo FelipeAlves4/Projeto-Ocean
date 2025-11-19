@@ -65,6 +65,12 @@
     border-right: 1px solid var(--border-light);
 }
 
+/* Logo no tema claro */
+[data-theme="light"] .logo-image {
+    filter: brightness(1);
+    opacity: 1;
+}
+
 /* Cards com sombras refinadas e hover melhorado */
 [data-theme="light"] .summary-card,
 [data-theme="light"] .goal-card,
