@@ -1609,6 +1609,20 @@ function generateFinancialReport() {
     reportTitle.textContent = `Relatório Financeiro - ${new Date().toLocaleDateString('pt-BR')}`
     reportModal.style.display = 'flex'
     
+    // Atualizar texto do botão de exportação baseado no nível
+    const exportReportBtn = document.getElementById('exportReportBtn')
+    if (exportReportBtn) {
+        if (isPremium) {
+            exportReportBtn.textContent = 'Exportar PDF Completo'
+            exportReportBtn.classList.remove('btn-outline')
+            exportReportBtn.classList.add('btn-primary')
+        } else {
+            exportReportBtn.textContent = 'Exportar PDF Básico'
+            exportReportBtn.classList.remove('btn-primary')
+            exportReportBtn.classList.add('btn-outline')
+        }
+    }
+    
     // Initialize charts
     setTimeout(() => {
         initializeReportCharts(isPremium)
@@ -1818,9 +1832,421 @@ function closeReportModal() {
 }
 
 // Export report to PDF
-function exportReportToPDF() {
-    showToast('Exportando...', 'A funcionalidade de exportação PDF será implementada em breve.', 'info')
-    // TODO: Implement PDF export using jsPDF or similar library
+async function exportReportToPDF() {
+    const reportModal = document.getElementById('reportModal')
+    const reportHeader = document.querySelector('#reportModal .report-modal-header')
+    const reportBody = document.getElementById('reportBody')
+    const exportBtn = document.getElementById('exportReportBtn')
+
+    if (!reportModal || !reportBody || reportModal.style.display === 'none') {
+        showToast('Erro', 'Abra o relatório antes de exportar.', 'error')
+        return
+    }
+
+    if (!window.html2canvas || !window.jspdf?.jsPDF) {
+        showToast('Erro', 'Bibliotecas de exportação não foram carregadas.', 'error')
+        return
+    }
+
+    // Verificar se é usuário premium
+    const isPremium = isPremiumUser()
+    
+    // Se não for premium, mostrar opção de upgrade
+    if (!isPremium) {
+        const upgrade = await showConfirm({
+            title: '🔒 Exportação Premium',
+            message: `
+                <div style="text-align: left; padding: 1rem 0;">
+                    <p>Você está usando o plano <strong>Básico</strong>.</p>
+                    <p><strong>Exportação Básica inclui:</strong></p>
+                    <ul style="list-style: none; padding: 0; margin: 1rem 0;">
+                        <li style="padding: 0.5rem 0;">✅ Resumo financeiro</li>
+                        <li style="padding: 0.5rem 0;">✅ Gráfico de Receitas vs Despesas</li>
+                        <li style="padding: 0.5rem 0;">✅ Gráfico de Distribuição</li>
+                    </ul>
+                    <p><strong>Com Premium você teria:</strong></p>
+                    <ul style="list-style: none; padding: 0; margin: 1rem 0;">
+                        <li style="padding: 0.5rem 0;">✨ Análise de Tendências</li>
+                        <li style="padding: 0.5rem 0;">✨ Projeções Futuras</li>
+                        <li style="padding: 0.5rem 0;">✨ Recomendações Personalizadas</li>
+                        <li style="padding: 0.5rem 0;">✨ Exportação em alta qualidade</li>
+                    </ul>
+                </div>
+            `,
+            confirmText: 'Continuar Exportação Básica',
+            cancelText: 'Fazer Upgrade Agora'
+        })
+
+        if (upgrade === false) {
+            // Usuário escolheu fazer upgrade
+            showUpgradeModal()
+            return
+        }
+    }
+
+    const originalText = exportBtn?.textContent
+    if (exportBtn) {
+        exportBtn.disabled = true
+        exportBtn.textContent = 'Exportando...'
+    }
+
+    const exportType = isPremium ? 'completo' : 'básico'
+    showToast('Exportando...', `Gerando PDF ${exportType} com os gráficos do relatório. Aguarde...`, 'info')
+
+    try {
+        // Aguardar os gráficos renderizarem completamente (apenas os disponíveis)
+        await waitForChartsToRender(isPremium)
+
+        // Criar um container temporário para exportação (sem footer e botões)
+        const exportContainer = document.createElement('div')
+        exportContainer.style.position = 'absolute'
+        exportContainer.style.left = '-9999px'
+        exportContainer.style.width = '900px'
+        exportContainer.style.backgroundColor = '#ffffff'
+        exportContainer.style.padding = '2rem'
+        exportContainer.style.fontFamily = 'system-ui, -apple-system, sans-serif'
+        exportContainer.style.color = '#1e293b'
+        exportContainer.style.lineHeight = '1.6'
+        
+        // Clonar o header
+        if (reportHeader) {
+            const headerClone = reportHeader.cloneNode(true)
+            // Remover o botão de fechar
+            const closeBtn = headerClone.querySelector('.report-close-btn')
+            if (closeBtn) closeBtn.remove()
+            
+            // Aplicar estilos ao header
+            headerClone.style.borderBottom = '2px solid #e2e8f0'
+            headerClone.style.paddingBottom = '1rem'
+            headerClone.style.marginBottom = '1.5rem'
+            const headerTitle = headerClone.querySelector('h2')
+            if (headerTitle) {
+                headerTitle.style.color = '#1e293b'
+                headerTitle.style.margin = '0'
+                headerTitle.style.fontSize = '1.75rem'
+                headerTitle.style.fontWeight = '700'
+            }
+            
+            exportContainer.appendChild(headerClone)
+        }
+
+        // Clonar o body com todo o conteúdo
+        const bodyClone = reportBody.cloneNode(true)
+        
+        // Filtrar conteúdo baseado no nível do usuário
+        if (!isPremium) {
+            // Remover todas as seções premium
+            const allSections = bodyClone.querySelectorAll('.report-section')
+            allSections.forEach(section => {
+                const title = section.querySelector('h3')
+                if (title) {
+                    const titleText = title.textContent
+                    // Remover seções premium
+                    if (titleText.includes('Tendências') || 
+                        titleText.includes('Projeções') || 
+                        titleText.includes('Recomendações')) {
+                        section.remove()
+                    }
+                }
+            })
+            
+            // Remover gráficos premium diretamente (caso ainda existam)
+            const trendsChart = bodyClone.querySelector('#trendsChart')
+            if (trendsChart) {
+                const trendsSection = trendsChart.closest('.report-section')
+                if (trendsSection) trendsSection.remove()
+            }
+            
+            const projectionsChart = bodyClone.querySelector('#projectionsChart')
+            if (projectionsChart) {
+                const projectionsSection = projectionsChart.closest('.report-section')
+                if (projectionsSection) projectionsSection.remove()
+            }
+            
+            // Remover banner de upgrade se existir
+            const upgradeBanner = bodyClone.querySelector('.report-upgrade-banner')
+            if (upgradeBanner) {
+                const bannerSection = upgradeBanner.closest('.report-section')
+                if (bannerSection) {
+                    bannerSection.remove()
+                } else {
+                    upgradeBanner.remove()
+                }
+            }
+            
+            // Adicionar banner informativo sobre upgrade no PDF
+            const upgradeInfo = document.createElement('div')
+            upgradeInfo.className = 'report-section'
+            upgradeInfo.style.cssText = `
+                background: linear-gradient(135deg, #4a90e2, #357abd);
+                border-radius: 8px;
+                padding: 1.5rem;
+                margin-bottom: 2rem;
+                color: white;
+                text-align: center;
+            `
+            upgradeInfo.innerHTML = `
+                <h3 style="color: white; margin: 0 0 0.5rem 0; font-size: 1.25rem;">🚀 Desbloqueie Exportação Premium!</h3>
+                <p style="color: rgba(255,255,255,0.9); margin: 0 0 1rem 0; font-size: 0.9rem;">
+                    Faça upgrade para ter acesso a análises avançadas, projeções futuras e recomendações personalizadas no seu PDF.
+                </p>
+                <p style="color: rgba(255,255,255,0.8); margin: 0; font-size: 0.85rem; font-weight: 600;">
+                    Visite o dashboard para fazer upgrade agora!
+                </p>
+            `
+            bodyClone.insertBefore(upgradeInfo, bodyClone.firstChild)
+        }
+        
+        // Aplicar estilos aos elementos do body
+        const sections = bodyClone.querySelectorAll('.report-section')
+        sections.forEach(section => {
+            section.style.marginBottom = '2.5rem'
+            section.style.pageBreakInside = 'avoid'
+            
+            const sectionTitle = section.querySelector('h3')
+            if (sectionTitle) {
+                sectionTitle.style.color = '#1e293b'
+                sectionTitle.style.fontSize = '1.5rem'
+                sectionTitle.style.fontWeight = '600'
+                sectionTitle.style.marginBottom = '1.5rem'
+                sectionTitle.style.marginTop = '0'
+            }
+        })
+        
+        // Estilizar cards de resumo
+        const summaryCards = bodyClone.querySelectorAll('.report-summary-card')
+        summaryCards.forEach(card => {
+            card.style.backgroundColor = '#f8fafc'
+            card.style.border = '1px solid #e2e8f0'
+            card.style.borderRadius = '8px'
+            card.style.padding = '1.5rem'
+            card.style.textAlign = 'center'
+            
+            const label = card.querySelector('.label')
+            if (label) {
+                label.style.color = '#64748b'
+                label.style.fontSize = '0.875rem'
+                label.style.marginBottom = '0.5rem'
+            }
+            
+            const value = card.querySelector('.value')
+            if (value) {
+                value.style.color = value.style.color || '#1e293b'
+                value.style.fontSize = '1.75rem'
+                value.style.fontWeight = '700'
+            }
+        })
+        
+        // Estilizar containers de gráficos
+        const chartContainers = bodyClone.querySelectorAll('.report-chart-container')
+        chartContainers.forEach(container => {
+            container.style.backgroundColor = '#ffffff'
+            container.style.border = '1px solid #e2e8f0'
+            container.style.borderRadius = '8px'
+            container.style.padding = '1rem'
+            container.style.marginBottom = '1.5rem'
+            container.style.pageBreakInside = 'avoid'
+            
+            const canvas = container.querySelector('canvas')
+            if (canvas) {
+                const chartId = canvas.id
+                const originalCanvas = document.getElementById(chartId)
+                if (originalCanvas) {
+                    const chart = Chart.getChart(originalCanvas)
+                    if (chart) {
+                        // Criar uma imagem do gráfico com alta qualidade
+                        const img = document.createElement('img')
+                        img.src = chart.toBase64Image('image/png', 1.0)
+                        img.style.width = '100%'
+                        img.style.height = 'auto'
+                        img.style.display = 'block'
+                        img.style.maxWidth = '100%'
+                        
+                        // Substituir o canvas pela imagem
+                        canvas.parentNode.replaceChild(img, canvas)
+                    }
+                }
+            }
+        })
+        
+        // Estilizar lista de recomendações
+        const recommendations = bodyClone.querySelectorAll('.report-section ul')
+        recommendations.forEach(ul => {
+            ul.style.listStyle = 'none'
+            ul.style.padding = '0'
+            ul.style.margin = '0'
+            
+            const lis = ul.querySelectorAll('li')
+            lis.forEach(li => {
+                li.style.padding = '0.75rem 0'
+                li.style.borderBottom = '1px solid #e2e8f0'
+                li.style.color = '#1e293b'
+            })
+        })
+        
+        exportContainer.appendChild(bodyClone)
+
+        // Adicionar ao DOM temporariamente
+        document.body.appendChild(exportContainer)
+
+        // Aguardar imagens dos gráficos carregarem
+        const images = exportContainer.querySelectorAll('img')
+        const imagePromises = Array.from(images).map(img => {
+            return new Promise((resolve) => {
+                if (img.complete) {
+                    resolve()
+                } else {
+                    img.onload = resolve
+                    img.onerror = resolve // Continuar mesmo se houver erro
+                    setTimeout(resolve, 1000) // Timeout de segurança
+                }
+            })
+        })
+        await Promise.all(imagePromises)
+
+        // Aguardar frames para garantir renderização completa
+        await new Promise(resolve => requestAnimationFrame(resolve))
+        await new Promise(resolve => requestAnimationFrame(resolve))
+        await new Promise(resolve => setTimeout(resolve, 300))
+
+        // Capturar com alta qualidade
+        const canvas = await window.html2canvas(exportContainer, {
+            backgroundColor: '#ffffff',
+            scale: 2, // Alta qualidade
+            useCORS: true,
+            logging: false,
+            allowTaint: true,
+            width: exportContainer.offsetWidth,
+            height: exportContainer.scrollHeight,
+            windowWidth: exportContainer.scrollWidth,
+            windowHeight: exportContainer.scrollHeight
+        })
+
+        // Remover container temporário
+        document.body.removeChild(exportContainer)
+
+        // Criar PDF
+        const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4')
+        const pageWidth = pdf.internal.pageSize.getWidth()
+        const pageHeight = pdf.internal.pageSize.getHeight()
+        const margin = 10 // Margem de 10mm
+        const contentWidth = pageWidth - (margin * 2)
+        const contentHeight = pageHeight - (margin * 2)
+
+        // Calcular dimensões da imagem
+        const imgWidth = contentWidth
+        const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+        // Converter canvas para imagem
+        const imgData = canvas.toDataURL('image/png', 1.0)
+
+        // Adicionar imagens em páginas múltiplas se necessário
+        let heightLeft = imgHeight
+        let position = 0
+
+        // Primeira página
+        pdf.addImage(
+            imgData,
+            'PNG',
+            margin,
+            margin,
+            imgWidth,
+            imgHeight,
+            undefined,
+            'FAST'
+        )
+        heightLeft -= contentHeight
+
+        // Páginas adicionais se necessário
+        while (heightLeft > 0) {
+            position = margin - (imgHeight - heightLeft)
+            pdf.addPage()
+            pdf.addImage(
+                imgData,
+                'PNG',
+                margin,
+                position,
+                imgWidth,
+                imgHeight,
+                undefined,
+                'FAST'
+            )
+            heightLeft -= contentHeight
+        }
+
+        // Adicionar data de geração no rodapé
+        const totalPages = pdf.internal.getNumberOfPages()
+        for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i)
+            pdf.setFontSize(8)
+            pdf.setTextColor(128, 128, 128)
+            pdf.text(
+                `Gerado em ${new Date().toLocaleString('pt-BR')} - Página ${i} de ${totalPages}`,
+                pageWidth / 2,
+                pageHeight - 5,
+                { align: 'center' }
+            )
+        }
+
+        // Salvar arquivo
+        const fileName = `relatorio-ocean-${new Date().toISOString().slice(0, 10)}.pdf`
+        pdf.save(fileName)
+
+        showToast('Sucesso!', 'Seu relatório com os gráficos foi exportado em PDF.', 'success')
+    } catch (error) {
+        console.error('Erro ao exportar PDF:', error)
+        showToast('Erro', 'Não foi possível exportar o relatório. Tente novamente.', 'error')
+    } finally {
+        if (exportBtn) {
+            exportBtn.disabled = false
+            exportBtn.textContent = originalText || 'Exportar PDF'
+        }
+    }
+}
+
+// Aguardar gráficos renderizarem
+async function waitForChartsToRender(isPremium = true) {
+    // Gráficos básicos sempre disponíveis
+    const basicCharts = ['incomeExpenseChart', 'distributionChart']
+    
+    // Gráficos premium apenas se for usuário premium
+    const premiumCharts = isPremium ? ['trendsChart', 'projectionsChart'] : []
+    
+    const chartIds = [...basicCharts, ...premiumCharts]
+    const promises = chartIds.map(id => {
+        return new Promise((resolve) => {
+            const canvas = document.getElementById(id)
+            if (!canvas) {
+                resolve()
+                return
+            }
+
+            const chart = Chart.getChart(canvas)
+            if (!chart) {
+                resolve()
+                return
+            }
+
+            // Aguardar o chart renderizar
+            chart.update('none')
+            
+            // Aguardar alguns frames para garantir renderização completa
+            let frames = 0
+            const checkRender = () => {
+                frames++
+                if (frames >= 3) {
+                    resolve()
+                } else {
+                    requestAnimationFrame(checkRender)
+                }
+            }
+            requestAnimationFrame(checkRender)
+        })
+    })
+
+    await Promise.all(promises)
+    // Aguardar um pouco mais para garantir que tudo está renderizado
+    await new Promise(resolve => setTimeout(resolve, 300))
 }
 
 // Show upgrade modal
