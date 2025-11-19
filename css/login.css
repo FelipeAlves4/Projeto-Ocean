@@ -202,7 +202,7 @@ body {
 }
 
 .logo-icon {
-    max-width: 120px;
+    max-width: 200px;
     height: auto;
     object-fit: contain;
     transition: var(--transition-ocean);
