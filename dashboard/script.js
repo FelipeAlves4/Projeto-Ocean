@@ -151,6 +151,92 @@ function renderProfilePage() {
     
     // Update header name display
     updateUserProfile()
+    
+    // Update premium plan status
+    updatePremiumPlanStatus()
+}
+
+// Update premium plan status in profile
+function updatePremiumPlanStatus() {
+    const isPremium = isPremiumUser()
+    const premiumCard = document.getElementById('profilePremiumCard')
+    const premiumCardTitle = document.getElementById('premiumCardTitle')
+    const premiumCardSubtitle = document.getElementById('premiumCardSubtitle')
+    const premiumCardFeatures = document.getElementById('premiumCardFeatures')
+    const premiumBadge = document.getElementById('premiumBadge')
+    const profileUpgradeBtn = document.getElementById('profileUpgradeBtn')
+    
+    if (!premiumCard) return
+    
+    if (isPremium) {
+        // Usuário Premium
+        premiumCard.classList.add('premium-active')
+        if (premiumCardTitle) premiumCardTitle.textContent = 'Plano Premium'
+        if (premiumCardSubtitle) premiumCardSubtitle.textContent = 'Acesso completo a todos os recursos'
+        if (premiumBadge) premiumBadge.style.display = 'flex'
+        
+        if (premiumCardFeatures) {
+            premiumCardFeatures.innerHTML = `
+                <div class="premium-feature">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Relatórios completos e avançados</span>
+                </div>
+                <div class="premium-feature">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Análise de tendências e projeções</span>
+                </div>
+                <div class="premium-feature">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Recomendações personalizadas</span>
+                </div>
+                <div class="premium-feature">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Exportação em alta qualidade</span>
+                </div>
+            `
+        }
+        
+        if (profileUpgradeBtn) profileUpgradeBtn.style.display = 'none'
+    } else {
+        // Usuário Básico
+        premiumCard.classList.remove('premium-active')
+        if (premiumCardTitle) premiumCardTitle.textContent = 'Plano Básico'
+        if (premiumCardSubtitle) premiumCardSubtitle.textContent = 'Acesse recursos limitados'
+        if (premiumBadge) premiumBadge.style.display = 'none'
+        
+        if (premiumCardFeatures) {
+            premiumCardFeatures.innerHTML = `
+                <div class="premium-feature">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Relatórios básicos</span>
+                </div>
+                <div class="premium-feature">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Gráficos essenciais</span>
+                </div>
+                <div class="premium-feature">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Exportação básica</span>
+                </div>
+            `
+        }
+        
+        if (profileUpgradeBtn) profileUpgradeBtn.style.display = 'block'
+    }
 }
 
 // Update profile on page load
@@ -746,6 +832,14 @@ window.addEventListener("load", () => {
     const upgradeReportBtn = document.getElementById("upgradeReportBtn")
     if (upgradeReportBtn) {
         upgradeReportBtn.addEventListener("click", () => {
+            showUpgradeModal()
+        })
+    }
+
+    // Profile upgrade button
+    const profileUpgradeBtn = document.getElementById("profileUpgradeBtn")
+    if (profileUpgradeBtn) {
+        profileUpgradeBtn.addEventListener("click", () => {
             showUpgradeModal()
         })
     }
@@ -2292,9 +2386,20 @@ function showUpgradeModal() {
             // Simulate premium upgrade
             localStorage.setItem('isPremium', 'true')
             showToast('Upgrade realizado!', 'Agora você tem acesso a todos os recursos Premium.', 'success')
-            setTimeout(() => {
-                generateFinancialReport()
-            }, 1000)
+            
+            // Atualizar status do perfil se estiver na página de perfil
+            const currentSection = document.querySelector('.page-section.active')
+            if (currentSection && currentSection.getAttribute('data-section-content') === 'perfil') {
+                updatePremiumPlanStatus()
+            }
+            
+            // Atualizar relatório se estiver aberto
+            const reportModal = document.getElementById('reportModal')
+            if (reportModal && reportModal.style.display === 'flex') {
+                setTimeout(() => {
+                    generateFinancialReport()
+                }, 500)
+            }
         }
     })
 }
