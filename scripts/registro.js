@@ -37,6 +37,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (passwordInput) passwordInput.focus();
             return;
         }
+        const grecaptcha = window.grecaptcha;
+        const captchaToken = grecaptcha ? grecaptcha.getResponse() : '';
+        if (!captchaToken) {
+            showToast('Verificação pendente', 'Marque o reCAPTCHA para continuar.', 'warning');
+            grecaptcha && grecaptcha.reset();
+            return;
+        }
 
         if (submitBtn && btnText && btnArrow && loadingSpinner) {
             submitBtn.disabled = true;
@@ -59,7 +66,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 body: JSON.stringify({
                     username: usuario,
-                    password: senha
+                    password: senha,
+                    captchaToken
                 }),
             });
 
@@ -90,6 +98,9 @@ document.addEventListener('DOMContentLoaded', function () {
             showToast('Erro ao registrar', msg, msg.includes('existe') ? 'warning' : 'error');
             if (msg.toLowerCase().includes('senha')) { if (passwordInput) passwordInput.focus(); }
             else if (emailInput) { emailInput.focus(); }
+            if (window.grecaptcha) {
+                window.grecaptcha.reset();
+            }
         } finally {
             if (submitBtn && btnText && btnArrow && loadingSpinner) {
                 setTimeout(() => {
@@ -101,6 +112,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         loadingSpinner.style.display = 'none';
                     }
                 }, 800);
+            }
+            if (window.grecaptcha && window.location.href.endsWith('registro.html')) {
+                window.grecaptcha.reset();
             }
         }
     });
