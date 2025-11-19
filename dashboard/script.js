@@ -33,90 +33,23 @@ if (!checkAuthentication()) {
 // Get current user email
 const currentUser = localStorage.getItem('usuario') || 'guest';
 
-// Default data structure
+// Default data structure (vazio para novos usuários)
 const defaultData = {
-    tasks: [
-        { id: 1, name: "Reunião de planejamento", status: "pending", createdAt: new Date().toISOString() },
-        { id: 2, name: "Revisar documentação", status: "pending", createdAt: new Date().toISOString() },
-        { id: 3, name: "Atualizar relatório", status: "completed", createdAt: new Date().toISOString() },
-        { id: 4, name: "Preparar apresentação", status: "pending", createdAt: new Date().toISOString() },
-        { id: 5, name: "Enviar e-mails", status: "completed", createdAt: new Date().toISOString() },
-    ],
-    goals: [
-        {
-            id: 1,
-            title: "Aumentar Produtividade",
-            description: "Completar 20 tarefas por semana",
-            progress: 75,
-            target: 20,
-            current: 15,
-        },
-        {
-            id: 2,
-            title: "Economia Mensal",
-            description: "Economizar R$ 1.000 este mês",
-            progress: 60,
-            target: 1000,
-            current: 600,
-        },
-        {
-            id: 3,
-            title: "Aprendizado Contínuo",
-            description: "Estudar 10 horas por semana",
-            progress: 45,
-            target: 10,
-            current: 4.5,
-        },
-    ],
+    tasks: [],
+    goals: [],
     finances: {
-        income: 4200,
-        expenses: 1360,
-        balance: 2840,
+        income: 0,
+        expenses: 0,
+        balance: 0,
     },
-    transactions: [
-        { id: 1, type: 'income', description: 'Salário', amount: 4200, date: new Date().toISOString(), category: 'Trabalho' },
-        { id: 2, type: 'expense', description: 'Aluguel', amount: 800, date: new Date().toISOString(), category: 'Moradia' },
-        { id: 3, type: 'expense', description: 'Supermercado', amount: 350, date: new Date().toISOString(), category: 'Alimentação' },
-        { id: 4, type: 'expense', description: 'Transporte', amount: 210, date: new Date().toISOString(), category: 'Transporte' },
-    ],
+    transactions: [],
     stats: {
-        tasksCompleted: 12,
-        tasksTotal: 20,
-        productiveTime: 5.2,
-        activeGoals: 4,
+        tasksCompleted: 0,
+        tasksTotal: 0,
+        productiveTime: 0,
+        activeGoals: 0,
     },
-    products: [
-        {
-            id: 1,
-            name: "Notebook Dell",
-            description: "Notebook Dell Inspiron 15 com processador Intel i5",
-            price: 3299.99,
-            category: "eletrônicos",
-            status: "ativo",
-            stock: 15,
-            createdAt: new Date().toISOString()
-        },
-        {
-            id: 2,
-            name: "Camiseta Básica",
-            description: "Camiseta 100% algodão, várias cores disponíveis",
-            price: 49.90,
-            category: "roupas",
-            status: "ativo",
-            stock: 50,
-            createdAt: new Date().toISOString()
-        },
-        {
-            id: 3,
-            name: "Café Premium",
-            description: "Café em grãos torrado, pacote 500g",
-            price: 24.90,
-            category: "alimentos",
-            status: "ativo",
-            stock: 30,
-            createdAt: new Date().toISOString()
-        },
-    ],
+    products: [],
 }
 
 // Load data from localStorage or use default (user-specific)
