@@ -154,6 +154,37 @@ function renderProfilePage() {
     
     // Update premium plan status
     updatePremiumPlanStatus()
+    
+    // Update premium badge in profile name
+    updatePremiumBadge()
+}
+
+// Update premium badge next to user name
+function updatePremiumBadge() {
+    const isPremium = isPremiumUser()
+    const premiumBadge = document.getElementById('premiumUserBadge')
+    
+    if (premiumBadge) {
+        if (isPremium) {
+            premiumBadge.style.display = 'flex'
+        } else {
+            premiumBadge.style.display = 'none'
+        }
+    }
+}
+
+// Update header upgrade button
+function updateHeaderUpgradeButton() {
+    const isPremium = isPremiumUser()
+    const headerUpgradeBtn = document.getElementById('headerUpgradeBtn')
+    
+    if (headerUpgradeBtn) {
+        if (isPremium) {
+            headerUpgradeBtn.style.display = 'none'
+        } else {
+            headerUpgradeBtn.style.display = 'flex'
+        }
+    }
 }
 
 // Update premium plan status in profile
@@ -840,6 +871,14 @@ window.addEventListener("load", () => {
     const profileUpgradeBtn = document.getElementById("profileUpgradeBtn")
     if (profileUpgradeBtn) {
         profileUpgradeBtn.addEventListener("click", () => {
+            showUpgradeModal()
+        })
+    }
+
+    // Header upgrade button
+    const headerUpgradeBtn = document.getElementById("headerUpgradeBtn")
+    if (headerUpgradeBtn) {
+        headerUpgradeBtn.addEventListener("click", () => {
             showUpgradeModal()
         })
     }
@@ -1613,7 +1652,13 @@ document.addEventListener("keydown", (e) => {
 
 // Check if user has premium plan
 function isPremiumUser() {
-    return localStorage.getItem('isPremium') === 'true'
+    // Garantir que usuários novos tenham plano gratuito (básico) por padrão
+    const isPremium = localStorage.getItem('isPremium')
+    if (isPremium === null) {
+        localStorage.setItem('isPremium', 'false')
+        return false
+    }
+    return isPremium === 'true'
 }
 
 // Generate financial report
@@ -2392,6 +2437,10 @@ function showUpgradeModal() {
             if (currentSection && currentSection.getAttribute('data-section-content') === 'perfil') {
                 updatePremiumPlanStatus()
             }
+            
+            // Atualizar badge premium e botão do cabeçalho
+            updatePremiumBadge()
+            updateHeaderUpgradeButton()
             
             // Atualizar relatório se estiver aberto
             const reportModal = document.getElementById('reportModal')

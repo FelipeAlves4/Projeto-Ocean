@@ -114,6 +114,11 @@ class OceanLogin {
             localStorage.setItem('usuario', email);
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('loginTime', new Date().toISOString());
+            
+            // Garantir que usuários novos tenham plano gratuito (básico) por padrão
+            if (!localStorage.getItem('isPremium')) {
+                localStorage.setItem('isPremium', 'false');
+            }
 
             // Redirect to dashboard
             this.showToast('Login Realizado!', 'Bem-vindo ao Ocean Dashboard.', 'success');

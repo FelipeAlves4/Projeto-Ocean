@@ -134,6 +134,14 @@
                     <h1 class="page-title">Dashboard</h1>
                     <p class="page-subtitle">Controle suas tarefas, metas e finanças em um só lugar.</p>
                 </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary header-upgrade-btn" id="headerUpgradeBtn" style="display: none;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+                        </svg>
+                        Fazer Upgrade
+                    </button>
+                </div>
             </header>
 
             <!-- Dashboard Section -->
@@ -588,7 +596,15 @@
                                 <circle cx="12" cy="7" r="4"></circle>
                             </svg>
                         </div>
-                        <h2 class="profile-name" id="profileName">Usuário Ocean</h2>
+                        <div class="profile-name-container">
+                            <h2 class="profile-name" id="profileName">Usuário Ocean</h2>
+                            <span class="premium-user-badge" id="premiumUserBadge" style="display: none;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+                                </svg>
+                                <span>Premium</span>
+                            </span>
+                        </div>
                         <p class="profile-email" id="profileEmail">usuario@ocean.com</p>
                     </div>
 

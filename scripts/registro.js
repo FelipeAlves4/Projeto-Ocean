@@ -87,6 +87,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
             registeredUsers[usuario] = senha;
             localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+            
+            // Definir plano gratuito (básico) por padrão para novos usuários
+            localStorage.setItem('isPremium', 'false');
 
             showToast('Cadastro realizado', 'Usuário registrado com sucesso! Redirecionando...', 'success');
             // Mantém o botão desabilitado até o redirecionamento para evitar duplo envio
