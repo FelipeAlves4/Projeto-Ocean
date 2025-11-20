@@ -275,6 +275,26 @@ body {
     gap: 1rem;
 }
 
+.language-select {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    appearance: none;
+    cursor: pointer;
+    min-width: 150px;
+    transition: var(--transition);
+}
+
+.language-select:hover,
+.language-select:focus {
+    border-color: var(--accent-primary);
+    outline: none;
+}
+
 .header-upgrade-btn {
     display: flex;
     align-items: center;

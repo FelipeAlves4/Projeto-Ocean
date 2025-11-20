@@ -69,6 +69,594 @@ function saveData(data) {
 const appData = loadData()
 
 // ============================================
+// INTERNATIONALIZAÇÃO (I18N)
+// ============================================
+
+const LANGUAGE_STORAGE_KEY = 'oceanDashboardLanguage'
+const SUPPORTED_LANGUAGES = ['pt-BR', 'en-US']
+
+const translations = {
+    'pt-BR': {
+        'aria.languageSelect': 'Selecionar idioma',
+        'aria.mobileMenu': 'Menu',
+        'aria.chatButton': 'Abrir chat de suporte',
+        'aria.chatMinimize': 'Minimizar chat',
+        'aria.chatSend': 'Enviar mensagem',
+        'buttons.today': 'Hoje',
+        'buttons.add': 'Adicionar',
+        'buttons.newTask': 'Nova Tarefa',
+        'buttons.newGoal': 'Nova Meta',
+        'buttons.newTransaction': 'Nova Transação',
+        'buttons.generateReport': 'Gerar Relatório',
+        'buttons.newProduct': 'Novo Produto',
+        'buttons.sendMessage': 'Enviar Mensagem',
+        'buttons.manual': 'Manual do Usuário (PDF)',
+        'buttons.logout': 'Sair',
+        'buttons.clearData': 'Limpar',
+        'buttons.exportData': 'Exportar',
+        'buttons.upgrade': 'Fazer Upgrade',
+        'buttons.upgradePremium': 'Fazer Upgrade para Premium',
+        'buttons.saveChanges': 'Salvar Alterações',
+        'buttons.exportPdf': 'Exportar PDF',
+        'nav.dashboard': 'Dashboard',
+        'nav.tarefas': 'Tarefas',
+        'nav.metas': 'Metas',
+        'nav.financas': 'Finanças',
+        'nav.produtos': 'Produtos',
+        'nav.configuracoes': 'Configurações',
+        'nav.perfil': 'Perfil',
+        'nav.ajuda': 'Ajuda',
+        'header.welcome': 'Bem-vindo',
+        'sections.dashboard.title': 'Dashboard',
+        'sections.dashboard.subtitle': 'Controle suas tarefas, metas e finanças em um só lugar.',
+        'sections.tarefas.title': 'Tarefas',
+        'sections.tarefas.subtitle': 'Gerencie todas as suas tarefas e projetos.',
+        'sections.metas.title': 'Metas',
+        'sections.metas.subtitle': 'Acompanhe o progresso das suas metas.',
+        'sections.financas.title': 'Finanças',
+        'sections.financas.subtitle': 'Controle suas receitas e despesas.',
+        'sections.produtos.title': 'Produtos',
+        'sections.produtos.subtitle': 'Gerencie seu catálogo de produtos.',
+        'sections.configuracoes.title': 'Configurações',
+        'sections.configuracoes.subtitle': 'Personalize sua experiência.',
+        'sections.perfil.title': 'Perfil',
+        'sections.perfil.subtitle': 'Gerencie suas informações pessoais.',
+        'sections.ajuda.title': 'Ajuda',
+        'sections.ajuda.subtitle': 'Encontre respostas para suas dúvidas.',
+        'summary.tasks.title': 'Tarefas Concluídas',
+        'summary.tasks.subtitle': '+2 concluídas desde ontem',
+        'summary.productiveTime.title': 'Tempo Produtivo',
+        'summary.productiveTime.subtitle': '+1.2h em relação à média',
+        'summary.goals.title': 'Metas Ativas',
+        'summary.goals.subtitle': '3 em progresso, 1 atrasada',
+        'summary.financial.title': 'Balanço Financeiro',
+        'summary.financial.subtitle': '+12% em relação ao mês passado',
+        'tabs.tasks': 'Tarefas Recentes',
+        'tabs.progress': 'Progresso de Metas',
+        'tabs.financial': 'Visão Financeira',
+        'tabs.products': 'Produtos',
+        'tabs.tarefas.title': 'Tarefas Recentes',
+        'tabs.tarefas.subtitle': 'Visualize e gerencie suas tarefas pendentes e concluídas',
+        'tabs.progresso.title': 'Progresso de Metas',
+        'tabs.progresso.subtitle': 'Acompanhe o desenvolvimento das suas metas ativas',
+        'tabs.financeira.title': 'Visão Financeira',
+        'tabs.financeira.subtitle': 'Acompanhe suas receitas, despesas e investimentos',
+        'tabs.produtos.title': 'Produtos',
+        'tabs.produtos.subtitle': 'Visualize seus produtos mais recentes',
+        'goals.description.productivity': 'Completar 20 tarefas por semana',
+        'goals.description.savings': 'Economizar R$ 1.000 este mês',
+        'goals.description.learning': 'Estudar 10 horas por semana',
+        'tasks.badges.pending': 'Pendente',
+        'tasks.badges.completed': 'Concluída',
+        'filters.tasks.all': 'Todas',
+        'filters.tasks.pending': 'Pendentes',
+        'filters.tasks.completed': 'Concluídas',
+        'finances.buttons.newTransaction': 'Nova Transação',
+        'finances.buttons.generateReport': 'Gerar Relatório',
+        'finances.labels.receitas': 'Receitas',
+        'finances.labels.despesas': 'Despesas',
+        'finances.labels.saldo': 'Saldo',
+        'finances.transactions.title': 'Transações Recentes',
+        'filters.transactions.all': 'Todas',
+        'filters.transactions.income': 'Receitas',
+        'filters.transactions.expense': 'Despesas',
+        'products.header.title': 'Gerencie seu catálogo de produtos',
+        'products.buttons.new': 'Novo Produto',
+        'filters.products.categories.all': 'Todas as Categorias',
+        'filters.products.categories.eletronicos': 'Eletrônicos',
+        'filters.products.categories.roupas': 'Roupas',
+        'filters.products.categories.alimentos': 'Alimentos',
+        'filters.products.categories.casa': 'Casa',
+        'filters.products.categories.esportes': 'Esportes',
+        'filters.products.categories.outros': 'Outros',
+        'filters.products.status.all': 'Todos os Status',
+        'filters.products.status.ativo': 'Ativo',
+        'filters.products.status.inativo': 'Inativo',
+        'filters.products.status.esgotado': 'Esgotado',
+        'placeholders.products.search': 'Buscar produtos...',
+        'settings.appearance.title': 'Aparência',
+        'settings.theme.title': 'Tema Escuro',
+        'settings.theme.description': 'Alternar entre tema claro e escuro',
+        'settings.notifications.title': 'Notificações',
+        'settings.tasksNotifications.title': 'Notificações de Tarefas',
+        'settings.tasksNotifications.description': 'Receber lembretes sobre tarefas pendentes',
+        'settings.goalsNotifications.title': 'Notificações de Metas',
+        'settings.goalsNotifications.description': 'Receber atualizações sobre progresso de metas',
+        'settings.account.title': 'Conta',
+        'settings.logout.description': 'Sair da sua conta e retornar à página de login',
+        'settings.data.title': 'Dados',
+        'settings.clearData.title': 'Limpar Dados',
+        'settings.clearData.description': 'Remover todos os dados salvos localmente',
+        'settings.exportData.title': 'Exportar Dados',
+        'settings.exportData.description': 'Baixar seus dados em formato JSON',
+        'profile.stats.tasks': 'Tarefas Concluídas',
+        'profile.stats.goals': 'Metas Ativas',
+        'profile.stats.days': 'Dias de Uso',
+        'profile.plan.basicTitle': 'Plano Básico',
+        'profile.plan.basicSubtitle': 'Acesse recursos limitados',
+        'profile.plan.premiumTitle': 'Plano Premium',
+        'profile.plan.premiumSubtitle': 'Acesso completo a todos os recursos',
+        'profile.plan.features.basicReports': 'Relatórios básicos',
+        'profile.plan.features.basicCharts': 'Gráficos essenciais',
+        'profile.plan.features.basicExport': 'Exportação básica',
+        'profile.plan.features.premiumReports': 'Relatórios completos e avançados',
+        'profile.plan.features.premiumTrends': 'Análise de tendências e projeções',
+        'profile.plan.features.premiumRecommendations': 'Recomendações personalizadas',
+        'profile.plan.features.premiumExport': 'Exportação em alta qualidade',
+        'profile.form.title': 'Informações Pessoais',
+        'form.labels.name': 'Nome',
+        'form.labels.email': 'Email',
+        'form.labels.bio': 'Bio',
+        'placeholders.profile.name': 'Seu nome',
+        'placeholders.profile.bio': 'Conte um pouco sobre você...',
+        'placeholders.profile.email': 'seu@email.com',
+        'help.search.placeholder': 'Buscar ajuda...',
+        'help.faq.title': 'Perguntas Frequentes',
+        'faq.q1.question': 'Como adicionar uma nova tarefa?',
+        'faq.q1.answer': 'Para adicionar uma nova tarefa, clique no botão "Adicionar" no topo da página ou use o atalho Ctrl+K. Você também pode ir até a seção de Tarefas e clicar em "Nova Tarefa".',
+        'faq.q2.question': 'Como acompanhar o progresso das minhas metas?',
+        'faq.q2.answer': 'Acesse a seção "Metas" no menu lateral. Lá você pode visualizar todas as suas metas, atualizar o progresso clicando em "Atualizar Progresso" e acompanhar a porcentagem de conclusão de cada uma.',
+        'faq.q3.question': 'Como gerenciar minhas finanças?',
+        'faq.q3.answer': 'Na seção "Finanças", você pode adicionar receitas e despesas, visualizar seu saldo total e acompanhar transações recentes. Use o botão "Nova Transação" para registrar movimentações financeiras.',
+        'faq.q4.question': 'Como exportar meus dados?',
+        'faq.q4.answer': 'Vá até "Configurações" e role até a seção "Dados". Clique em "Exportar Dados" para baixar um arquivo JSON com todas as suas informações.',
+        'faq.q5.question': 'Meus dados estão seguros?',
+        'faq.q5.answer': 'Sim! Todos os seus dados são armazenados localmente no seu navegador usando localStorage. Nenhuma informação é enviada para servidores externos.',
+        'help.contact.title': 'Precisa de mais ajuda?',
+        'help.contact.text': 'Entre em contato conosco através do email: suporte@ocean.com',
+        'buttons.help.manual': 'Manual do Usuário (PDF)',
+        'modal.report.title': 'Relatório Financeiro',
+        'chat.title': 'Suporte Ocean',
+        'chat.status': 'Online agora',
+        'chat.initialMessage': 'Olá! 👋 Bem-vindo ao suporte Ocean. Como posso ajudá-lo hoje?',
+        'chat.message.now': 'Agora',
+        'chat.suggestion.addTask': 'Como adicionar uma tarefa?',
+        'chat.suggestion.manageFinance': 'Como gerenciar finanças?',
+        'chat.suggestion.productHelp': 'Ajuda com produtos',
+        'placeholders.chat.input': 'Digite sua mensagem...'
+    },
+    'en-US': {
+        'aria.languageSelect': 'Select language',
+        'aria.mobileMenu': 'Menu',
+        'aria.chatButton': 'Open support chat',
+        'aria.chatMinimize': 'Minimize chat',
+        'aria.chatSend': 'Send message',
+        'buttons.today': 'Today',
+        'buttons.add': 'Add',
+        'buttons.newTask': 'New Task',
+        'buttons.newGoal': 'New Goal',
+        'buttons.newTransaction': 'New Transaction',
+        'buttons.generateReport': 'Generate Report',
+        'buttons.newProduct': 'New Product',
+        'buttons.sendMessage': 'Send Message',
+        'buttons.manual': 'User Manual (PDF)',
+        'buttons.logout': 'Log Out',
+        'buttons.clearData': 'Clear',
+        'buttons.exportData': 'Export',
+        'buttons.upgrade': 'Upgrade',
+        'buttons.upgradePremium': 'Upgrade to Premium',
+        'buttons.saveChanges': 'Save Changes',
+        'buttons.exportPdf': 'Export PDF',
+        'nav.dashboard': 'Dashboard',
+        'nav.tarefas': 'Tasks',
+        'nav.metas': 'Goals',
+        'nav.financas': 'Finances',
+        'nav.produtos': 'Products',
+        'nav.configuracoes': 'Settings',
+        'nav.perfil': 'Profile',
+        'nav.ajuda': 'Help',
+        'header.welcome': 'Welcome',
+        'sections.dashboard.title': 'Dashboard',
+        'sections.dashboard.subtitle': 'Manage your tasks, goals, and finances in one place.',
+        'sections.tarefas.title': 'Tasks',
+        'sections.tarefas.subtitle': 'Manage all of your tasks and projects.',
+        'sections.metas.title': 'Goals',
+        'sections.metas.subtitle': 'Track the progress of your goals.',
+        'sections.financas.title': 'Finances',
+        'sections.financas.subtitle': 'Control your income and expenses.',
+        'sections.produtos.title': 'Products',
+        'sections.produtos.subtitle': 'Manage your product catalog.',
+        'sections.configuracoes.title': 'Settings',
+        'sections.configuracoes.subtitle': 'Customize your experience.',
+        'sections.perfil.title': 'Profile',
+        'sections.perfil.subtitle': 'Manage your personal information.',
+        'sections.ajuda.title': 'Help',
+        'sections.ajuda.subtitle': 'Find answers to your questions.',
+        'summary.tasks.title': 'Completed Tasks',
+        'summary.tasks.subtitle': '+2 completed since yesterday',
+        'summary.productiveTime.title': 'Productive Time',
+        'summary.productiveTime.subtitle': '+1.2h compared to average',
+        'summary.goals.title': 'Active Goals',
+        'summary.goals.subtitle': '3 in progress, 1 delayed',
+        'summary.financial.title': 'Financial Balance',
+        'summary.financial.subtitle': '+12% compared to last month',
+        'tabs.tasks': 'Recent Tasks',
+        'tabs.progress': 'Goals Progress',
+        'tabs.financial': 'Financial Overview',
+        'tabs.products': 'Products',
+        'tabs.tarefas.title': 'Recent Tasks',
+        'tabs.tarefas.subtitle': 'View and manage your pending and completed tasks',
+        'tabs.progresso.title': 'Goals Progress',
+        'tabs.progresso.subtitle': 'Track the development of your active goals',
+        'tabs.financeira.title': 'Financial Overview',
+        'tabs.financeira.subtitle': 'Track your income, expenses, and investments',
+        'tabs.produtos.title': 'Products',
+        'tabs.produtos.subtitle': 'See your most recent products',
+        'goals.description.productivity': 'Complete 20 tasks per week',
+        'goals.description.savings': 'Save R$ 1,000 this month',
+        'goals.description.learning': 'Study 10 hours per week',
+        'tasks.badges.pending': 'Pending',
+        'tasks.badges.completed': 'Completed',
+        'filters.tasks.all': 'All',
+        'filters.tasks.pending': 'Pending',
+        'filters.tasks.completed': 'Completed',
+        'finances.buttons.newTransaction': 'New Transaction',
+        'finances.buttons.generateReport': 'Generate Report',
+        'finances.labels.receitas': 'Income',
+        'finances.labels.despesas': 'Expenses',
+        'finances.labels.saldo': 'Balance',
+        'finances.transactions.title': 'Recent Transactions',
+        'filters.transactions.all': 'All',
+        'filters.transactions.income': 'Income',
+        'filters.transactions.expense': 'Expenses',
+        'products.header.title': 'Manage your product catalog',
+        'products.buttons.new': 'New Product',
+        'filters.products.categories.all': 'All Categories',
+        'filters.products.categories.eletronicos': 'Electronics',
+        'filters.products.categories.roupas': 'Clothing',
+        'filters.products.categories.alimentos': 'Food',
+        'filters.products.categories.casa': 'Home',
+        'filters.products.categories.esportes': 'Sports',
+        'filters.products.categories.outros': 'Other',
+        'filters.products.status.all': 'All Statuses',
+        'filters.products.status.ativo': 'Active',
+        'filters.products.status.inativo': 'Inactive',
+        'filters.products.status.esgotado': 'Out of Stock',
+        'placeholders.products.search': 'Search products...',
+        'settings.appearance.title': 'Appearance',
+        'settings.theme.title': 'Dark Theme',
+        'settings.theme.description': 'Toggle between light and dark themes',
+        'settings.notifications.title': 'Notifications',
+        'settings.tasksNotifications.title': 'Task Notifications',
+        'settings.tasksNotifications.description': 'Receive reminders about pending tasks',
+        'settings.goalsNotifications.title': 'Goal Notifications',
+        'settings.goalsNotifications.description': 'Get updates about your goal progress',
+        'settings.account.title': 'Account',
+        'settings.logout.description': 'Sign out and return to the login page',
+        'settings.data.title': 'Data',
+        'settings.clearData.title': 'Clear Data',
+        'settings.clearData.description': 'Remove all locally saved data',
+        'settings.exportData.title': 'Export Data',
+        'settings.exportData.description': 'Download your data in JSON format',
+        'profile.stats.tasks': 'Completed Tasks',
+        'profile.stats.goals': 'Active Goals',
+        'profile.stats.days': 'Days of Use',
+        'profile.plan.basicTitle': 'Basic Plan',
+        'profile.plan.basicSubtitle': 'Access limited features',
+        'profile.plan.premiumTitle': 'Premium Plan',
+        'profile.plan.premiumSubtitle': 'Full access to every feature',
+        'profile.plan.features.basicReports': 'Basic reports',
+        'profile.plan.features.basicCharts': 'Essential charts',
+        'profile.plan.features.basicExport': 'Basic export',
+        'profile.plan.features.premiumReports': 'Comprehensive advanced reports',
+        'profile.plan.features.premiumTrends': 'Trend and forecast analysis',
+        'profile.plan.features.premiumRecommendations': 'Personalized recommendations',
+        'profile.plan.features.premiumExport': 'High-quality export',
+        'profile.form.title': 'Personal Information',
+        'form.labels.name': 'Name',
+        'form.labels.email': 'Email',
+        'form.labels.bio': 'Bio',
+        'placeholders.profile.name': 'Your name',
+        'placeholders.profile.bio': 'Tell us a bit about yourself...',
+        'placeholders.profile.email': 'your@email.com',
+        'help.search.placeholder': 'Search for help...',
+        'help.faq.title': 'Frequently Asked Questions',
+        'faq.q1.question': 'How do I add a new task?',
+        'faq.q1.answer': 'Click the "Add" button at the top of the page or use the Ctrl+K shortcut. You can also open the Tasks section and click "New Task".',
+        'faq.q2.question': 'How can I track my goals?',
+        'faq.q2.answer': 'Open the "Goals" section in the sidebar. There you can view every goal, update progress and follow each completion percentage.',
+        'faq.q3.question': 'How do I manage my finances?',
+        'faq.q3.answer': 'Inside the "Finances" section you can add income and expenses, view your total balance, and review recent transactions. Use the "New Transaction" button to record movements.',
+        'faq.q4.question': 'How do I export my data?',
+        'faq.q4.answer': 'Go to "Settings" and scroll to the "Data" area. Click "Export Data" to download a JSON file with all your information.',
+        'faq.q5.question': 'Is my data safe?',
+        'faq.q5.answer': 'Yes! All of your data stays locally in your browser via localStorage. Nothing is sent to external servers.',
+        'help.contact.title': 'Need more help?',
+        'help.contact.text': 'Reach us via email: suporte@ocean.com',
+        'buttons.help.manual': 'User Manual (PDF)',
+        'modal.report.title': 'Financial Report',
+        'chat.title': 'Ocean Support',
+        'chat.status': 'Online now',
+        'chat.initialMessage': 'Hi! 👋 Welcome to Ocean support. How can I help you today?',
+        'chat.message.now': 'Now',
+        'chat.suggestion.addTask': 'How to add a task?',
+        'chat.suggestion.manageFinance': 'How to manage finances?',
+        'chat.suggestion.productHelp': 'Help with products',
+        'placeholders.chat.input': 'Type your message...'
+    }
+}
+
+let currentLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY) || 'pt-BR'
+let currentSection = 'dashboard'
+
+function t(key, lang = currentLanguage) {
+    const normalizedLang = SUPPORTED_LANGUAGES.includes(lang) ? lang : 'pt-BR'
+    return translations[normalizedLang]?.[key] ?? translations['pt-BR'][key] ?? key
+}
+
+function setElementTextContent(element, text, preserveChildren = false) {
+    if (!element) return
+    if (!preserveChildren || element.children.length === 0) {
+        element.textContent = text
+        return
+    }
+    const textNode = Array.from(element.childNodes).find(
+        (node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0
+    )
+    if (textNode) {
+        const prefix = element.children.length > 0 ? ' ' : ''
+        textNode.textContent = `${prefix}${text}`
+    } else {
+        element.appendChild(document.createTextNode(` ${text}`))
+    }
+}
+
+function updateElementContent(element, key, type = 'text', options = {}) {
+    if (!element || !key) return
+    const value = t(key)
+    const preserveChildren = options.preserveChildren ?? false
+
+    switch (type) {
+        case 'text':
+            setElementTextContent(element, value, preserveChildren)
+            break
+        case 'placeholder':
+            element.setAttribute('placeholder', value)
+            break
+        case 'aria-label':
+            element.setAttribute('aria-label', value)
+            break
+        case 'html':
+            element.innerHTML = value
+            break
+        case 'value':
+            element.value = value
+            break
+        default:
+            setElementTextContent(element, value, preserveChildren)
+            break
+    }
+}
+
+const translationBindings = [
+    { selector: '#languageSelect', key: 'aria.languageSelect', type: 'aria-label' },
+    { selector: '#mobileMenuBtn', key: 'aria.mobileMenu', type: 'aria-label' },
+    { selector: '.action-buttons .btn-primary', key: 'buttons.today', preserveChildren: true },
+    { selector: '.action-buttons .btn-outline', key: 'buttons.add', preserveChildren: true },
+    { selector: '.nav-item[data-section="dashboard"] span', key: 'nav.dashboard' },
+    { selector: '.nav-item[data-section="tarefas"] span', key: 'nav.tarefas' },
+    { selector: '.nav-item[data-section="metas"] span', key: 'nav.metas' },
+    { selector: '.nav-item[data-section="financas"] span', key: 'nav.financas' },
+    { selector: '.nav-item[data-section="produtos"] span', key: 'nav.produtos' },
+    { selector: '.nav-item[data-section="configuracoes"] span', key: 'nav.configuracoes' },
+    { selector: '.nav-item[data-section="perfil"] span', key: 'nav.perfil' },
+    { selector: '.nav-item[data-section="ajuda"] span', key: 'nav.ajuda' },
+    { selector: '.welcome-text', key: 'header.welcome' },
+    { selector: '.header-upgrade-btn', key: 'buttons.upgrade', preserveChildren: true },
+    { selector: '.summary-card:nth-child(1) .card-title', key: 'summary.tasks.title' },
+    { selector: '.summary-card:nth-child(1) .card-subtitle', key: 'summary.tasks.subtitle' },
+    { selector: '.summary-card:nth-child(2) .card-title', key: 'summary.productiveTime.title' },
+    { selector: '.summary-card:nth-child(2) .card-subtitle', key: 'summary.productiveTime.subtitle' },
+    { selector: '.summary-card:nth-child(3) .card-title', key: 'summary.goals.title' },
+    { selector: '.summary-card:nth-child(3) .card-subtitle', key: 'summary.goals.subtitle' },
+    { selector: '.summary-card:nth-child(4) .card-title', key: 'summary.financial.title' },
+    { selector: '.summary-card:nth-child(4) .card-subtitle', key: 'summary.financial.subtitle' },
+    { selector: '.tab-btn[data-tab="tarefas"]', key: 'tabs.tasks', preserveChildren: true },
+    { selector: '.tab-btn[data-tab="progresso"]', key: 'tabs.progress', preserveChildren: true },
+    { selector: '.tab-btn[data-tab="financeira"]', key: 'tabs.financial', preserveChildren: true },
+    { selector: '.tab-btn[data-tab="produtos"]', key: 'tabs.products', preserveChildren: true },
+    { selector: '.tab-panel[data-panel="tarefas"] .section-title', key: 'tabs.tarefas.title' },
+    { selector: '.tab-panel[data-panel="tarefas"] .section-subtitle', key: 'tabs.tarefas.subtitle' },
+    { selector: '.tab-panel[data-panel="tarefas"] .badge-pending', key: 'tasks.badges.pending' },
+    { selector: '.tab-panel[data-panel="tarefas"] .badge-completed', key: 'tasks.badges.completed' },
+    { selector: '.tab-panel[data-panel="progresso"] .section-title', key: 'tabs.progresso.title' },
+    { selector: '.tab-panel[data-panel="progresso"] .section-subtitle', key: 'tabs.progresso.subtitle' },
+    { selector: '.goal-card:nth-child(1) .goal-description', key: 'goals.description.productivity' },
+    { selector: '.goal-card:nth-child(2) .goal-description', key: 'goals.description.savings' },
+    { selector: '.goal-card:nth-child(3) .goal-description', key: 'goals.description.learning' },
+    { selector: '.tab-panel[data-panel="financeira"] .section-title', key: 'tabs.financeira.title' },
+    { selector: '.tab-panel[data-panel="financeira"] .section-subtitle', key: 'tabs.financeira.subtitle' },
+    { selector: '.finance-card.finance-income .finance-label', key: 'finances.labels.receitas' },
+    { selector: '.finance-card.finance-expense .finance-label', key: 'finances.labels.despesas' },
+    { selector: '.finance-card.finance-balance .finance-label', key: 'finances.labels.saldo' },
+    { selector: '.tab-panel[data-panel="produtos"] .section-title', key: 'tabs.produtos.title' },
+    { selector: '.tab-panel[data-panel="produtos"] .section-subtitle', key: 'tabs.produtos.subtitle' },
+    { selector: '#addTaskBtn', key: 'buttons.newTask', preserveChildren: true },
+    { selector: '#taskFilter option[value="all"]', key: 'filters.tasks.all' },
+    { selector: '#taskFilter option[value="pending"]', key: 'filters.tasks.pending' },
+    { selector: '#taskFilter option[value="completed"]', key: 'filters.tasks.completed' },
+    { selector: '#addGoalBtn', key: 'buttons.newGoal', preserveChildren: true },
+    { selector: '#addTransactionBtn span', key: 'finances.buttons.newTransaction' },
+    { selector: '#generateReportBtn span', key: 'finances.buttons.generateReport' },
+    { selector: '.page-section[data-section-content="financas"] h3.section-title', key: 'finances.transactions.title' },
+    { selector: '#transactionFilter option[value="all"]', key: 'filters.transactions.all' },
+    { selector: '#transactionFilter option[value="income"]', key: 'filters.transactions.income' },
+    { selector: '#transactionFilter option[value="expense"]', key: 'filters.transactions.expense' },
+    { selector: '.page-section[data-section-content="produtos"] .section-title', key: 'products.header.title' },
+    { selector: '#addProductBtn span', key: 'products.buttons.new' },
+    { selector: '#productCategoryFilter option[value="all"]', key: 'filters.products.categories.all' },
+    { selector: '#productCategoryFilter option[value="eletrônicos"]', key: 'filters.products.categories.eletronicos' },
+    { selector: '#productCategoryFilter option[value="roupas"]', key: 'filters.products.categories.roupas' },
+    { selector: '#productCategoryFilter option[value="alimentos"]', key: 'filters.products.categories.alimentos' },
+    { selector: '#productCategoryFilter option[value="casa"]', key: 'filters.products.categories.casa' },
+    { selector: '#productCategoryFilter option[value="esportes"]', key: 'filters.products.categories.esportes' },
+    { selector: '#productCategoryFilter option[value="outros"]', key: 'filters.products.categories.outros' },
+    { selector: '#productStatusFilter option[value="all"]', key: 'filters.products.status.all' },
+    { selector: '#productStatusFilter option[value="ativo"]', key: 'filters.products.status.ativo' },
+    { selector: '#productStatusFilter option[value="inativo"]', key: 'filters.products.status.inativo' },
+    { selector: '#productStatusFilter option[value="esgotado"]', key: 'filters.products.status.esgotado' },
+    { selector: '#productSearchInput', key: 'placeholders.products.search', type: 'placeholder' },
+    { selector: '.settings-card:nth-of-type(1) .settings-title', key: 'settings.appearance.title' },
+    { selector: '.settings-card:nth-of-type(1) .settings-item-label', key: 'settings.theme.title' },
+    { selector: '.settings-card:nth-of-type(1) .settings-item-description', key: 'settings.theme.description' },
+    { selector: '.settings-card:nth-of-type(2) .settings-title', key: 'settings.notifications.title' },
+    { selector: '.settings-card:nth-of-type(2) .settings-item:nth-of-type(1) .settings-item-label', key: 'settings.tasksNotifications.title' },
+    { selector: '.settings-card:nth-of-type(2) .settings-item:nth-of-type(1) .settings-item-description', key: 'settings.tasksNotifications.description' },
+    { selector: '.settings-card:nth-of-type(2) .settings-item:nth-of-type(2) .settings-item-label', key: 'settings.goalsNotifications.title' },
+    { selector: '.settings-card:nth-of-type(2) .settings-item:nth-of-type(2) .settings-item-description', key: 'settings.goalsNotifications.description' },
+    { selector: '.settings-card:nth-of-type(3) .settings-title', key: 'settings.account.title' },
+    { selector: '.settings-card:nth-of-type(3) .settings-item-label', key: 'buttons.logout' },
+    { selector: '.settings-card:nth-of-type(3) .settings-item-description', key: 'settings.logout.description' },
+    { selector: '#logoutBtn', key: 'buttons.logout' },
+    { selector: '.settings-card:nth-of-type(4) .settings-title', key: 'settings.data.title' },
+    { selector: '.settings-card:nth-of-type(4) .settings-item:nth-of-type(1) .settings-item-label', key: 'settings.clearData.title' },
+    { selector: '.settings-card:nth-of-type(4) .settings-item:nth-of-type(1) .settings-item-description', key: 'settings.clearData.description' },
+    { selector: '.settings-card:nth-of-type(4) .settings-item:nth-of-type(2) .settings-item-label', key: 'settings.exportData.title' },
+    { selector: '.settings-card:nth-of-type(4) .settings-item:nth-of-type(2) .settings-item-description', key: 'settings.exportData.description' },
+    { selector: '#clearDataBtn', key: 'buttons.clearData' },
+    { selector: '#exportDataBtn', key: 'buttons.exportData' },
+    { selector: '.profile-stat-card:nth-child(1) .profile-stat-label', key: 'profile.stats.tasks' },
+    { selector: '.profile-stat-card:nth-child(2) .profile-stat-label', key: 'profile.stats.goals' },
+    { selector: '.profile-stat-card:nth-child(3) .profile-stat-label', key: 'profile.stats.days' },
+    { selector: '#premiumCardTitle', key: 'profile.plan.basicTitle' },
+    { selector: '#premiumCardSubtitle', key: 'profile.plan.basicSubtitle' },
+    { selector: '#profileUpgradeBtn', key: 'buttons.upgradePremium', preserveChildren: true },
+    { selector: '.profile-form .section-title', key: 'profile.form.title' },
+    { selector: 'label[for="profileNameInput"]', key: 'form.labels.name' },
+    { selector: 'label[for="profileEmailInput"]', key: 'form.labels.email' },
+    { selector: 'label[for="profileBio"]', key: 'form.labels.bio' },
+    { selector: '#profileNameInput', key: 'placeholders.profile.name', type: 'placeholder' },
+    { selector: '#profileEmailInput', key: 'placeholders.profile.email', type: 'placeholder' },
+    { selector: '#profileBio', key: 'placeholders.profile.bio', type: 'placeholder' },
+    { selector: '#saveProfileBtn', key: 'buttons.saveChanges', preserveChildren: true },
+    { selector: '.help-search input', key: 'help.search.placeholder', type: 'placeholder' },
+    { selector: '.help-categories .section-title', key: 'help.faq.title' },
+    { selector: '.faq-item:nth-of-type(1) .faq-question span', key: 'faq.q1.question' },
+    { selector: '.faq-item:nth-of-type(1) .faq-answer p', key: 'faq.q1.answer' },
+    { selector: '.faq-item:nth-of-type(2) .faq-question span', key: 'faq.q2.question' },
+    { selector: '.faq-item:nth-of-type(2) .faq-answer p', key: 'faq.q2.answer' },
+    { selector: '.faq-item:nth-of-type(3) .faq-question span', key: 'faq.q3.question' },
+    { selector: '.faq-item:nth-of-type(3) .faq-answer p', key: 'faq.q3.answer' },
+    { selector: '.faq-item:nth-of-type(4) .faq-question span', key: 'faq.q4.question' },
+    { selector: '.faq-item:nth-of-type(4) .faq-answer p', key: 'faq.q4.answer' },
+    { selector: '.faq-item:nth-of-type(5) .faq-question span', key: 'faq.q5.question' },
+    { selector: '.faq-item:nth-of-type(5) .faq-answer p', key: 'faq.q5.answer' },
+    { selector: '.help-contact .section-title', key: 'help.contact.title' },
+    { selector: '.help-contact-text', key: 'help.contact.text' },
+    { selector: '.help-contact .btn.btn-primary', key: 'buttons.sendMessage', preserveChildren: true },
+    { selector: '.help-contact .btn.btn-outline', key: 'buttons.manual', preserveChildren: true },
+    { selector: '#reportTitle', key: 'modal.report.title' },
+    { selector: '#exportReportBtn', key: 'buttons.exportPdf', preserveChildren: true },
+    { selector: '#upgradeReportBtn', key: 'buttons.upgrade', preserveChildren: true },
+    { selector: '#supportChatButton', key: 'aria.chatButton', type: 'aria-label' },
+    { selector: '.chat-title', key: 'chat.title' },
+    { selector: '.chat-status', key: 'chat.status' },
+    { selector: '.chat-message-bot .message-bubble p', key: 'chat.initialMessage' },
+    { selector: '.chat-message-bot .message-time', key: 'chat.message.now' },
+    { selector: '.suggestion-btn:nth-of-type(1)', key: 'chat.suggestion.addTask' },
+    { selector: '.suggestion-btn:nth-of-type(2)', key: 'chat.suggestion.manageFinance' },
+    { selector: '.suggestion-btn:nth-of-type(3)', key: 'chat.suggestion.productHelp' },
+    { selector: '#chatInput', key: 'placeholders.chat.input', type: 'placeholder' },
+    { selector: '#chatMinimizeBtn', key: 'aria.chatMinimize', type: 'aria-label' },
+    { selector: '#chatSendBtn', key: 'aria.chatSend', type: 'aria-label' }
+]
+
+const sectionTitleKeys = {
+    dashboard: { titleKey: 'sections.dashboard.title', subtitleKey: 'sections.dashboard.subtitle' },
+    tarefas: { titleKey: 'sections.tarefas.title', subtitleKey: 'sections.tarefas.subtitle' },
+    metas: { titleKey: 'sections.metas.title', subtitleKey: 'sections.metas.subtitle' },
+    financas: { titleKey: 'sections.financas.title', subtitleKey: 'sections.financas.subtitle' },
+    produtos: { titleKey: 'sections.produtos.title', subtitleKey: 'sections.produtos.subtitle' },
+    configuracoes: { titleKey: 'sections.configuracoes.title', subtitleKey: 'sections.configuracoes.subtitle' },
+    perfil: { titleKey: 'sections.perfil.title', subtitleKey: 'sections.perfil.subtitle' },
+    ajuda: { titleKey: 'sections.ajuda.title', subtitleKey: 'sections.ajuda.subtitle' }
+}
+
+function updatePageHeader(section = currentSection, titlesMap = sectionTitleKeys) {
+    const pageTitle = document.querySelector('.page-title')
+    const pageSubtitle = document.querySelector('.page-subtitle')
+    const config = titlesMap[section] || titlesMap.dashboard
+
+    if (pageTitle && config?.titleKey) {
+        setElementTextContent(pageTitle, t(config.titleKey))
+    }
+
+    if (pageSubtitle && config?.subtitleKey) {
+        setElementTextContent(pageSubtitle, t(config.subtitleKey))
+    }
+}
+
+function refreshLanguageSensitiveComponents() {
+    if (typeof renderSummaryCards === 'function') renderSummaryCards()
+    if (typeof renderTasks === 'function') renderTasks()
+    if (typeof renderGoals === 'function') renderGoals()
+    if (typeof renderFullTasksList === 'function') renderFullTasksList()
+    if (typeof renderFullGoalsList === 'function') renderFullGoalsList()
+    if (typeof renderProfilePage === 'function') renderProfilePage()
+}
+
+function applyTranslations(lang = currentLanguage, { persist = false } = {}) {
+    const normalizedLang = SUPPORTED_LANGUAGES.includes(lang) ? lang : 'pt-BR'
+    currentLanguage = normalizedLang
+    document.documentElement.lang = normalizedLang
+
+    if (persist) {
+        localStorage.setItem(LANGUAGE_STORAGE_KEY, normalizedLang)
+    }
+
+    translationBindings.forEach((binding) => {
+        const elements = document.querySelectorAll(binding.selector)
+        if (!elements.length) return
+
+        elements.forEach((element) => {
+            updateElementContent(element, binding.key, binding.type, binding)
+        })
+    })
+
+    updatePageHeader(currentSection)
+    refreshLanguageSensitiveComponents()
+}
+
+function initializeLanguageSelector() {
+    const select = document.getElementById('languageSelect')
+    if (!select) return
+
+    if (!SUPPORTED_LANGUAGES.includes(currentLanguage)) {
+        currentLanguage = 'pt-BR'
+    }
+
+    select.value = currentLanguage
+
+    select.addEventListener('change', (event) => {
+        applyTranslations(event.target.value, { persist: true })
+        handleNavigation(currentSection)
+    })
+}
+
+initializeLanguageSelector()
+applyTranslations(currentLanguage)
+
+// ============================================
 // UPDATE USER PROFILE INFO
 // ============================================
 
@@ -199,71 +787,54 @@ function updatePremiumPlanStatus() {
     
     if (!premiumCard) return
     
+    const featureIcon = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+    `
+    
+    const buildFeatureList = (featureKeys = []) =>
+        featureKeys
+            .map(
+                (key) => `
+                <div class="premium-feature">
+                    ${featureIcon}
+                    <span>${t(key)}</span>
+                </div>
+            `
+            )
+            .join('')
+    
     if (isPremium) {
         // Usuário Premium
         premiumCard.classList.add('premium-active')
-        if (premiumCardTitle) premiumCardTitle.textContent = 'Plano Premium'
-        if (premiumCardSubtitle) premiumCardSubtitle.textContent = 'Acesso completo a todos os recursos'
+        if (premiumCardTitle) premiumCardTitle.textContent = t('profile.plan.premiumTitle')
+        if (premiumCardSubtitle) premiumCardSubtitle.textContent = t('profile.plan.premiumSubtitle')
         if (premiumBadge) premiumBadge.style.display = 'flex'
         
         if (premiumCardFeatures) {
-            premiumCardFeatures.innerHTML = `
-                <div class="premium-feature">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span>Relatórios completos e avançados</span>
-                </div>
-                <div class="premium-feature">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span>Análise de tendências e projeções</span>
-                </div>
-                <div class="premium-feature">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span>Recomendações personalizadas</span>
-                </div>
-                <div class="premium-feature">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span>Exportação em alta qualidade</span>
-                </div>
-            `
+            premiumCardFeatures.innerHTML = buildFeatureList([
+                'profile.plan.features.premiumReports',
+                'profile.plan.features.premiumTrends',
+                'profile.plan.features.premiumRecommendations',
+                'profile.plan.features.premiumExport'
+            ])
         }
         
         if (profileUpgradeBtn) profileUpgradeBtn.style.display = 'none'
     } else {
         // Usuário Básico
         premiumCard.classList.remove('premium-active')
-        if (premiumCardTitle) premiumCardTitle.textContent = 'Plano Básico'
-        if (premiumCardSubtitle) premiumCardSubtitle.textContent = 'Acesse recursos limitados'
+        if (premiumCardTitle) premiumCardTitle.textContent = t('profile.plan.basicTitle')
+        if (premiumCardSubtitle) premiumCardSubtitle.textContent = t('profile.plan.basicSubtitle')
         if (premiumBadge) premiumBadge.style.display = 'none'
         
         if (premiumCardFeatures) {
-            premiumCardFeatures.innerHTML = `
-                <div class="premium-feature">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span>Relatórios básicos</span>
-                </div>
-                <div class="premium-feature">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span>Gráficos essenciais</span>
-                </div>
-                <div class="premium-feature">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span>Exportação básica</span>
-                </div>
-            `
+            premiumCardFeatures.innerHTML = buildFeatureList([
+                'profile.plan.features.basicReports',
+                'profile.plan.features.basicCharts',
+                'profile.plan.features.basicExport'
+            ])
         }
         
         if (profileUpgradeBtn) profileUpgradeBtn.style.display = 'block'
@@ -317,6 +888,10 @@ navItems.forEach((item) => {
 })
 
 function handleNavigation(section) {
+    if (section) {
+        currentSection = section
+    }
+
     const allSections = document.querySelectorAll(".page-section")
     allSections.forEach((s) => s.classList.remove("active"))
 
@@ -325,24 +900,8 @@ function handleNavigation(section) {
         targetSection.classList.add("active")
     }
 
-    // Update page title based on section
-    const pageTitle = document.querySelector(".page-title")
-    const pageSubtitle = document.querySelector(".page-subtitle")
-
-    const sectionTitles = {
-        dashboard: { title: "Dashboard", subtitle: "Controle suas tarefas, metas e finanças em um só lugar." },
-        tarefas: { title: "Tarefas", subtitle: "Gerencie todas as suas tarefas e projetos." },
-        metas: { title: "Metas", subtitle: "Acompanhe o progresso das suas metas." },
-        financas: { title: "Finanças", subtitle: "Controle suas receitas e despesas." },
-        produtos: { title: "Produtos", subtitle: "Gerencie seu catálogo de produtos." },
-        configuracoes: { title: "Configurações", subtitle: "Personalize sua experiência." },
-        perfil: { title: "Perfil", subtitle: "Gerencie suas informações pessoais." },
-        ajuda: { title: "Ajuda", subtitle: "Encontre respostas para suas dúvidas." },
-    }
-
-    if (sectionTitles[section]) {
-        pageTitle.textContent = sectionTitles[section].title
-        pageSubtitle.textContent = sectionTitles[section].subtitle
+    if (sectionTitleKeys[section]) {
+        updatePageHeader(section, sectionTitleKeys)
     }
 
     if (section === "tarefas") {
@@ -403,12 +962,21 @@ function renderSummaryCards() {
     const activeGoals = appData.goals.length
     const goalsInProgress = appData.goals.filter((g) => g.progress < 100 && g.progress >= 50).length
     const goalsDelayed = appData.goals.filter((g) => g.progress < 50).length
+    const inProgressLabel = currentLanguage === 'en-US' ? 'in progress' : 'em progresso'
+    const delayedSingular = currentLanguage === 'en-US' ? 'delayed' : 'atrasada'
+    const delayedPlural = currentLanguage === 'en-US' ? 'delayed' : 'atrasadas'
+    const delayedLabel = goalsDelayed === 1 ? delayedSingular : delayedPlural
+
     document.querySelector(".summary-card:nth-child(3) .card-value").textContent = activeGoals
     document.querySelector(".summary-card:nth-child(3) .card-subtitle").textContent =
-        `${goalsInProgress} em progresso, ${goalsDelayed} atrasada${goalsDelayed !== 1 ? "s" : ""}`
+        `${goalsInProgress} ${inProgressLabel}, ${goalsDelayed} ${delayedLabel}`
 
+    const balanceFormatter = new Intl.NumberFormat(
+        currentLanguage === 'en-US' ? 'en-US' : 'pt-BR',
+        { style: 'currency', currency: 'BRL' }
+    )
     document.querySelector(".summary-card:nth-child(4) .card-value").textContent =
-        `R$ ${appData.finances.balance.toLocaleString("pt-BR")}`
+        balanceFormatter.format(appData.finances.balance)
 }
 
 function renderTasks() {
@@ -425,7 +993,7 @@ function renderTasks() {
           </div>
           <div style="display: flex; gap: 0.5rem; align-items: center;">
             <span class="task-badge ${task.status === "completed" ? "badge-completed" : "badge-pending"}">
-              ${task.status === "completed" ? "Concluída" : "Pendente"}
+              ${task.status === "completed" ? t('tasks.badges.completed') : t('tasks.badges.pending')}
             </span>
             <button class="task-action-btn" data-task-id="${task.id}" data-action="${task.status === "completed" ? "uncomplete" : "complete"}" 
                     style="background: none; border: none; cursor: pointer; padding: 0.5rem; color: var(--text-secondary); transition: var(--transition);"
@@ -1093,7 +1661,7 @@ function renderFullTasksList() {
           </div>
           <div style="display: flex; gap: 0.5rem; align-items: center;">
             <span class="task-badge ${task.status === "completed" ? "badge-completed" : "badge-pending"}">
-              ${task.status === "completed" ? "Concluída" : "Pendente"}
+              ${task.status === "completed" ? t('tasks.badges.completed') : t('tasks.badges.pending')}
             </span>
             <button class="task-action-btn" data-task-id="${task.id}" data-action="${task.status === "completed" ? "uncomplete" : "complete"}" 
                     style="background: none; border: none; cursor: pointer; padding: 0.5rem; color: var(--text-secondary); transition: var(--transition);"
