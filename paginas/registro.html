@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Ocean - Registro</title>
+    <link rel="icon" type="image/png" href="../img/Ocean_logo_n1.png">
     <link rel="stylesheet" href="../css/login.css">
     <style>
         /* ajustes mínimos específicos de registro, reutilizando login.css */
@@ -118,6 +119,41 @@
                 </div>
                 <form id="registerForm" class="login-form">
                     <div class="form-group fade-in-up stagger-2">
+                        <label for="firstName" class="form-label">Nome</label>
+                        <div class="input-container">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <input type="text" id="firstName" placeholder="Seu nome" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group fade-in-up stagger-2">
+                        <label for="lastName" class="form-label">Sobrenome</label>
+                        <div class="input-container">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <input type="text" id="lastName" placeholder="Seu sobrenome" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group fade-in-up stagger-2">
+                        <label for="birthDate" class="form-label">Data de Nascimento</label>
+                        <div class="input-container">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <input type="date" id="birthDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group fade-in-up stagger-2">
                         <label for="email" class="form-label">Email</label>
                         <div class="input-container">
                             <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -137,6 +173,25 @@
                             </svg>
                             <input type="password" id="password" placeholder="••••••••" required>
                             <button type="button" id="togglePassword" class="password-toggle"
+                                aria-label="Mostrar ou ocultar senha" aria-pressed="false">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group fade-in-up stagger-3">
+                        <label for="confirmPassword" class="form-label">Confirmação de Senha</label>
+                        <div class="input-container">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                <path d="m7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            <input type="password" id="confirmPassword" placeholder="••••••••" required>
+                            <button type="button" id="toggleConfirmPassword" class="password-toggle"
                                 aria-label="Mostrar ou ocultar senha" aria-pressed="false">
                                 <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">

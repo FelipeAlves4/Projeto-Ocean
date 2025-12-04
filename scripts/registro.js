@@ -13,28 +13,82 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Setup confirm password toggle
+    const toggleConfirmPasswordBtn = document.getElementById('toggleConfirmPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    if (toggleConfirmPasswordBtn && confirmPasswordInput) {
+        toggleConfirmPasswordBtn.addEventListener('click', function () {
+            togglePasswordVisibility(confirmPasswordInput, toggleConfirmPasswordBtn);
+        });
+    }
+
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
 
+        const firstNameInput = document.getElementById('firstName');
+        const lastNameInput = document.getElementById('lastName');
+        const birthDateInput = document.getElementById('birthDate');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
         const submitBtn = form.querySelector('.submit-btn');
         const btnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
         const btnArrow = submitBtn ? submitBtn.querySelector('.btn-arrow') : null;
         const loadingSpinner = submitBtn ? submitBtn.querySelector('.loading-spinner') : null;
 
+        const firstName = (firstNameInput && firstNameInput.value || '').trim();
+        const lastName = (lastNameInput && lastNameInput.value || '').trim();
+        const birthDate = (birthDateInput && birthDateInput.value || '').trim();
         const usuario = (emailInput && emailInput.value || '').trim();
         const senha = (passwordInput && passwordInput.value || '').trim();
+        const confirmSenha = (confirmPasswordInput && confirmPasswordInput.value || '').trim();
 
-        if (!usuario || !senha) {
-            showToast('Campos obrigatórios', 'Por favor, preencha email e senha.', 'warning');
-            if (!usuario && emailInput) emailInput.focus(); else if (passwordInput) passwordInput.focus();
+        // Validações
+        if (!firstName) {
+            showToast('Campo obrigatório', 'Por favor, preencha o nome.', 'warning');
+            if (firstNameInput) firstNameInput.focus();
+            return;
+        }
+
+        if (!lastName) {
+            showToast('Campo obrigatório', 'Por favor, preencha o sobrenome.', 'warning');
+            if (lastNameInput) lastNameInput.focus();
+            return;
+        }
+
+        if (!birthDate) {
+            showToast('Campo obrigatório', 'Por favor, preencha a data de nascimento.', 'warning');
+            if (birthDateInput) birthDateInput.focus();
+            return;
+        }
+
+        if (!usuario) {
+            showToast('Campo obrigatório', 'Por favor, preencha o email.', 'warning');
+            if (emailInput) emailInput.focus();
+            return;
+        }
+
+        if (!senha) {
+            showToast('Campo obrigatório', 'Por favor, preencha a senha.', 'warning');
+            if (passwordInput) passwordInput.focus();
             return;
         }
 
         if (senha.length < 6) {
             showToast('Senha muito curta', 'A senha deve ter ao menos 6 caracteres.', 'error');
             if (passwordInput) passwordInput.focus();
+            return;
+        }
+
+        if (!confirmSenha) {
+            showToast('Campo obrigatório', 'Por favor, confirme a senha.', 'warning');
+            if (confirmPasswordInput) confirmPasswordInput.focus();
+            return;
+        }
+
+        if (senha !== confirmSenha) {
+            showToast('Senhas não coincidem', 'As senhas devem ser iguais.', 'error');
+            if (confirmPasswordInput) confirmPasswordInput.focus();
             return;
         }
         const grecaptcha = window.grecaptcha;
@@ -67,6 +121,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: JSON.stringify({
                     username: usuario,
                     password: senha,
+                    firstName: firstName,
+                    lastName: lastName,
+                    birthDate: birthDate,
                     captchaToken
                 }),
             });
@@ -83,6 +140,15 @@ document.addEventListener('DOMContentLoaded', function () {
             // Sucesso! Preencher email para tela de login
             localStorage.setItem('justRegisteredEmail', usuario);
             
+            // Salvar informações do usuário no localStorage
+            const userInfo = {
+                firstName: firstName,
+                lastName: lastName,
+                birthDate: birthDate,
+                email: usuario
+            };
+            localStorage.setItem('userInfo', JSON.stringify(userInfo));
+            
             // Also save to localStorage for fallback login
             const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
             registeredUsers[usuario] = senha;
@@ -90,6 +156,34 @@ document.addEventListener('DOMContentLoaded', function () {
             
             // Definir plano gratuito (básico) por padrão para novos usuários
             localStorage.setItem('isPremium', 'false');
+            
+            // Inicializar dados vazios para o novo usuário
+            const emptyUserData = {
+                tasks: [],
+                goals: [],
+                finances: {
+                    income: 0,
+                    expenses: 0,
+                    balance: 0,
+                },
+                transactions: [],
+                stats: {
+                    tasksCompleted: 0,
+                    tasksTotal: 0,
+                    productiveTime: 0,
+                    activeGoals: 0,
+                },
+                products: [],
+                sales: [],
+                profile: {
+                    name: firstName,
+                    lastName: lastName,
+                    birthDate: birthDate,
+                    bio: ''
+                }
+            };
+            const userDataKey = `oceanDashboardData_${usuario}`;
+            localStorage.setItem(userDataKey, JSON.stringify(emptyUserData));
 
             showToast('Cadastro realizado', 'Usuário registrado com sucesso! Redirecionando...', 'success');
             // Mantém o botão desabilitado até o redirecionamento para evitar duplo envio

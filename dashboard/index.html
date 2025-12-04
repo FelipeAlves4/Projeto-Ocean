@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ocean - Dashboard de Produtividade</title>
+    <link rel="icon" type="image/png" href="../img/Ocean_logo_n1.png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="theme-light.css">
 </head>
@@ -112,6 +113,29 @@
                     </svg>
                     <span>Perfil</span>
                 </button>
+                
+                <!-- Profile Selector (Visible to all, Premium feature) -->
+                <div class="profile-selector-container" id="profileSelectorContainer">
+                    <div class="profile-selector-header" id="profileSelectorHeader">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <div class="profile-selector-info">
+                            <span class="profile-selector-label">Perfil Atual</span>
+                            <span class="profile-selector-name" id="currentProfileName">Perfil Principal</span>
+                        </div>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="profile-selector-arrow">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="profile-selector-dropdown" id="profileSelectorDropdown" style="display: none;">
+                        <div class="profile-selector-list" id="profileSelectorList">
+                            <!-- Profiles will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+                
                 <button class="nav-item" data-section="ajuda">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -518,6 +542,46 @@
                         <!-- Products will be rendered here -->
                     </div>
                 </div>
+
+                <!-- Relatório de Vendas -->
+                <div class="sales-report-container" style="margin-top: 2rem;">
+                    <div class="section-header">
+                        <div>
+                            <h3 class="section-title">Relatório de Vendas</h3>
+                        </div>
+                        <div class="section-header-actions">
+                            <button class="btn btn-primary" id="addSaleBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                <span>Nova Venda</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="sales-summary">
+                        <div class="sales-stat-card">
+                            <div class="sales-stat-label">Total de Produtos</div>
+                            <div class="sales-stat-value" id="totalProductsCount">0</div>
+                        </div>
+                        <div class="sales-stat-card">
+                            <div class="sales-stat-label">Total de Vendas</div>
+                            <div class="sales-stat-value" id="totalSalesCount">0</div>
+                        </div>
+                        <div class="sales-stat-card">
+                            <div class="sales-stat-label">Valor Total em Vendas</div>
+                            <div class="sales-stat-value" id="totalSalesValue">R$ 0,00</div>
+                        </div>
+                    </div>
+
+                    <div class="sales-list-container">
+                        <h4 style="margin-bottom: 1rem;">Vendas Recentes</h4>
+                        <div id="salesList" class="sales-list">
+                            <!-- Vendas will be rendered here -->
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Configurações Section -->
@@ -534,6 +598,23 @@
                                 <input type="checkbox" id="darkModeToggle" checked>
                                 <span class="toggle-slider"></span>
                             </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3 class="settings-title">Idioma</h3>
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <p class="settings-item-label">Idioma da Interface</p>
+                                <p class="settings-item-description">Selecione o idioma para a interface do sistema</p>
+                            </div>
+                            <select class="filter-select" id="settingsLanguageSelect" style="min-width: 150px;">
+                                <option value="pt-BR">Português (Brasil)</option>
+                                <option value="en-US">English (US)</option>
+                                <option value="es-ES">Español</option>
+                                <option value="fr-FR">Français</option>
+                                <option value="de-DE">Deutsch</option>
+                            </select>
                         </div>
                     </div>
 
@@ -580,13 +661,6 @@
                                 <p class="settings-item-description">Remover todos os dados salvos localmente</p>
                             </div>
                             <button class="btn btn-danger" id="clearDataBtn">Limpar</button>
-                        </div>
-                        <div class="settings-item">
-                            <div class="settings-item-info">
-                                <p class="settings-item-label">Exportar Dados</p>
-                                <p class="settings-item-description">Baixar seus dados em formato JSON</p>
-                            </div>
-                            <button class="btn btn-outline" id="exportDataBtn">Exportar</button>
                         </div>
                     </div>
                 </div>
@@ -680,6 +754,14 @@
                             <input type="text" class="form-input" id="profileNameInput" value="Usuário Ocean" placeholder="Seu nome">
                         </div>
                         <div class="form-group">
+                            <label class="form-label">Sobrenome</label>
+                            <input type="text" class="form-input" id="profileLastNameInput" placeholder="Seu sobrenome">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Data de Nascimento</label>
+                            <input type="date" class="form-input" id="profileBirthDateInput" placeholder="Data de nascimento">
+                        </div>
+                        <div class="form-group">
                             <label class="form-label">Email</label>
                             <input type="email" class="form-input" id="profileEmailInput" value="usuario@ocean.com"
                                 placeholder="seu@email.com" readonly>
@@ -690,6 +772,49 @@
                                 placeholder="Conte um pouco sobre você..."></textarea>
                         </div>
                         <button class="btn btn-primary" id="saveProfileBtn">Salvar Alterações</button>
+                    </div>
+
+                    <!-- Múltiplos Perfis Section (Premium Only) -->
+                    <div class="profile-form" id="multipleProfilesSection" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color); display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <div>
+                                <h3 class="section-title">Perfis Múltiplos</h3>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">
+                                    Gerencie múltiplos perfis para diferentes fontes de renda ou projetos
+                                </p>
+                            </div>
+                            <button class="btn btn-primary" id="addProfileBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Novo Perfil
+                            </button>
+                        </div>
+                        
+                        <div id="profilesList" class="profiles-list">
+                            <!-- Perfis serão renderizados aqui -->
+                        </div>
+                        
+                        <div id="profilesEmptyState" class="empty-state" style="display: none;">
+                            <div class="empty-icon">👤</div>
+                            <h3>Nenhum perfil adicional</h3>
+                            <p>Crie perfis para organizar diferentes fontes de renda ou projetos</p>
+                        </div>
+                    </div>
+
+                    <!-- Conta Section -->
+                    <div class="profile-form" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+                        <h3 class="section-title">Conta</h3>
+                        <div class="form-group">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--bg-secondary); border-radius: var(--radius-sm);">
+                                <div>
+                                    <p style="margin: 0; font-weight: 500; color: var(--text-primary);">Sair da conta</p>
+                                    <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--text-secondary);">Sair da sua conta e retornar à página de login</p>
+                                </div>
+                                <button class="btn btn-danger" id="profileLogoutBtn">Sair</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

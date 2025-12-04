@@ -1,0 +1,17 @@
+{
+  "tasks": [],
+  "goals": [],
+  "finances": {
+    "income": 0,
+    "expenses": 0,
+    "balance": 0
+  },
+  "transactions": [],
+  "stats": {
+    "tasksCompleted": 0,
+    "tasksTotal": 0,
+    "productiveTime": 0,
+    "activeGoals": 0
+  },
+  "products": []
+}

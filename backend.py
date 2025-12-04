@@ -24,6 +24,9 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
+    first_name = db.Column(db.String(100), nullable=True)
+    last_name = db.Column(db.String(100), nullable=True)
+    birth_date = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def check_password(self, password):
@@ -33,6 +36,9 @@ class User(db.Model):
         return {
             'id': self.id,
             'username': self.username,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'birth_date': self.birth_date.isoformat() if self.birth_date else None,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 
@@ -109,6 +115,9 @@ def register():
         
         username = data.get('username', '').strip()
         password = data.get('password', '')
+        first_name = data.get('firstName', '').strip()
+        last_name = data.get('lastName', '').strip()
+        birth_date_str = data.get('birthDate', '').strip()
         
         # Validações
         if not username:
@@ -130,8 +139,22 @@ def register():
         if User.query.filter_by(username=username).first():
             return jsonify({"success": False, "message": "Usuário já existe."}), 409
         
+        # Processar data de nascimento
+        birth_date = None
+        if birth_date_str:
+            try:
+                birth_date = datetime.strptime(birth_date_str, '%Y-%m-%d').date()
+            except ValueError:
+                return jsonify({"success": False, "message": "Data de nascimento inválida."}), 400
+        
         # Criar novo usuário
-        user = User(username=username, password_hash=generate_password_hash(password))
+        user = User(
+            username=username,
+            password_hash=generate_password_hash(password),
+            first_name=first_name if first_name else None,
+            last_name=last_name if last_name else None,
+            birth_date=birth_date
+        )
         db.session.add(user)
         db.session.commit()
         

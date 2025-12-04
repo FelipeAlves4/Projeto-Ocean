@@ -33,6 +33,20 @@ if (!checkAuthentication()) {
 // Get current user email
 const currentUser = localStorage.getItem('usuario') || 'guest';
 
+// Get current profile ID (for multiple profiles feature - Premium only)
+let currentProfileId = localStorage.getItem(`currentProfileId_${currentUser}`) || 'main';
+
+// Check if user has premium plan (moved here to be available for loadData)
+function isPremiumUser() {
+    // Garantir que usuários novos tenham plano gratuito (básico) por padrão
+    const isPremium = localStorage.getItem('isPremium')
+    if (isPremium === null) {
+        localStorage.setItem('isPremium', 'false')
+        return false
+    }
+    return isPremium === 'true'
+}
+
 // Default data structure (vazio para novos usuários)
 const defaultData = {
     tasks: [],
@@ -50,19 +64,182 @@ const defaultData = {
         activeGoals: 0,
     },
     products: [],
+    sales: [],
+    profile: {}
 }
 
 // Load data from localStorage or use default (user-specific)
 function loadData() {
-    const userDataKey = `oceanDashboardData_${currentUser}`;
-    const savedData = localStorage.getItem(userDataKey);
-    return savedData ? JSON.parse(savedData) : defaultData;
+    const isPremium = isPremiumUser();
+    
+    // Se não for premium, usar estrutura antiga (compatibilidade)
+    if (!isPremium) {
+        const userDataKey = `oceanDashboardData_${currentUser}`;
+        const savedData = localStorage.getItem(userDataKey);
+        
+        if (!savedData) {
+            const initialData = JSON.parse(JSON.stringify(defaultData));
+            localStorage.setItem(userDataKey, JSON.stringify(initialData));
+            return initialData;
+        }
+        
+        const data = JSON.parse(savedData);
+        return {
+            tasks: data.tasks || [],
+            goals: data.goals || [],
+            finances: {
+                income: data.finances?.income || 0,
+                expenses: data.finances?.expenses || 0,
+                balance: data.finances?.balance || 0,
+            },
+            transactions: data.transactions || [],
+            stats: {
+                tasksCompleted: data.stats?.tasksCompleted || 0,
+                tasksTotal: data.stats?.tasksTotal || 0,
+                productiveTime: data.stats?.productiveTime || 0,
+                activeGoals: data.stats?.activeGoals || 0,
+            },
+            products: data.products || [],
+            sales: data.sales || [],
+            profile: data.profile || {}
+        };
+    }
+    
+    // Se for premium, usar sistema de múltiplos perfis
+    const profilesKey = `oceanProfiles_${currentUser}`;
+    const savedProfiles = localStorage.getItem(profilesKey);
+    
+    if (!savedProfiles) {
+        // Verificar se há dados no formato antigo para migrar
+        const oldDataKey = `oceanDashboardData_${currentUser}`;
+        const oldData = localStorage.getItem(oldDataKey);
+        
+        let profileData;
+        if (oldData) {
+            // Migrar dados antigos para o novo formato
+            const oldDataObj = JSON.parse(oldData);
+            profileData = {
+                tasks: oldDataObj.tasks || [],
+                goals: oldDataObj.goals || [],
+                finances: {
+                    income: oldDataObj.finances?.income || 0,
+                    expenses: oldDataObj.finances?.expenses || 0,
+                    balance: oldDataObj.finances?.balance || 0,
+                },
+                transactions: oldDataObj.transactions || [],
+                stats: {
+                    tasksCompleted: oldDataObj.stats?.tasksCompleted || 0,
+                    tasksTotal: oldDataObj.stats?.tasksTotal || 0,
+                    productiveTime: oldDataObj.stats?.productiveTime || 0,
+                    activeGoals: oldDataObj.stats?.activeGoals || 0,
+                },
+                products: oldDataObj.products || [],
+                sales: oldDataObj.sales || [],
+                profile: oldDataObj.profile || {}
+            };
+        } else {
+            // Criar dados vazios
+            profileData = JSON.parse(JSON.stringify(defaultData));
+        }
+        
+        // Criar perfil principal
+        const mainProfile = {
+            id: 'main',
+            name: 'Perfil Principal',
+            description: 'Perfil principal',
+            createdAt: new Date().toISOString(),
+            data: profileData
+        };
+        const profiles = { main: mainProfile };
+        localStorage.setItem(profilesKey, JSON.stringify(profiles));
+        localStorage.setItem(`currentProfileId_${currentUser}`, 'main');
+        
+        return mainProfile.data;
+    }
+    
+    const profiles = JSON.parse(savedProfiles);
+    const profileId = currentProfileId || 'main';
+    const currentProfile = profiles[profileId] || profiles.main;
+    
+    if (!currentProfile) {
+        // Se perfil não existe, criar um novo
+        const newProfile = {
+            id: 'main',
+            name: 'Perfil Principal',
+            description: 'Perfil principal',
+            createdAt: new Date().toISOString(),
+            data: JSON.parse(JSON.stringify(defaultData))
+        };
+        profiles.main = newProfile;
+        localStorage.setItem(profilesKey, JSON.stringify(profiles));
+        return newProfile.data;
+    }
+    
+    // Garantir que todos os campos existam
+    return {
+        tasks: currentProfile.data?.tasks || [],
+        goals: currentProfile.data?.goals || [],
+        finances: {
+            income: currentProfile.data?.finances?.income || 0,
+            expenses: currentProfile.data?.finances?.expenses || 0,
+            balance: currentProfile.data?.finances?.balance || 0,
+        },
+        transactions: currentProfile.data?.transactions || [],
+        stats: {
+            tasksCompleted: currentProfile.data?.stats?.tasksCompleted || 0,
+            tasksTotal: currentProfile.data?.stats?.tasksTotal || 0,
+            productiveTime: currentProfile.data?.stats?.productiveTime || 0,
+            activeGoals: currentProfile.data?.stats?.activeGoals || 0,
+        },
+        products: currentProfile.data?.products || [],
+        sales: currentProfile.data?.sales || [],
+        profile: currentProfile.data?.profile || {}
+    };
 }
 
 // Save data to localStorage (user-specific)
 function saveData(data) {
-    const userDataKey = `oceanDashboardData_${currentUser}`;
-    localStorage.setItem(userDataKey, JSON.stringify(data));
+    const isPremium = isPremiumUser();
+    
+    if (!isPremium) {
+        // Se não for premium, salvar na estrutura antiga
+        const userDataKey = `oceanDashboardData_${currentUser}`;
+        localStorage.setItem(userDataKey, JSON.stringify(data));
+        return;
+    }
+    
+    // Se for premium, salvar no perfil atual
+    const profilesKey = `oceanProfiles_${currentUser}`;
+    const savedProfiles = localStorage.getItem(profilesKey);
+    
+    if (!savedProfiles) {
+        const mainProfile = {
+            id: 'main',
+            name: 'Perfil Principal',
+            description: 'Perfil principal',
+            createdAt: new Date().toISOString(),
+            data: data
+        };
+        localStorage.setItem(profilesKey, JSON.stringify({ main: mainProfile }));
+        return;
+    }
+    
+    const profiles = JSON.parse(savedProfiles);
+    const profileId = currentProfileId || 'main';
+    
+    if (!profiles[profileId]) {
+        profiles[profileId] = {
+            id: profileId,
+            name: 'Perfil Principal',
+            description: 'Perfil principal',
+            createdAt: new Date().toISOString(),
+            data: data
+        };
+    }
+    
+    profiles[profileId].data = data;
+    profiles[profileId].updatedAt = new Date().toISOString();
+    localStorage.setItem(profilesKey, JSON.stringify(profiles));
 }
 
 // Initialize data
@@ -180,6 +357,9 @@ const translations = {
         'settings.appearance.title': 'Aparência',
         'settings.theme.title': 'Tema Escuro',
         'settings.theme.description': 'Alternar entre tema claro e escuro',
+        'settings.language.title': 'Idioma',
+        'settings.language.label': 'Idioma da Interface',
+        'settings.language.description': 'Selecione o idioma para a interface do sistema',
         'settings.notifications.title': 'Notificações',
         'settings.tasksNotifications.title': 'Notificações de Tarefas',
         'settings.tasksNotifications.description': 'Receber lembretes sobre tarefas pendentes',
@@ -342,6 +522,9 @@ const translations = {
         'settings.appearance.title': 'Appearance',
         'settings.theme.title': 'Dark Theme',
         'settings.theme.description': 'Toggle between light and dark themes',
+        'settings.language.title': 'Language',
+        'settings.language.label': 'Interface Language',
+        'settings.language.description': 'Select the language for the system interface',
         'settings.notifications.title': 'Notifications',
         'settings.tasksNotifications.title': 'Task Notifications',
         'settings.tasksNotifications.description': 'Receive reminders about pending tasks',
@@ -504,6 +687,9 @@ const translations = {
         'settings.appearance.title': 'Apariencia',
         'settings.theme.title': 'Tema Oscuro',
         'settings.theme.description': 'Alternar entre tema claro y oscuro',
+        'settings.language.title': 'Idioma',
+        'settings.language.label': 'Idioma de la Interfaz',
+        'settings.language.description': 'Seleccione el idioma para la interfaz del sistema',
         'settings.notifications.title': 'Notificaciones',
         'settings.tasksNotifications.title': 'Notificaciones de Tareas',
         'settings.tasksNotifications.description': 'Recibir recordatorios sobre tareas pendientes',
@@ -666,6 +852,9 @@ const translations = {
         'settings.appearance.title': 'Apparence',
         'settings.theme.title': 'Thème sombre',
         'settings.theme.description': 'Basculer entre le thème clair et sombre',
+        'settings.language.title': 'Langue',
+        'settings.language.label': 'Langue de l\'Interface',
+        'settings.language.description': 'Sélectionnez la langue pour l\'interface du système',
         'settings.notifications.title': 'Notifications',
         'settings.tasksNotifications.title': 'Notifications de tâches',
         'settings.tasksNotifications.description': 'Recevoir des rappels sur les tâches en attente',
@@ -828,6 +1017,9 @@ const translations = {
         'settings.appearance.title': 'Darstellung',
         'settings.theme.title': 'Dunkles Thema',
         'settings.theme.description': 'Zwischen hellem und dunklem Thema wechseln',
+        'settings.language.title': 'Sprache',
+        'settings.language.label': 'Schnittstellensprache',
+        'settings.language.description': 'Wählen Sie die Sprache für die Systemoberfläche',
         'settings.notifications.title': 'Benachrichtigungen',
         'settings.tasksNotifications.title': 'Aufgabenbenachrichtigungen',
         'settings.tasksNotifications.description': 'Erinnerungen an ausstehende Aufgaben erhalten',
@@ -1019,20 +1211,23 @@ const translationBindings = [
     { selector: '.settings-card:nth-of-type(1) .settings-title', key: 'settings.appearance.title' },
     { selector: '.settings-card:nth-of-type(1) .settings-item-label', key: 'settings.theme.title' },
     { selector: '.settings-card:nth-of-type(1) .settings-item-description', key: 'settings.theme.description' },
-    { selector: '.settings-card:nth-of-type(2) .settings-title', key: 'settings.notifications.title' },
-    { selector: '.settings-card:nth-of-type(2) .settings-item:nth-of-type(1) .settings-item-label', key: 'settings.tasksNotifications.title' },
-    { selector: '.settings-card:nth-of-type(2) .settings-item:nth-of-type(1) .settings-item-description', key: 'settings.tasksNotifications.description' },
-    { selector: '.settings-card:nth-of-type(2) .settings-item:nth-of-type(2) .settings-item-label', key: 'settings.goalsNotifications.title' },
-    { selector: '.settings-card:nth-of-type(2) .settings-item:nth-of-type(2) .settings-item-description', key: 'settings.goalsNotifications.description' },
-    { selector: '.settings-card:nth-of-type(3) .settings-title', key: 'settings.account.title' },
-    { selector: '.settings-card:nth-of-type(3) .settings-item-label', key: 'buttons.logout' },
-    { selector: '.settings-card:nth-of-type(3) .settings-item-description', key: 'settings.logout.description' },
+    { selector: '.settings-card:nth-of-type(2) .settings-title', key: 'settings.language.title' },
+    { selector: '.settings-card:nth-of-type(2) .settings-item-label', key: 'settings.language.label' },
+    { selector: '.settings-card:nth-of-type(2) .settings-item-description', key: 'settings.language.description' },
+    { selector: '.settings-card:nth-of-type(3) .settings-title', key: 'settings.notifications.title' },
+    { selector: '.settings-card:nth-of-type(3) .settings-item:nth-of-type(1) .settings-item-label', key: 'settings.tasksNotifications.title' },
+    { selector: '.settings-card:nth-of-type(3) .settings-item:nth-of-type(1) .settings-item-description', key: 'settings.tasksNotifications.description' },
+    { selector: '.settings-card:nth-of-type(3) .settings-item:nth-of-type(2) .settings-item-label', key: 'settings.goalsNotifications.title' },
+    { selector: '.settings-card:nth-of-type(3) .settings-item:nth-of-type(2) .settings-item-description', key: 'settings.goalsNotifications.description' },
+    { selector: '.settings-card:nth-of-type(4) .settings-title', key: 'settings.account.title' },
+    { selector: '.settings-card:nth-of-type(4) .settings-item-label', key: 'buttons.logout' },
+    { selector: '.settings-card:nth-of-type(4) .settings-item-description', key: 'settings.logout.description' },
     { selector: '#logoutBtn', key: 'buttons.logout' },
-    { selector: '.settings-card:nth-of-type(4) .settings-title', key: 'settings.data.title' },
-    { selector: '.settings-card:nth-of-type(4) .settings-item:nth-of-type(1) .settings-item-label', key: 'settings.clearData.title' },
-    { selector: '.settings-card:nth-of-type(4) .settings-item:nth-of-type(1) .settings-item-description', key: 'settings.clearData.description' },
-    { selector: '.settings-card:nth-of-type(4) .settings-item:nth-of-type(2) .settings-item-label', key: 'settings.exportData.title' },
-    { selector: '.settings-card:nth-of-type(4) .settings-item:nth-of-type(2) .settings-item-description', key: 'settings.exportData.description' },
+    { selector: '.settings-card:nth-of-type(5) .settings-title', key: 'settings.data.title' },
+    { selector: '.settings-card:nth-of-type(5) .settings-item:nth-of-type(1) .settings-item-label', key: 'settings.clearData.title' },
+    { selector: '.settings-card:nth-of-type(5) .settings-item:nth-of-type(1) .settings-item-description', key: 'settings.clearData.description' },
+    { selector: '.settings-card:nth-of-type(5) .settings-item:nth-of-type(2) .settings-item-label', key: 'settings.exportData.title' },
+    { selector: '.settings-card:nth-of-type(5) .settings-item:nth-of-type(2) .settings-item-description', key: 'settings.exportData.description' },
     { selector: '#clearDataBtn', key: 'buttons.clearData' },
     { selector: '#exportDataBtn', key: 'buttons.exportData' },
     { selector: '.profile-stat-card:nth-child(1) .profile-stat-label', key: 'profile.stats.tasks' },
@@ -1150,6 +1345,33 @@ function initializeLanguageSelector() {
     select.addEventListener('change', (event) => {
         applyTranslations(event.target.value, { persist: true })
         handleNavigation(currentSection)
+        // Sincronizar com o seletor de configurações
+        const settingsSelect = document.getElementById('settingsLanguageSelect')
+        if (settingsSelect) {
+            settingsSelect.value = event.target.value
+        }
+    })
+}
+
+// Initialize settings language selector
+function initializeSettingsLanguageSelector() {
+    const select = document.getElementById('settingsLanguageSelect')
+    if (!select) return
+
+    if (!SUPPORTED_LANGUAGES.includes(currentLanguage)) {
+        currentLanguage = 'pt-BR'
+    }
+
+    select.value = currentLanguage
+
+    select.addEventListener('change', (event) => {
+        applyTranslations(event.target.value, { persist: true })
+        handleNavigation(currentSection)
+        // Sincronizar com o seletor do header
+        const headerSelect = document.getElementById('languageSelect')
+        if (headerSelect) {
+            headerSelect.value = event.target.value
+        }
     })
 }
 
@@ -1232,8 +1454,31 @@ function renderProfilePage() {
         if (profileNameInput && appData.profile.name) {
             profileNameInput.value = appData.profile.name
         }
+        const profileLastNameInput = document.getElementById('profileLastNameInput')
+        if (profileLastNameInput && appData.profile.lastName) {
+            profileLastNameInput.value = appData.profile.lastName
+        }
+        const profileBirthDateInput = document.getElementById('profileBirthDateInput')
+        if (profileBirthDateInput && appData.profile.birthDate) {
+            profileBirthDateInput.value = appData.profile.birthDate
+        }
         if (profileBioEl && appData.profile.bio) {
             profileBioEl.value = appData.profile.bio
+        }
+    }
+    
+    // Load from localStorage userInfo if available
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+    if (userInfo.lastName && !appData.profile?.lastName) {
+        const profileLastNameInput = document.getElementById('profileLastNameInput')
+        if (profileLastNameInput) {
+            profileLastNameInput.value = userInfo.lastName
+        }
+    }
+    if (userInfo.birthDate && !appData.profile?.birthDate) {
+        const profileBirthDateInput = document.getElementById('profileBirthDateInput')
+        if (profileBirthDateInput) {
+            profileBirthDateInput.value = userInfo.birthDate
         }
     }
     
@@ -1245,6 +1490,9 @@ function renderProfilePage() {
     
     // Update premium badge in profile name
     updatePremiumBadge()
+    
+    // Render multiple profiles section (Premium only)
+    renderMultipleProfiles()
 }
 
 // Update premium badge next to user name
@@ -1340,6 +1588,558 @@ function updatePremiumPlanStatus() {
         if (profileUpgradeBtn) profileUpgradeBtn.style.display = 'block'
     }
 }
+
+// ============================================
+// MULTIPLE PROFILES MANAGEMENT (Premium Only)
+// ============================================
+
+// Render multiple profiles section
+function renderMultipleProfiles() {
+    const isPremium = isPremiumUser();
+    const multipleProfilesSection = document.getElementById('multipleProfilesSection');
+    
+    if (!multipleProfilesSection) return;
+    
+    if (!isPremium) {
+        multipleProfilesSection.style.display = 'none';
+        return;
+    }
+    
+    multipleProfilesSection.style.display = 'block';
+    
+    const profilesKey = `oceanProfiles_${currentUser}`;
+    const savedProfiles = localStorage.getItem(profilesKey);
+    const profilesList = document.getElementById('profilesList');
+    const profilesEmptyState = document.getElementById('profilesEmptyState');
+    
+    if (!profilesList || !profilesEmptyState) return;
+    
+    if (!savedProfiles) {
+        profilesList.innerHTML = '';
+        profilesEmptyState.style.display = 'block';
+        return;
+    }
+    
+    const profiles = JSON.parse(savedProfiles);
+    const profileEntries = Object.values(profiles);
+    
+    if (profileEntries.length === 0) {
+        profilesList.innerHTML = '';
+        profilesEmptyState.style.display = 'block';
+        return;
+    }
+    
+    profilesEmptyState.style.display = 'none';
+    profilesList.innerHTML = '';
+    
+    profileEntries.forEach(profile => {
+        const isActive = profile.id === currentProfileId;
+        const profileCard = document.createElement('div');
+        profileCard.className = 'profile-card-item';
+        profileCard.style.cssText = `
+            background: var(--bg-card);
+            border: 2px solid ${isActive ? 'var(--accent-primary)' : 'var(--border-color)'};
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+            ${isActive ? 'box-shadow: var(--shadow-md);' : ''}
+        `;
+        
+        profileCard.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <h4 style="margin: 0; color: var(--text-primary); font-size: 1.125rem;">
+                            ${profile.name || 'Sem nome'}
+                        </h4>
+                        ${isActive ? `
+                            <span style="
+                                padding: 0.25rem 0.75rem;
+                                background: var(--accent-light);
+                                color: var(--accent-primary);
+                                border-radius: 12px;
+                                font-size: 0.75rem;
+                                font-weight: 600;
+                            ">Ativo</span>
+                        ` : ''}
+                    </div>
+                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">
+                        ${profile.description || 'Sem descrição'}
+                    </p>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.75rem;">
+                        Criado em ${new Date(profile.createdAt).toLocaleDateString('pt-BR')}
+                    </p>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    ${!isActive ? `
+                        <button class="btn btn-primary btn-sm" onclick="switchToProfile('${profile.id}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                            Ativar
+                        </button>
+                    ` : ''}
+                    <button class="btn btn-outline btn-sm" onclick="editProfileModal('${profile.id}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Editar
+                    </button>
+                    ${profile.id !== 'main' ? `
+                        <button class="btn btn-danger btn-sm" onclick="deleteProfileConfirm('${profile.id}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                            Excluir
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+            <div style="display: flex; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                <div style="flex: 1;">
+                    <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted);">Tarefas</p>
+                    <p style="margin: 0.25rem 0 0 0; font-size: 1rem; font-weight: 600; color: var(--text-primary);">
+                        ${(profile.data?.tasks || []).length}
+                    </p>
+                </div>
+                <div style="flex: 1;">
+                    <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted);">Finanças</p>
+                    <p style="margin: 0.25rem 0 0 0; font-size: 1rem; font-weight: 600; color: var(--success);">
+                        R$ ${((profile.data?.finances?.balance || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </p>
+                </div>
+                <div style="flex: 1;">
+                    <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted);">Produtos</p>
+                    <p style="margin: 0.25rem 0 0 0; font-size: 1rem; font-weight: 600; color: var(--text-primary);">
+                        ${(profile.data?.products || []).length}
+                    </p>
+                </div>
+            </div>
+        `;
+        
+        profilesList.appendChild(profileCard);
+    });
+}
+
+// Show add profile modal
+function showAddProfileModal() {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    
+    modal.innerHTML = `
+        <div class="modal-header">
+            Novo Perfil
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Nome do Perfil *</label>
+                <input type="text" id="profileNameInput" placeholder="Ex: Trabalho, Freelance, Negócio" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                ">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Descrição</label>
+                <textarea id="profileDescriptionInput" rows="3" placeholder="Descreva este perfil (opcional)" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                    resize: vertical;
+                "></textarea>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" id="cancelProfileBtn">Cancelar</button>
+            <button class="btn btn-primary" id="saveProfileBtn">Criar Perfil</button>
+        </div>
+    `;
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    
+    setTimeout(() => {
+        document.getElementById('profileNameInput')?.focus();
+    }, 100);
+    
+    document.getElementById('cancelProfileBtn').addEventListener('click', () => {
+        document.body.removeChild(overlay);
+    });
+    
+    document.getElementById('saveProfileBtn').addEventListener('click', () => {
+        const name = document.getElementById('profileNameInput').value.trim();
+        const description = document.getElementById('profileDescriptionInput').value.trim();
+        
+        if (!name) {
+            showToast('Campo obrigatório', 'O nome do perfil é obrigatório.', 'error');
+            return;
+        }
+        
+        addProfile(name, description);
+        document.body.removeChild(overlay);
+        showToast('Perfil criado', 'O novo perfil foi criado com sucesso!', 'success');
+        renderMultipleProfiles();
+        renderProfileSelector(); // Atualizar seletor na sidebar
+    });
+    
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            document.body.removeChild(overlay);
+        }
+    });
+    
+    const handleKeyDown = function(e) {
+        if (e.key === 'Escape') {
+            if (document.body.contains(overlay)) {
+                document.body.removeChild(overlay);
+            }
+            document.removeEventListener('keydown', handleKeyDown);
+        }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+}
+
+// Add new profile
+function addProfile(name, description = '') {
+    const profilesKey = `oceanProfiles_${currentUser}`;
+    const savedProfiles = localStorage.getItem(profilesKey);
+    const profiles = savedProfiles ? JSON.parse(savedProfiles) : {};
+    
+    const newId = `profile_${Date.now()}`;
+    const newProfile = {
+        id: newId,
+        name: name,
+        description: description,
+        createdAt: new Date().toISOString(),
+        data: JSON.parse(JSON.stringify(defaultData))
+    };
+    
+    profiles[newId] = newProfile;
+    localStorage.setItem(profilesKey, JSON.stringify(profiles));
+}
+
+// Edit profile modal
+function editProfileModal(profileId) {
+    const profilesKey = `oceanProfiles_${currentUser}`;
+    const savedProfiles = localStorage.getItem(profilesKey);
+    if (!savedProfiles) return;
+    
+    const profiles = JSON.parse(savedProfiles);
+    const profile = profiles[profileId];
+    if (!profile) return;
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    
+    modal.innerHTML = `
+        <div class="modal-header">
+            Editar Perfil
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Nome do Perfil *</label>
+                <input type="text" id="editProfileNameInput" value="${profile.name || ''}" placeholder="Ex: Trabalho, Freelance, Negócio" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                ">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Descrição</label>
+                <textarea id="editProfileDescriptionInput" rows="3" placeholder="Descreva este perfil (opcional)" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                    resize: vertical;
+                ">${profile.description || ''}</textarea>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" id="cancelEditProfileBtn">Cancelar</button>
+            <button class="btn btn-primary" id="saveEditProfileBtn">Salvar Alterações</button>
+        </div>
+    `;
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    
+    setTimeout(() => {
+        document.getElementById('editProfileNameInput')?.focus();
+    }, 100);
+    
+    document.getElementById('cancelEditProfileBtn').addEventListener('click', () => {
+        document.body.removeChild(overlay);
+    });
+    
+    document.getElementById('saveEditProfileBtn').addEventListener('click', () => {
+        const name = document.getElementById('editProfileNameInput').value.trim();
+        const description = document.getElementById('editProfileDescriptionInput').value.trim();
+        
+        if (!name) {
+            showToast('Campo obrigatório', 'O nome do perfil é obrigatório.', 'error');
+            return;
+        }
+        
+        profile.name = name;
+        profile.description = description;
+        profile.updatedAt = new Date().toISOString();
+        profiles[profileId] = profile;
+        localStorage.setItem(profilesKey, JSON.stringify(profiles));
+        
+        document.body.removeChild(overlay);
+        showToast('Perfil atualizado', 'As alterações foram salvas com sucesso!', 'success');
+        renderMultipleProfiles();
+        renderProfileSelector(); // Atualizar seletor na sidebar
+    });
+    
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            document.body.removeChild(overlay);
+        }
+    });
+    
+    const handleKeyDown = function(e) {
+        if (e.key === 'Escape') {
+            if (document.body.contains(overlay)) {
+                document.body.removeChild(overlay);
+            }
+            document.removeEventListener('keydown', handleKeyDown);
+        }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+}
+
+// Delete profile confirmation
+async function deleteProfileConfirm(profileId) {
+    if (profileId === 'main') {
+        showToast('Ação não permitida', 'Não é possível excluir o perfil principal.', 'warning');
+        return;
+    }
+    
+    const confirmed = await showConfirm({
+        title: 'Excluir Perfil',
+        message: 'Tem certeza que deseja excluir este perfil? Todos os dados associados a ele serão perdidos. Esta ação não pode ser desfeita.',
+        confirmText: 'Excluir',
+        cancelText: 'Cancelar',
+        danger: true
+    });
+    
+    if (confirmed) {
+        deleteProfile(profileId);
+    }
+}
+
+// Delete profile
+function deleteProfile(profileId) {
+    if (profileId === 'main') return;
+    
+    const profilesKey = `oceanProfiles_${currentUser}`;
+    const savedProfiles = localStorage.getItem(profilesKey);
+    if (!savedProfiles) return;
+    
+    const profiles = JSON.parse(savedProfiles);
+    delete profiles[profileId];
+    localStorage.setItem(profilesKey, JSON.stringify(profiles));
+    
+    // Se o perfil excluído era o ativo, voltar para o principal
+    if (currentProfileId === profileId) {
+        currentProfileId = 'main';
+        localStorage.setItem(`currentProfileId_${currentUser}`, 'main');
+        
+        // Recarregar dados do perfil principal
+        location.reload();
+    }
+    
+    showToast('Perfil excluído', 'O perfil foi removido com sucesso.', 'success');
+    renderMultipleProfiles();
+    renderProfileSelector(); // Atualizar seletor na sidebar
+}
+
+// Switch to a different profile
+function switchToProfile(profileId) {
+    const isPremium = isPremiumUser();
+    if (!isPremium) {
+        showToast('Recurso Premium', 'Múltiplos perfis estão disponíveis apenas para usuários Premium.', 'warning');
+        return;
+    }
+    
+    // Salvar dados atuais antes de trocar
+    saveData(appData);
+    
+    // Trocar para o novo perfil
+    currentProfileId = profileId;
+    localStorage.setItem(`currentProfileId_${currentUser}`, profileId);
+    
+    // Recarregar a página para carregar os dados do novo perfil
+    showToast('Perfil alterado', 'Carregando dados do novo perfil...', 'info');
+    setTimeout(() => {
+        location.reload();
+    }, 500);
+}
+
+// ============================================
+// SIDEBAR PROFILE SELECTOR
+// ============================================
+
+// Render profile selector in sidebar
+function renderProfileSelector() {
+    const profileSelectorContainer = document.getElementById('profileSelectorContainer');
+    const profileSelectorHeader = document.getElementById('profileSelectorHeader');
+    const profileSelectorDropdown = document.getElementById('profileSelectorDropdown');
+    const profileSelectorList = document.getElementById('profileSelectorList');
+    const currentProfileNameEl = document.getElementById('currentProfileName');
+    
+    if (!profileSelectorContainer || !profileSelectorHeader || !profileSelectorDropdown || !profileSelectorList) return;
+    
+    const isPremium = isPremiumUser();
+    
+    // Se não for premium, criar perfil principal padrão
+    if (!isPremium) {
+        if (currentProfileNameEl) {
+            currentProfileNameEl.textContent = 'Perfil Principal';
+        }
+        
+        // Limpar lista e mostrar apenas o perfil principal
+        profileSelectorList.innerHTML = `
+            <div class="profile-selector-item active">
+                <div class="profile-selector-item-icon">P</div>
+                <div class="profile-selector-item-info">
+                    <div class="profile-selector-item-name">Perfil Principal</div>
+                    <div class="profile-selector-item-description">Seu perfil padrão</div>
+                </div>
+                <span class="profile-selector-item-badge">Ativo</span>
+            </div>
+        `;
+        
+        // Event listener para mostrar upgrade quando clicar
+        profileSelectorHeader.onclick = () => {
+            showUpgradeModal();
+        };
+        
+        return;
+    }
+    
+    // Se for premium, carregar perfis
+    const profilesKey = `oceanProfiles_${currentUser}`;
+    const savedProfiles = localStorage.getItem(profilesKey);
+    
+    if (!savedProfiles) {
+        // Criar perfil principal se não existir
+        const mainProfile = {
+            id: 'main',
+            name: 'Perfil Principal',
+            description: 'Perfil principal',
+            createdAt: new Date().toISOString(),
+            data: JSON.parse(JSON.stringify(defaultData))
+        };
+        localStorage.setItem(profilesKey, JSON.stringify({ main: mainProfile }));
+        localStorage.setItem(`currentProfileId_${currentUser}`, 'main');
+        
+        if (currentProfileNameEl) {
+            currentProfileNameEl.textContent = 'Perfil Principal';
+        }
+        
+        profileSelectorList.innerHTML = `
+            <div class="profile-selector-item active">
+                <div class="profile-selector-item-icon">P</div>
+                <div class="profile-selector-item-info">
+                    <div class="profile-selector-item-name">Perfil Principal</div>
+                    <div class="profile-selector-item-description">Seu perfil padrão</div>
+                </div>
+                <span class="profile-selector-item-badge">Ativo</span>
+            </div>
+        `;
+        
+        profileSelectorHeader.onclick = () => {
+            profileSelectorContainer.classList.toggle('active');
+            profileSelectorDropdown.style.display = profileSelectorContainer.classList.contains('active') ? 'block' : 'none';
+        };
+        
+        return;
+    }
+    
+    const profiles = JSON.parse(savedProfiles);
+    const profileEntries = Object.values(profiles);
+    const currentProfile = profiles[currentProfileId] || profiles.main;
+    
+    // Atualizar nome do perfil atual
+    if (currentProfileNameEl && currentProfile) {
+        currentProfileNameEl.textContent = currentProfile.name || 'Perfil Principal';
+    }
+    
+    // Limpar e renderizar lista de perfis
+    profileSelectorList.innerHTML = '';
+    
+    if (profileEntries.length === 0) {
+        profileSelectorList.innerHTML = '<div class="profile-selector-empty">Nenhum perfil encontrado</div>';
+    } else {
+        profileEntries.forEach(profile => {
+            const isActive = profile.id === currentProfileId;
+            const profileInitial = (profile.name || 'P').charAt(0).toUpperCase();
+            
+            const profileItem = document.createElement('div');
+            profileItem.className = `profile-selector-item ${isActive ? 'active' : ''}`;
+            profileItem.innerHTML = `
+                <div class="profile-selector-item-icon">${profileInitial}</div>
+                <div class="profile-selector-item-info">
+                    <div class="profile-selector-item-name">${profile.name || 'Sem nome'}</div>
+                    <div class="profile-selector-item-description">${profile.description || 'Sem descrição'}</div>
+                </div>
+                ${isActive ? '<span class="profile-selector-item-badge">Ativo</span>' : ''}
+            `;
+            
+            profileItem.onclick = () => {
+                if (!isActive) {
+                    switchToProfile(profile.id);
+                }
+            };
+            
+            profileSelectorList.appendChild(profileItem);
+        });
+    }
+    
+    // Event listener para abrir/fechar dropdown
+    profileSelectorHeader.onclick = () => {
+        profileSelectorContainer.classList.toggle('active');
+        profileSelectorDropdown.style.display = profileSelectorContainer.classList.contains('active') ? 'block' : 'none';
+    };
+    
+    // Fechar dropdown ao clicar fora
+    document.addEventListener('click', (e) => {
+        if (!profileSelectorContainer.contains(e.target)) {
+            profileSelectorContainer.classList.remove('active');
+            profileSelectorDropdown.style.display = 'none';
+        }
+    });
+}
+
+// Make functions globally available
+window.editProfileModal = editProfileModal;
+window.deleteProfileConfirm = deleteProfileConfirm;
+window.switchToProfile = switchToProfile;
+window.renderProfileSelector = renderProfileSelector;
 
 // Update profile on page load
 updateUserProfile();
@@ -1841,6 +2641,9 @@ window.addEventListener("load", () => {
     renderDashboardProducts()
     animateProgressBars()
     animateOnScroll()
+    
+    // Render profile selector in sidebar
+    renderProfileSelector()
 
     // Task filter
     const taskFilter = document.getElementById("taskFilter")
@@ -1950,11 +2753,28 @@ window.addEventListener("load", () => {
         })
     }
 
+    // Initialize settings language selector
+    initializeSettingsLanguageSelector()
+
+    // Add profile button (Premium only)
+    const addProfileBtn = document.getElementById("addProfileBtn")
+    if (addProfileBtn) {
+        addProfileBtn.addEventListener("click", () => {
+            if (!isPremiumUser()) {
+                showUpgradeModal()
+                return
+            }
+            showAddProfileModal()
+        })
+    }
+
     // Save profile button
     const saveProfileBtn = document.getElementById("saveProfileBtn")
     if (saveProfileBtn) {
         saveProfileBtn.addEventListener("click", () => {
             const profileNameInput = document.getElementById("profileNameInput")
+            const profileLastNameInput = document.getElementById("profileLastNameInput")
+            const profileBirthDateInput = document.getElementById("profileBirthDateInput")
             const profileBio = document.getElementById("profileBio")
             
             // Initialize profile object if it doesn't exist
@@ -1965,6 +2785,12 @@ window.addEventListener("load", () => {
             // Save profile data
             if (profileNameInput) {
                 appData.profile.name = profileNameInput.value.trim()
+            }
+            if (profileLastNameInput) {
+                appData.profile.lastName = profileLastNameInput.value.trim()
+            }
+            if (profileBirthDateInput) {
+                appData.profile.birthDate = profileBirthDateInput.value
             }
             if (profileBio) {
                 appData.profile.bio = profileBio.value.trim()
@@ -1980,10 +2806,34 @@ window.addEventListener("load", () => {
         })
     }
 
-    // Logout button
+    // Logout button (configurações)
     const logoutBtn = document.getElementById("logoutBtn")
     if (logoutBtn) {
         logoutBtn.addEventListener("click", async () => {
+            const confirmed = await showConfirm({
+                title: 'Fazer Logout',
+                message: 'Tem certeza que deseja sair? Você precisará fazer login novamente.',
+                confirmText: 'Sair',
+                cancelText: 'Cancelar',
+                danger: false
+            })
+            if (confirmed) {
+                // Clear authentication data
+                localStorage.removeItem('isLoggedIn')
+                localStorage.removeItem('usuario')
+                localStorage.removeItem('loginTime')
+                showToast('Logout realizado', 'Você foi desconectado com sucesso.', 'success')
+                setTimeout(() => {
+                    window.location.href = '../paginas/login.html'
+                }, 1000)
+            }
+        })
+    }
+
+    // Logout button (perfil)
+    const profileLogoutBtn = document.getElementById("profileLogoutBtn")
+    if (profileLogoutBtn) {
+        profileLogoutBtn.addEventListener("click", async () => {
             const confirmed = await showConfirm({
                 title: 'Fazer Logout',
                 message: 'Tem certeza que deseja sair? Você precisará fazer login novamente.',
@@ -2101,6 +2951,14 @@ window.addEventListener("load", () => {
     if (addProductBtn) {
         addProductBtn.addEventListener("click", () => {
             showProductModal()
+        })
+    }
+
+    // Add sale button
+    const addSaleBtn = document.getElementById("addSaleBtn")
+    if (addSaleBtn) {
+        addSaleBtn.addEventListener("click", () => {
+            showSaleModal()
         })
     }
 
@@ -2716,17 +3574,6 @@ document.addEventListener("keydown", (e) => {
 // ============================================
 // FINANCIAL REPORT GENERATION
 // ============================================
-
-// Check if user has premium plan
-function isPremiumUser() {
-    // Garantir que usuários novos tenham plano gratuito (básico) por padrão
-    const isPremium = localStorage.getItem('isPremium')
-    if (isPremium === null) {
-        localStorage.setItem('isPremium', 'false')
-        return false
-    }
-    return isPremium === 'true'
-}
 
 // Generate financial report
 function generateFinancialReport() {
@@ -3509,6 +4356,9 @@ function showUpgradeModal() {
             updatePremiumBadge()
             updateHeaderUpgradeButton()
             
+            // Atualizar seletor de perfil na sidebar
+            renderProfileSelector()
+            
             // Atualizar relatório se estiver aberto
             const reportModal = document.getElementById('reportModal')
             if (reportModal && reportModal.style.display === 'flex') {
@@ -3536,6 +4386,7 @@ if (!appData.products) {
 // Render products page
 function renderProductsPage() {
     renderProducts()
+    renderSalesReport()
 }
 
 // Render products in dashboard
@@ -3962,7 +4813,277 @@ function deleteProduct(productId) {
     appData.products = appData.products.filter(p => p.id !== productId)
     saveData(appData)
     renderProducts()
+    renderSalesReport()
 }
+
+// ============================================
+// SALES MANAGEMENT
+// ============================================
+
+// Initialize sales array if it doesn't exist
+if (!appData.sales) {
+    appData.sales = []
+    saveData(appData)
+}
+
+// Render sales report
+function renderSalesReport() {
+    const totalProductsCount = document.getElementById('totalProductsCount')
+    const totalSalesCount = document.getElementById('totalSalesCount')
+    const totalSalesValue = document.getElementById('totalSalesValue')
+    const salesList = document.getElementById('salesList')
+    
+    if (!totalProductsCount || !totalSalesCount || !totalSalesValue || !salesList) return
+    
+    // Update product count
+    const productsCount = (appData.products || []).length
+    totalProductsCount.textContent = productsCount
+    
+    // Update sales count
+    const sales = appData.sales || []
+    totalSalesCount.textContent = sales.length
+    
+    // Calculate total sales value
+    const totalValue = sales.reduce((sum, sale) => {
+        return sum + (sale.total || 0)
+    }, 0)
+    totalSalesValue.textContent = `R$ ${totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    
+    // Render sales list
+    salesList.innerHTML = ''
+    
+    if (sales.length === 0) {
+        salesList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📊</div>
+                <h3>Nenhuma venda registrada</h3>
+                <p>Adicione uma venda para começar a gerar relatórios</p>
+            </div>
+        `
+        return
+    }
+    
+    // Sort sales by date (most recent first)
+    const sortedSales = [...sales].sort((a, b) => {
+        const dateA = new Date(a.date || a.createdAt)
+        const dateB = new Date(b.date || b.createdAt)
+        return dateB - dateA
+    })
+    
+    sortedSales.forEach(sale => {
+        const saleCard = document.createElement('div')
+        saleCard.className = 'sale-card'
+        
+        const saleDate = new Date(sale.date || sale.createdAt)
+        const formattedDate = saleDate.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+        
+        saleCard.innerHTML = `
+            <div class="sale-card-header">
+                <div>
+                    <h4>Venda #${sale.id}</h4>
+                    <p class="sale-date">${formattedDate}</p>
+                </div>
+                <button class="btn btn-danger btn-sm" data-sale-id="${sale.id}" onclick="deleteSale(${sale.id})">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Remover
+                </button>
+            </div>
+            <div class="sale-card-body">
+                <div class="sale-items">
+                    ${(sale.items || []).map(item => `
+                        <div class="sale-item">
+                            <span class="sale-item-name">${item.productName || 'Produto'}</span>
+                            <span class="sale-item-qty">Qtd: ${item.quantity || 0}</span>
+                            <span class="sale-item-price">R$ ${(item.price || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="sale-total">
+                    <strong>Total: R$ ${(sale.total || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
+                </div>
+            </div>
+        `
+        
+        salesList.appendChild(saleCard)
+    })
+}
+
+// Show add sale modal
+function showSaleModal() {
+    const products = appData.products || []
+    
+    if (products.length === 0) {
+        showToast('Nenhum produto disponível', 'Adicione produtos antes de criar uma venda.', 'warning')
+        return
+    }
+    
+    const overlay = document.createElement('div')
+    overlay.className = 'modal-overlay'
+    
+    const modal = document.createElement('div')
+    modal.className = 'modal'
+    
+    modal.innerHTML = `
+        <div class="modal-header">
+            Nova Venda
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Produto *</label>
+                <select id="saleProductId" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                ">
+                    <option value="">Selecione um produto</option>
+                    ${products.map(p => `<option value="${p.id}">${p.name} - R$ ${p.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</option>`).join('')}
+                </select>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Quantidade *</label>
+                <input type="number" id="saleQuantity" placeholder="1" min="1" value="1" style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                ">
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" id="cancelSaleBtn">Cancelar</button>
+            <button class="btn btn-primary" id="saveSaleBtn">Adicionar Venda</button>
+        </div>
+    `
+    
+    overlay.appendChild(modal)
+    document.body.appendChild(overlay)
+    
+    // Event listeners
+    document.getElementById('cancelSaleBtn').addEventListener('click', () => {
+        document.body.removeChild(overlay)
+    })
+    
+    const saveBtn = document.getElementById('saveSaleBtn')
+    saveBtn.addEventListener('click', () => {
+        const productId = Number.parseInt(document.getElementById('saleProductId').value)
+        const quantity = Number.parseInt(document.getElementById('saleQuantity').value)
+        
+        if (!productId || !quantity || quantity < 1) {
+            showToast('Dados inválidos', 'Preencha todos os campos corretamente.', 'error')
+            return
+        }
+        
+        const product = products.find(p => p.id === productId)
+        if (!product) {
+            showToast('Produto não encontrado', 'O produto selecionado não existe.', 'error')
+            return
+        }
+        
+        // Create sale
+        addSale({
+            productId: product.id,
+            productName: product.name,
+            quantity: quantity,
+            price: product.price,
+            total: product.price * quantity
+        })
+        
+        // Close modal
+        document.body.removeChild(overlay)
+        showToast('Venda registrada', 'A venda foi adicionada com sucesso.', 'success')
+    })
+    
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            document.body.removeChild(overlay)
+        }
+    })
+    
+    const handleKeyDown = function(e) {
+        if (e.key === 'Escape') {
+            if (document.body.contains(overlay)) {
+                document.body.removeChild(overlay)
+            }
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+}
+
+// Add sale
+function addSale(saleData) {
+    if (!appData.sales) {
+        appData.sales = []
+    }
+    
+    const newId = appData.sales.length > 0 
+        ? Math.max(...appData.sales.map(s => s.id)) + 1 
+        : 1
+    
+    const newSale = {
+        id: newId,
+        items: [{
+            productId: saleData.productId,
+            productName: saleData.productName,
+            quantity: saleData.quantity,
+            price: saleData.price
+        }],
+        total: saleData.total,
+        date: new Date().toISOString(),
+        createdAt: new Date().toISOString()
+    }
+    
+    appData.sales.push(newSale)
+    
+    // Update product stock
+    const product = appData.products.find(p => p.id === saleData.productId)
+    if (product) {
+        product.stock = (product.stock || 0) - saleData.quantity
+        if (product.stock < 0) product.stock = 0
+        if (product.stock === 0) product.status = 'esgotado'
+    }
+    
+    saveData(appData)
+    renderProducts()
+    renderSalesReport()
+}
+
+// Delete sale
+function deleteSale(saleId) {
+    showConfirm({
+        title: 'Remover Venda',
+        message: 'Tem certeza que deseja remover esta venda? Esta ação não pode ser desfeita.',
+        confirmText: 'Remover',
+        cancelText: 'Cancelar',
+        danger: true
+    }).then(confirmed => {
+        if (confirmed) {
+            appData.sales = appData.sales.filter(s => s.id !== saleId)
+            saveData(appData)
+            renderSalesReport()
+            showToast('Venda removida', 'A venda foi removida com sucesso.', 'success')
+        }
+    })
+}
+
+// Make deleteSale available globally
+window.deleteSale = deleteSale
 
 console.log("[v0] All functions are now fully operational")
 
